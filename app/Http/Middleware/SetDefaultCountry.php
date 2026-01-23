@@ -4,36 +4,31 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Services\CountryService;
 use Route;
-use DB;
 
 class SetDefaultCountry
-{    
+{
+    public function __construct(private CountryService $countryService)
+    {
+    }
+
     public function handle($request, Closure $next)
     {
-        $allowedCountries = DB::table('countries')->pluck('country_code')->toArray();
+        // Get country using the service
+        $country = $this->countryService->getCurrentCountry($request);
 
-        // Extract subdomain from the request host
-        $host = $request->getHost();
-        $hostParts = explode('.', $host);
+        // Set the country code as a route parameter for use in controllers
+        $request->route()->setParameter('country_code', $country->country_code);
 
-        Route::currentRouteName();
+        // Store in session for backward compatibility (will be removed later)
+        session(['country_code' => $country->country_code]);
 
-        // Determine the subdomain
-        $subdomain = count($hostParts) > 2 ? $hostParts[0] : 'pk';
-
-        // Determine the country code to use
-        $routeCountryCode = in_array($subdomain, $allowedCountries) ? $subdomain : 'pk';        
-
-        // Set the country code as a parameter for use in controllers
-        $request->route()->setParameter('country_code', $routeCountryCode);
-
-        // Store the country code in the session for subsequent requests
-        session(['country_code' => $routeCountryCode]);
-
-        // **NEW CODE:** Fetch the country object and share it with all views.
-        $country = \App\Country::where('country_code', $routeCountryCode)->first();
+        // Share country with all views
         \View::share('country', $country);
+
+        // Store in request attributes for easy access in controllers
+        $request->attributes->set('country', $country);
 
         return $next($request);
     }

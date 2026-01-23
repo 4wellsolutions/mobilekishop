@@ -78,13 +78,21 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand py-0" href="{{ URL::to('/') }}">
+                @php
+                    // Extract country from current URL path
+                    $pathSegments = explode('/', trim(request()->path(), '/'));
+                    $firstSegment = $pathSegments[0] ?? null;
+                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+                    $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+                    $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+                @endphp
+                <a class="navbar-brand py-0" href="{{ $homeUrl }}">
                     <!-- Mobile logo for screens with width <= 768px -->
-                    <img src="{{ URL::to('/') }}/images/mobile-logo.png" alt="mobile-ki-shop-Logo"
+                    <img src="{{ url('/images/mobile-logo.png') }}" alt="mobile-ki-shop-Logo"
                         class="img-fluid mks-logo mobile-logo" width="70" height="31" />
 
                     <!-- Default logo for screens with width > 768px -->
-                    <img src="{{ URL::to('/') }}/images/logo.png" alt="mobile-ki-shop-Logo"
+                    <img src="{{ url('/images/logo.png') }}" alt="mobile-ki-shop-Logo"
                         class="img-fluid mks-logo default-logo" width="110" height="48" />
                 </a>
 
@@ -130,13 +138,8 @@
                             $currentCountryCode = $currentCountry->country_code;
                             $currentCountryIcon = $currentCountry->icon;
 
-                            // Get the current domain without subdomain
-                            $baseDomain = request()->getHost();
-                            $parts = explode('.', $baseDomain);
-                            if (count($parts) > 2) {
-                                array_shift($parts);
-                            }
-                            $baseDomain = implode('.', $parts);
+                            // Get the base domain
+                            $baseDomain = request()->getSchemeAndHttpHost();
                         @endphp
 
                         <li class="list-inline-item dropdown">
@@ -149,9 +152,9 @@
                                 @foreach ($countries as $ctry)
                                     @php
                                         if (strtolower($ctry->country_code) !== 'pk') {
-                                            $finalURL = 'https://' . strtolower($ctry->country_code) . '.' . $baseDomain;
+                                            $finalURL = $baseDomain . '/' . strtolower($ctry->country_code);
                                         } else {
-                                            $finalURL = 'https://' . $baseDomain;
+                                            $finalURL = $baseDomain;
                                         }
                                     @endphp
 
@@ -176,20 +179,28 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto">
                             <li class="nav-item">
+                                @php
+                                    // Extract country from current URL path
+                                    $pathSegments = explode('/', trim(request()->path(), '/'));
+                                    $firstSegment = $pathSegments[0] ?? null;
+                                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+                                    $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+                                    $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
+                                @endphp
                                 <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" aria-current="page"
-                                    href="{{ URL::to('/') }}">Home</a>
+                                    href="{{ url($urlPrefix . '/') }}">Home</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ Route::currentRouteNamed('brands.by.category') ? 'active' : '' }}"
-                                    href="{{ URL::to('/brands/all') }}">Brands</a>
+                                    href="{{ url($urlPrefix . '/brands/all') }}">Brands</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ Route::currentRouteNamed('up.coming.mobiles') ? 'active' : '' }}"
-                                    href="{{ URL::to('/up-coming-mobile-phones') }}">Up Coming</a>
+                                    href="{{ url($urlPrefix . '/up-coming-mobile-phones') }}">Up Coming</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link position-relative {{ Route::currentRouteNamed('comparison') ? 'active' : '' }}"
-                                    href="{{ URL::to('/comparison') }}">Compares</a>
+                                    href="{{ url($urlPrefix . '/comparison') }}">Compares</a>
                             </li>
                             @php
                                 $hasNews = \App\News::where('country_id', $country->id)->exists();
@@ -198,7 +209,7 @@
                             @if($hasNews)
                                 <li class="nav-item">
                                     <a class="nav-link position-relative {{ Request::is('news/*') ? 'active' : '' }}"
-                                        href="{{url('/news')}}">News</a>
+                                        href="{{url($urlPrefix . '/news')}}">News</a>
                                 </li>
                             @endif
                         </ul>

@@ -84,13 +84,21 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand py-0" href="{{ URL::to('/') }}">
+                @php
+                    // Extract country from current URL path
+                    $pathSegments = explode('/', trim(request()->path(), '/'));
+                    $firstSegment = $pathSegments[0] ?? null;
+                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+                    $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+                    $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+                @endphp
+                <a class="navbar-brand py-0" href="{{ $homeUrl }}">
                     <!-- Mobile logo for screens with width <= 768px -->
-                    <img src="{{ URL::to('/') }}/images/mobile-logo.png" alt="mobile-ki-shop-Logo"
+                    <img src="{{ url('/images/mobile-logo.png') }}" alt="mobile-ki-shop-Logo"
                         class="img-fluid mks-logo mobile-logo" width="70" height="31" />
 
                     <!-- Default logo for screens with width > 768px -->
-                    <img src="{{ URL::to('/') }}/images/logo.png" alt="mobile-ki-shop-Logo"
+                    <img src="{{ url('/images/logo.png') }}" alt="mobile-ki-shop-Logo"
                         class="img-fluid mks-logo default-logo" width="110" height="48" />
                 </a>
 
@@ -137,13 +145,8 @@
                             $currentCountryCode = $currentCountry->country_code;
                             $currentCountryIcon = $currentCountry->icon;
 
-                            // Get the current domain without subdomain
-                            $baseDomain = request()->getHost();
-                            $parts = explode('.', $baseDomain);
-                            if (count($parts) > 2) {
-                                array_shift($parts);
-                            }
-                            $baseDomain = implode('.', $parts);
+                            // Get the base domain
+                            $baseDomain = request()->getSchemeAndHttpHost();
                         @endphp
 
                         <li class="list-inline-item dropdown">
@@ -156,9 +159,9 @@
                                 @foreach ($countries as $ctry)
                                     @php
                                         if (strtolower($ctry->country_code) !== 'pk') {
-                                            $finalURL = 'https://' . strtolower($ctry->country_code) . '.' . $baseDomain;
+                                            $finalURL = $baseDomain . '/' . strtolower($ctry->country_code);
                                         } else {
-                                            $finalURL = 'https://' . $baseDomain;
+                                            $finalURL = $baseDomain;
                                         }
                                     @endphp
 
@@ -184,8 +187,13 @@
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto">
                             <li class="nav-item text-white">
                                 @php
-                                    $countryCode = session('country_code', 'pk');
+                                    // Extract country from current URL path, not session
+                                    $pathSegments = explode('/', trim(request()->path(), '/'));
+                                    $firstSegment = $pathSegments[0] ?? null;
+                                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in']; // Add your country codes
+                                    $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+                                    $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
                                 @endphp
 
                                 <a class="nav-link {{ Request::is('/') || Request::is($countryCode) ? 'active' : '' }}"
@@ -193,23 +201,24 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ url('/brands/all') == 'brands/all' ? 'active' : '' }}"
-                                    href="{{ url('/brands/all') }}">Brands</a>
+                                    href="{{ url($urlPrefix . '/brands/all') }}">Brands</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ Request::is('up-coming-mobile-phones') ? 'active' : '' }}"
-                                    href="{{ url('/up-coming-mobile-phones') }}">Up Coming</a>
+                                    href="{{ url($urlPrefix . '/up-coming-mobile-phones') }}">Up Coming</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link position-relative {{ Request::is('packages') ? 'active' : '' }}"
-                                    href="{{ url('/packages') }}">Packages</a>
+                                    href="{{ url($urlPrefix . '/packages') }}">Packages</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link position-relative {{ Request::is('mobile-installment-calculator') ? 'active' : '' }}"
-                                    href="{{ url('/mobile-installment-calculator') }}">Installment Calculator</a>
+                                    href="{{ url($urlPrefix . '/mobile-installment-calculator') }}">Installment
+                                    Calculator</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link position-relative {{ request::is('comparison') ? 'active' : '' }}"
-                                    href="{{ URL::to('/comparison') }}">Compares</a>
+                                    href="{{ url($urlPrefix . '/comparison') }}">Compares</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link position-relative {{ Request::is('blogs/*') ? 'active' : '' }}"

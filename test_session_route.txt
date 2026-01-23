@@ -1,0 +1,15 @@
+<?php
+
+// Add this temporary test route to routes/web.php
+Route::get('/test-session', function() {
+    $countryCode = session('country_code', 'not-set');
+    $path = request()->path();
+    $firstSegment = explode('/', trim(request()->path(), '/'))[0] ?? 'none';
+    
+    return response()->json([
+        'session_country' => $countryCode,
+        'current_path' => $path,
+        'first_segment' => $firstSegment,
+        'all_session' => session()->all(),
+    ]);
+});
