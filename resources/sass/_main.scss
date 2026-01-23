@@ -1,0 +1,385 @@
+.bg-light-grey {
+    background-color: #f6f6f6 !important;
+}
+
+.pageBody {
+    word-break: break-all;
+}
+
+.text-blue {
+    color: #0274AC !important;
+}
+
+.bg-blue {
+    background-color: #0274AC !important;
+}
+
+.mobileMenu .widget-sidebar {
+    background-color: #fff !important;
+}
+
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+h5,
+.h5,
+h6,
+.h6,
+p,
+.widget-title,
+span {
+    line-height: 1.1;
+    font-family: Poppins, sans-serif;
+}
+
+.dropdown-menu.dropdown-menu-end.show {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Stylish scrollbar */
+.dropdown-menu.dropdown-menu-end.show::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-menu.dropdown-menu-end.show::-webkit-scrollbar-thumb {
+    background-color: #2a4b80;
+    border-radius: 10px;
+}
+
+.dropdown-menu.dropdown-menu-end.show::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+}
+
+@media(max-width: 576px) {
+    .mks-logo {
+        width: 70px;
+        height: auto;
+    }
+
+    .search-bar {
+        position: absolute;
+        top: 37px;
+        right: 45px;
+        display: none;
+    }
+
+    .socialIcon {
+        display: none;
+    }
+}
+
+@media(min-width: 577px) {
+    .mks-logo {
+        width: 110px;
+        height: auto;
+    }
+
+    .search-icon {
+        display: none;
+    }
+
+    .search-bar {
+        display: inline-block;
+    }
+
+    .navbar ul {}
+}
+
+.search-bar {
+    z-index: 100;
+}
+
+.navbar-light .navbar-toggler {
+    color: white !important;
+}
+
+#navbarSupportedContent a {
+    color: black !important;
+}
+
+#navbarSupportedContent .dropdown-menu a {
+    color: black !important;
+}
+
+#navbarSupportedContent .nav-link.active {
+    border-bottom: 2px solid #000000 !important;
+}
+
+.fs-10 {
+    font-size: 10px;
+}
+
+.fs-12 {
+    font-size: 12px;
+}
+
+.fs-14 {
+    font-size: 14px;
+}
+
+.fs-15 {
+    font-size: 15px;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.widget-sidebar {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f94d;
+    max-height: 320px;
+    overflow-x: auto;
+}
+
+.widget-sidebar a {
+    color: #777 !important;
+    text-decoration: none;
+}
+
+.widget-sidebar {
+    margin-bottom: 10px !important;
+    /*border: 1px solid #dee2e6!important;*/
+}
+
+.widget-sidebar .widget-title a {
+    color: #313131 !important;
+}
+
+footer .widget {
+    border: none !important;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+footer .widget p,
+footer .widget li,
+footer .widget a {
+    font-size: 14px;
+    color: #FFF !important;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.footer h2,
+.footer h3,
+.footer h4,
+.footer h5,
+.footer h6 {
+    color: #fff !important;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.social-icons a {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.spinner-border {
+    height: 1.3rem !important;
+    width: 1.3rem !important;
+}
+
+.main a {
+    text-decoration: none;
+}
+
+.brandWidget {
+    height: 300px;
+    /* Set the height of the element */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    overflow-x: hidden;
+    /* Hide horizontal scrollbar */
+}
+
+/* CSS for screens with width <= 768px (Mobile) */
+@media (max-width: 768px) {
+    .default-logo {
+        display: none;
+    }
+
+    .mobile-logo {
+        display: inline-block;
+    }
+}
+
+/* CSS for screens with width > 768px (Desktop) */
+@media (min-width: 769px) {
+    .default-logo {
+        display: inline-block;
+    }
+
+    .mobile-logo {
+        display: none;
+    }
+}
+
+header {
+    background-color: #e5e5e5;
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    /* Soft background color */
+}
+
+.custom-table th,
+.custom-table td {
+    border: none;
+    padding: 12px 15px;
+}
+
+.custom-table thead th {
+    background-color: #ececec;
+    /* Slightly darker background for headers */
+    color: #333;
+    font-weight: bold;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.custom-table tbody tr:nth-child(even) {
+    background-color: #f4f4f4;
+    /* Alternate row color */
+}
+
+.custom-table th,
+.custom-table td {
+    text-align: left;
+}
+
+.custom-table td a,
+.custom-table th a {
+    text-decoration: none;
+}
+
+.custom-table td a:hover {
+    text-decoration: underline;
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    /* Soft background color */
+}
+
+.custom-table th,
+.custom-table td {
+    border: none;
+    padding: 12px 15px;
+    /* Default padding for first row */
+}
+
+.custom-table thead th {
+    background-color: #ececec;
+    /* Slightly darker background for headers */
+    color: #333;
+    font-weight: bold;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.custom-table tbody tr:nth-child(even) {
+    background-color: #f4f4f4;
+    /* Alternate row color */
+}
+
+.custom-table tbody tr:not(:first-child) th,
+.custom-table tbody tr:not(:first-child) td {
+    padding: 8px 15px;
+    /* Reduced padding for all rows except the first row */
+}
+
+.custom-table th:first-child,
+.custom-table td:first-child {
+    width: 100px;
+    /* Adjust the width value as needed */
+}
+
+.custom-table th,
+.custom-table td {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    /* Border bottom for each cell */
+}
+
+.custom-table td a {
+    color: #007bff;
+    /* Link color */
+    text-decoration: none;
+}
+
+.custom-table td a:hover {
+    text-decoration: underline;
+}
+
+/* Custom CSS for a small, attractive Bootstrap 5 button with soft colors */
+.btn-custom {
+    background-color: #2f71b5;
+    /* Soft color */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    /* Small size padding */
+    font-size: 14px;
+    /* Smaller font size */
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    /* Slight rounding for a polished look */
+}
+
+.btn-custom:hover {
+    background-color: #2e99d0;
+    /* Slightly darker shade for hover effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-custom:focus,
+.btn-custom:active {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(176, 224, 230, 0.5);
+}
+
+.btn-custom:disabled {
+    background-color: #d3e2e4;
+    /* Disabled button color */
+    color: #6c757d;
+    box-shadow: none;
+    cursor: not-allowed;
+}

@@ -1,0 +1,13 @@
+User-agent: * 
+Disallow: /ad/
+Disallow: /blog/wp-admin/
+Allow: /blog/wp-admin/admin-ajax.php
+
+Disallow: /.well-known/assetlinks.json
+Disallow: /blog/wp-content/cache/min/1/blog/wp-content/plugins/contact-form-7/includes/swv/js/index-13f0ff0929d0ca83ece69aa10781aec9.js
+Disallow: /blog/wp-content/cache/min/1/blog/wp-content/plugins/contact-form-7/includes/js/index-48ab1ba16c8c91fceb7b8b6317b237a7.js
+Disallow: /blog/wp-content/cache/min/1/blog/wp-content/plugins/i2-pro-cons/dist/blocks.editor.build-f0fd5321584882fedf5654bf51ac3922.css
+Disallow: /blog/*/*/page/
+Disallow: /blog/*/page/
+Disallow: /review/
+Sitemap: https://mobilekishop.net/sitemap/sitemap.xml

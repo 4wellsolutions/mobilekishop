@@ -1,0 +1,313 @@
+// Consolidated Frontend View Styles
+// specific page styles extracted from blade templates
+
+/* Styles from index.blade.php */
+.mobileImage {
+    /*width:140px !important;*/
+    height: 185px !important;
+}
+
+.offcanvas-backdrop {
+    background: #FFF !important;
+}
+
+.widget a {
+    text-decoration: none !important;
+    color: #777;
+}
+
+.widget-title a {
+    text-decoration: none !important;
+    font-family: Poppins, sans-serif;
+    color: #343a40;
+    font-size: 18px;
+}
+
+.widget {
+    border-bottom: 1px solid #e7e7e7;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(231, 231, 231);
+    border: 1px solid #dee2e6 !important;
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.widget-body li a {
+    font-size: 14px;
+}
+
+.nav-tabs.nav-item a {
+    text-decoration: none !important;
+    color: #343a40;
+}
+
+.nav-tabs.nav-tabs .nav-link {
+    color: #31343a;
+    border: none;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    color: black !important;
+    border-bottom: 2px solid #000000 !important;
+}
+
+.nav-tabs.nav-link:hover {
+    border-bottom: 2px solid #000000 !important;
+}
+
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+h5,
+.h5,
+h6,
+.h6 {
+    font-weight: 700;
+    line-height: 1.1;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+@media(max-width: 576px) {
+    .cameraBlock {
+        border: none !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .screenBlock {
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .mobileTable tr td:first-child {
+        display: none;
+    }
+
+    .mobileTable tr th {
+        color: #dc3545 !important
+    }
+
+    .table {
+        font-size: .8rem;
+    }
+
+    .imgDiv {
+        height: 120px;
+    }
+
+    .detailDiv {
+        height: 120px;
+    }
+
+    .product-title {
+        font-size: 14px;
+        font-weight: normal;
+    }
+
+    .product-price {
+        font-size: 16px;
+    }
+}
+
+@media(min-width: 577px) {
+    .imgDiv {
+        height: 130px;
+    }
+
+    .detailDiv {
+        height: 130px;
+    }
+
+    .product-title {
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .product-price {
+        font-size: 20px;
+    }
+}
+
+.nav-tabs .nav-link {
+    font-size: .9rem;
+    padding-right: 7px;
+    padding-left: 7px;
+}
+
+.mobile_image {
+    max-height: 160px;
+    width: auto;
+}
+
+.product-title>a {
+    text-decoration: none;
+}
+
+.category>a {
+    text-decoration: none;
+}
+
+.product-label {
+    animation: label-groups 2s infinite;
+    padding: 3px 6px;
+    background-color: #fe5858;
+    font-size: 11px;
+    color: white;
+    border-radius: 20px;
+}
+
+.label-groups {
+    position: absolute;
+    top: -0.3rem;
+    right: 1rem;
+}
+
+@keyframes label-groups {
+    0% {
+        background-color: #ed6161
+    }
+
+    /*25%     { background-color: #1056c0;}*/
+    50% {
+        background-color: #ed6161;
+    }
+
+    /*75%     { background-color: #254878;}*/
+    100% {
+        background-color: #7661ed;
+    }
+}
+
+.product-default .group-new .product-label {
+    font-size: 8px;
+    animation: group-new 2s infinite;
+}
+
+@keyframes group-new {
+    0% {
+        background-color: #8abf6f
+    }
+
+    /*25%     { background-color: #1056c0;}*/
+    /*50%     { background-color: #ed6161;}*/
+    /*75%     { background-color: #254878;}*/
+    100% {
+        background-color: #3e8f15;
+    }
+}
+
+.page-link {
+    color: #000000 !important;
+}
+
+/* End Styles from index.blade.php */
+
+/* Styles from products.blade.php */
+/* Note: Checking for duplicates... most seem identical. Appending unique ones or overrides */
+.filter-select {
+    height: 4rem !important;
+}
+
+.icon-angle-right {
+    background: #928989ad;
+    margin-left: 10px;
+    padding-left: 15px !important;
+    padding-right: 12px !important;
+    padding-bottom: 3px !important;
+}
+
+.icon-angle-left {
+    background: #928989ad;
+    margin-left: 10px;
+    padding-left: 12px !important;
+    padding-right: 15px !important;
+    padding-bottom: 3px !important;
+}
+
+.select-filter:after {
+    margin-top: 8px !important;
+}
+
+#sort_filter:after {
+    margin-top: -1px !important;
+}
+
+
+/* Styles from mobile-phones.blade.php (and likely other product categories) */
+.mobile_content a {
+    color: black;
+}
+
+.mobile_content h2 {
+    font-size: 18px !important;
+}
+
+.stars {
+    cursor: pointer;
+}
+
+.colorImage {
+    width: 80px;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .flex-md-row-custom {
+        flex-direction: row !important;
+    }
+}
+
+.spec-item:hover {
+    background-color: #e0f7fa;
+    transition: background-color 0.3s;
+}
+
+
+/* Additional Styles from index.blade.php (bottom block) */
+.card-body a strong {
+    text-transform: uppercase;
+    color: black;
+}
+
+.card-img {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.card-title {
+    margin-bottom: 0.3rem;
+}
+
+.cat {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.fa-users {
+    margin-left: 1rem;
+}
+
+.card-footer {
+    font-size: 0.8rem;
+}
+
+.cat-list li a {
+    font-weight: normal !important;
+}
+
+.card:hover {
+    box-shadow: 0 25px 35px -5px rgb(0 0 0 / 10%) !important;
+}
+
+/* End Additional Styles from index.blade.php */

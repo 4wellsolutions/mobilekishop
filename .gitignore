@@ -1,0 +1,71 @@
+# =========================
+# Laravel core
+# =========================
+/vendor
+/node_modules
+.env
+.env.backup
+.phpunit.result.cache
+
+# =========================
+# Public folder (DO NOT TRACK)
+# =========================
+/public/*
+!/public/index.php
+
+# =========================
+# Storage & Logs
+# =========================
+/storage/*.key
+/storage/logs
+/storage/framework
+
+# =========================
+# Backups & Archives (NEVER GIT)
+# =========================
+*.sql
+*.zip
+*.wpress
+*.tar
+*.gz
+
+# =========================
+# Node logs
+# =========================
+npm-debug.log
+yarn-error.log
+
+# =========================
+# Homestead
+# =========================
+Homestead.json
+Homestead.yaml
+
+# =========================
+# Git & Version Control (NEVER UPLOAD TO SERVER)
+# =========================
+.git/
+.gitattributes
+.gitmodules
+
+# =========================
+# IDE & Development Tools (NEVER UPLOAD)
+# =========================
+.idea/
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary & Debug Files
+# =========================
+*.tmp
+*.temp
+*.log
+debug.log
+error_log
+development tasks.txt
