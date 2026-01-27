@@ -310,4 +310,31 @@ body {
     box-shadow: 0 25px 35px -5px rgb(0 0 0 / 10%) !important;
 }
 
-/* End Additional Styles from index.blade.php */
+/* Informational Pages (Contact, About, Privacy, Terms) Styles */
+.form-floating label {
+    color: #888;
+}
+
+.form-control,
+.form-control:focus {
+    color: #495057;
+}
+
+.form-control::placeholder {
+    color: transparent;
+}
+
+.form-control:focus::placeholder {
+    color: #adb5bd;
+}
+
+.ck-editor__editable_inline {
+    min-height: 200px;
+}
+
+.fs-12 { font-size: 12px !important; }
+.fs-14 { font-size: 14px !important; }
+.fs-15 { font-size: 15px !important; }
+.fs-16 { font-size: 16px !important; }
+
+/* End Informational Pages Styles */

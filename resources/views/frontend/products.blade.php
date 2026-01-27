@@ -187,14 +187,9 @@
 
 
 
+@section("style") @stop
+
 @section("script")
-<script type="text/javascript">
-    var base_url = "{{Request::url()}}";
-    $(".select-filter").change(function () {
-        console.log("change");
-        $(".formFilter").submit();
-    });
-</script>
 <script type="application/ld+json">
 {
   "@@context": "https://schema.org/", 

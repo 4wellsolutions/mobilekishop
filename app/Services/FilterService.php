@@ -15,13 +15,13 @@ class FilterService
     {
         // ID 1 for Mobile Phones
         return Product::where('category_id', 1)
-            ->whereHas('variants', function ($query) use ($amount, $countryCode) {
+            ->whereHas('countries', function ($query) use ($amount, $countryCode) {
                 $query->where('country_code', $countryCode)
-                    ->where('price', '<=', $amount)
-                    ->where('price', '>', 0);
+                    ->where('product_variants.price', '<=', $amount)
+                    ->where('product_variants.price', '>', 0);
             })
             ->with([
-                'variants' => function ($query) use ($countryCode) {
+                'countries' => function ($query) use ($countryCode) {
                     $query->where('country_code', $countryCode);
                 },
                 'brand',
@@ -44,13 +44,13 @@ class FilterService
     /**
      * Get products by ROM/Storage size
      */
-    public function getProductsByRom(int $rom): Builder
+    public function getProductsByRom(int $rom, string $unit = 'GB'): Builder
     {
         return Product::where('category_id', 1)
-            ->whereHas('attributes', function ($query) use ($rom) {
+            ->whereHas('attributes', function ($query) use ($rom, $unit) {
                 $query->where('attribute_id', 77)
-                    ->where('value', 'like', $rom . 'GB');
-            })->with(['variants', 'brand', 'category']);
+                    ->where('value', 'like', $rom . strtoupper($unit));
+            })->with(['countries', 'brand', 'category']);
     }
 
     /**

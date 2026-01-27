@@ -97,10 +97,14 @@ $webRoutes = function () {
         ->name('filter.ram')
         ->where('ram', '[0-9]+');
 
-    // ROM/Storage filters: mobile-phones-{rom}gb-storage
-    Route::get('mobile-phones-{rom}gb-storage', [FilterController::class, 'byRom'])
+    // ROM/Storage filters: mobile-phones-{rom}gb-storage, mobile-phones-2tb, etc.
+    Route::get('mobile-phones-{rom}{unit}-storage', [FilterController::class, 'byRom'])
         ->name('filter.rom')
-        ->where('rom', '[0-9]+');
+        ->where(['rom' => '[0-9]+', 'unit' => 'gb|tb']);
+
+    Route::get('mobile-phones-{rom}{unit}', [FilterController::class, 'byRom'])
+        ->name('filter.rom.legacy')
+        ->where(['rom' => '[0-9]+', 'unit' => 'gb|tb']);
 
     // RAM + ROM combination: mobile-phones-with-{ram}gb-ram-{rom}gb-storage
     Route::get('mobile-phones-with-{ram}gb-ram-{rom}gb-storage', [FilterController::class, 'ramRomCombo'])
@@ -117,9 +121,13 @@ $webRoutes = function () {
         ->name('filter.camera.count')
         ->where('parameter', 'dual|triple|quad|penta');
 
-    // Camera MP: mobile-phones-{mp}mp-camera
+    // Camera MP: mobile-phones-{mp}mp-camera, mobile-phones-{mp}-camera
     Route::get('mobile-phones-{mp}mp-camera', [FilterController::class, 'byCameraMp'])
         ->name('filter.camera.mp')
+        ->where('mp', '[0-9]+');
+
+    Route::get('mobile-phones-{mp}-camera', [FilterController::class, 'byCameraMp'])
+        ->name('filter.camera.mp.legacy')
         ->where('mp', '[0-9]+');
 
     // Curved screens: curved-display-mobile-phones

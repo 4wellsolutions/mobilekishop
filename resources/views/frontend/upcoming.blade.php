@@ -51,42 +51,4 @@
 </main>
 @stop
 
-@section("script")
-<script type="text/javascript">
-    var baseUrl = "{!! Request::fullUrl() !!}";
-    $(document).ready(function () {
-        var isLoading = false;
-        function loadData() {
-            if (isLoading) return;
-            var nextPage = $("#productList").data("next-page");
-            var separator = baseUrl.includes("?") ? "&" : "?";
-            var urlWithPageParam = baseUrl + separator + "page=";
-            isLoading = true;
-            $.ajax({
-                url: urlWithPageParam + nextPage,
-                type: "GET",
-                success: function (data) {
-                    if (data.success === false) {
-                        $("#productList").data("next-page", "done");
-                    } else {
-                        $("#productList").append(data);
-                        $("#productList").data("next-page", nextPage + 1);
-                    }
-                    isLoading = false;
-                },
-                error: function (data) {
-                    isLoading = false;
-                }
-            });
-        }
-
-        $(window).scroll(function () {
-            if ($(window).scrollTop() + $(window).height() >= $(document).height() * 0.95) {
-                if ($("#productList").data("next-page") !== "done") {
-                    loadData();
-                }
-            }
-        });
-    });
-</script>
-@stop
+@section("script") @stop

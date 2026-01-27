@@ -122,11 +122,12 @@ class FilterController extends Controller
     /**
      * Show products by ROM/Storage size
      */
-    public function byRom(Request $request, int $rom)
+    public function byRom(Request $request, int $rom, string $unit = 'GB')
     {
         $country = $request->attributes->get('country');
+        $unit = strtoupper($unit);
 
-        $products = $this->filterService->getProductsByRom($rom);
+        $products = $this->filterService->getProductsByRom($rom, $unit);
 
         if ($request->has('filter')) {
             $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
@@ -141,11 +142,11 @@ class FilterController extends Controller
         }
 
         $metas = (object) [
-            'title' => "Latest {$rom}GB Storage Mobile Phones Price in {$country->country_name}",
-            'description' => "Discover top {$rom}GB storage smartphones on MobileKiShop. Compare specs, features, and prices in {$country->country_name}. Read expert reviews and make an informed choice. Shop now!",
+            'title' => "Latest {$rom}{$unit} Storage Mobile Phones Price in {$country->country_name}",
+            'description' => "Discover top {$rom}{$unit} storage smartphones on MobileKiShop. Compare specs, features, and prices in {$country->country_name}. Read expert reviews and make an informed choice. Shop now!",
             'canonical' => request()->fullUrl(),
-            'h1' => "Best {$rom}GB Storage Smartphones in {$country->country_name}: Top Picks & Deals",
-            'name' => "Mobile phones with {$rom}GB Storage"
+            'h1' => "Best {$rom}{$unit} Storage Smartphones in {$country->country_name}: Top Picks & Deals",
+            'name' => "Mobile phones with {$rom}{$unit} Storage"
         ];
 
         $products = $products->simplePaginate(32);

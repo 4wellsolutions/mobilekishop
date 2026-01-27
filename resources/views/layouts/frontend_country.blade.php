@@ -22,6 +22,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
         integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>
+        window.MKS_STATE = {
+            baseUrl: '{{ url("/") }}',
+            currentUrl: '{!! url()->current() !!}',
+            csrfToken: '{{ csrf_token() }}',
+            countryCode: '{{ $country->country_code ?? "pk" }}',
+            routes: {
+                login: '{{ route("login.post") }}',
+                register: '{{ route("auth.register") }}',
+                search: '{{ route("search") }}',
+                autocomplete: '{{ route("autocomplete.search") }}',
+                getProductsByBrand: '{{ route("get.products.by.brand") }}',
+                installmentPlanPost: '{{ route("installment.plan.post") }}',
+                reviewPost: '{{ route("review.post") }}',
+                storeUserInfo: '{{ route("store.user.info") }}'
+            },
+            isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}
+        };
+    </script>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 
@@ -134,9 +153,9 @@
                         </li>
                         @php
                             $countries = App\Country::where("is_menu", 1)->get();
-                            $currentCountry = App('App\Http\Controllers\CountryController')->getCountry();
-                            $currentCountryCode = $currentCountry->country_code;
-                            $currentCountryIcon = $currentCountry->icon;
+                            $currentCountry = $country ?? App('App\Http\Controllers\CountryController')->getCountry();
+                            $currentCountryCode = $currentCountry->country_code ?? 'pk';
+                            $currentCountryIcon = $currentCountry->icon ?? 'flag-icon-pk';
 
                             // Get the base domain
                             $baseDomain = request()->getSchemeAndHttpHost();

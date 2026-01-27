@@ -45,6 +45,11 @@ class Product extends Model
         return $this->belongsToMany(Variant::class, 'product_variants')
             ->withPivot('price', 'country_id');
     }
+    public function countries()
+    {
+        return $this->belongsToMany(Country::class, 'product_variants', 'product_id', 'country_id')
+            ->withPivot('price', 'variant_id');
+    }
     public function colors()
     {
         return $this->belongsToMany(Color::class, 'product_colors')
@@ -99,11 +104,9 @@ class Product extends Model
      */
     public static function getFirstVariantPriceForCountry($productOrId, $countryId)
     {
-        // If passed a Product object, use it directly
         if ($productOrId instanceof self) {
             $product = $productOrId;
         } else {
-            // Fallback: if passed an ID, we need to query (legacy support)
             $product = self::find($productOrId);
         }
 
@@ -111,17 +114,23 @@ class Product extends Model
             return 0;
         }
 
-        // Check if variants are already eager-loaded
+        // Check if countries (preferred) or Variants are already eager-loaded
+        if ($product->relationLoaded('countries')) {
+            $variant = $product->countries->first(function ($c) use ($countryId) {
+                return $c->id == $countryId || $c->pivot->country_id == $countryId;
+            });
+            return $variant ? $variant->pivot->price : 0;
+        }
+
         if ($product->relationLoaded('variants')) {
-            // Use the already-loaded collection
             $variant = $product->variants->first(function ($variant) use ($countryId) {
                 return $variant->pivot->country_id == $countryId;
             });
             return $variant ? $variant->pivot->price : 0;
         }
 
-        // Fallback: query the database (should be avoided via eager loading)
-        $variant = $product->variants()->wherePivot('country_id', $countryId)->first();
+        // Fallback: query the database
+        $variant = $product->countries()->wherePivot('country_id', $countryId)->first();
         return $variant ? $variant->pivot->price : 0;
     }
 

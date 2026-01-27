@@ -192,108 +192,10 @@
 
 </footer>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"
-  integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script type="text/javascript">
-  /*! echo-js v1.7.3 | (c) 2016 @toddmotto | https://github.com/toddmotto/echo */
-  !function (t, e) { "function" == typeof define && define.amd ? define(function () { return e(t) }) : "object" == typeof exports ? module.exports = e : t.echo = e(t) }(this, function (t) { "use strict"; var e, n, o, r, c, a = {}, u = function () { }, d = function (t) { return null === t.offsetParent }, l = function (t, e) { if (d(t)) return !1; var n = t.getBoundingClientRect(); return n.right >= e.l && n.bottom >= e.t && n.left <= e.r && n.top <= e.b }, i = function () { (r || !n) && (clearTimeout(n), n = setTimeout(function () { a.render(), n = null }, o)) }; return a.init = function (n) { n = n || {}; var d = n.offset || 0, l = n.offsetVertical || d, f = n.offsetHorizontal || d, s = function (t, e) { return parseInt(t || e, 10) }; e = { t: s(n.offsetTop, l), b: s(n.offsetBottom, l), l: s(n.offsetLeft, f), r: s(n.offsetRight, f) }, o = s(n.throttle, 250), r = n.debounce !== !1, c = !!n.unload, u = n.callback || u, a.render(), document.addEventListener ? (t.addEventListener("scroll", i, !1), t.addEventListener("load", i, !1)) : (t.attachEvent("onscroll", i), t.attachEvent("onload", i)) }, a.render = function (n) { for (var o, r, d = (n || document).querySelectorAll("[data-echo], [data-echo-background]"), i = d.length, f = { l: 0 - e.l, t: 0 - e.t, b: (t.innerHeight || document.documentElement.clientHeight) + e.b, r: (t.innerWidth || document.documentElement.clientWidth) + e.r }, s = 0; i > s; s++)r = d[s], l(r, f) ? (c && r.setAttribute("data-echo-placeholder", r.src), null !== r.getAttribute("data-echo-background") ? r.style.backgroundImage = "url(" + r.getAttribute("data-echo-background") + ")" : r.src !== (o = r.getAttribute("data-echo")) && (r.src = o), c || (r.removeAttribute("data-echo"), r.removeAttribute("data-echo-background")), u(r, "load")) : c && (o = r.getAttribute("data-echo-placeholder")) && (null !== r.getAttribute("data-echo-background") ? r.style.backgroundImage = "url(" + o + ")" : r.src = o, r.removeAttribute("data-echo-placeholder"), u(r, "unload")); i || a.detach() }, a.detach = function () { document.removeEventListener ? t.removeEventListener("scroll", i) : t.detachEvent("onscroll", i), clearTimeout(n) }, a });
-</script>
-<script type="text/javascript">
-  $(document).ready(function () {
-    echo.init();
-  });
-  $('#sign-with-google').on('click', function (event) {
-    event.preventDefault();
-    var newHref = $(this).data('href');
-    $(this).attr('href', newHref);
-    window.location.href = newHref;
-  });
-  // Check if the screen size is less than 768px
-  if (window.innerWidth < 768) {
-    console.log("mobilemenu");
-    $('.mobileMenu').append($('.sidebar').html()).removeClass("d-none");
-  }
-
-</script>
-<script type="text/javascript">
-  $('#reviewForm').on('submit', function (e) {
-    var actionValue = $(this).attr('action');
-    $(this).data('action', actionValue);
-  });
-  var loginForm = $("#loginForm");
-  loginForm.submit(function (e) {
-    // console.log("login");
-    $(".login_button").html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
-    e.preventDefault();
-    var formData = loginForm.serialize();
-    // console.log(formData);
-    $(".alert").html("").hide();
-    var urlLogin = $(this).data("url");
-    $.ajax({
-      url: urlLogin,
-      type: 'POST',
-      data: formData,
-      success: function (data) {
-        // console.log(data.intended);
-        $(".login_button").html('Login');
-        if (data.auth) {
-          // console.log(data.intended);
-          location.reload();
-        } else {
-          $('.validation-errors').html("");
-          // console.log(data.errors);
-          $.each(data.errors, function (key, value) {
-            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
-          });
-        }
-      },
-      error: function (data) {
-        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
-      }
-    });
-  });
-
-  var registerForm = $("#registerForm");
-  registerForm.submit(function (e) {
-    // console.log("login");
-    $(".alert").html("").hide();
-    $(".register_button").html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>').attr("disabled", true);
-    e.preventDefault();
-    var formData = registerForm.serialize();
-    var urlRegister = $(this).data("url");
-    // console.log(formData);
-    $.ajax({
-      url: urlRegister,
-      type: 'POST',
-      data: formData,
-      success: function (data) {
-        if (data.success) {
-          location.reload();
-        } else {
-          $('.validation-errors').html("");
-          $.each(data.errors, function (key, value) {
-            console.log(key);
-            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
-          });
-        }
-        $(".register_button").html('Register').attr("disabled", false);
-      },
-      error: function (data) {
-        $(".register_button").html('Register').attr("disabled", false);
-        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
-      }
-    });
-  });
-
-</script>
 @if (App::environment('production'))
   <!-- Google tag (gtag.js) -->
   <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-1TRC97HYME"></script>
-  <script defer>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
@@ -302,53 +204,8 @@
 @endif
 
 @yield("script")
-<script type="text/javascript">
-  $(".search-icon").click(function () {
-    var id = $(this).data("id");
-    if (id == 0) {
-      $(this).data("id", 1);
-      $(".search-bar").show();
-    } else {
-      $(this).data("id", 0);
-      $(".search-bar").hide();
-    }
-  });
-</script>
-@php
-  // 4429053821263976 is theseoteamorg account
-  $numbers = ['9435537056478331', '4429053821263976'];
-  $randomNumber = Arr::random($numbers);
-@endphp
-<script>
-  // Function to load the AdSense script dynamically
-  function loadAds() {
-    // Avoid loading the script multiple times
-    if (document.getElementById('adsense-script')) return;
 
-    var script = document.createElement('script');
-    script.id = 'adsense-script';
-    script.async = true;
-    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9435537056478331";
-    script.setAttribute('crossorigin', 'anonymous');
-    document.head.appendChild(script);
-
-    // Remove the scroll event listener once the ad script is loaded
-    window.removeEventListener('scroll', onScroll);
-  }
-
-  // Scroll event handler to check if user has scrolled half the viewport height
-  function onScroll() {
-    var scrollPos = window.scrollY || window.pageYOffset;
-    var threshold = window.innerHeight / 2;
-
-    if (scrollPos >= threshold) {
-      loadAds();
-    }
-  }
-
-  // Attach the scroll event listener
-  window.addEventListener('scroll', onScroll);
-</script>
+@yield("style")
 
 
 <!-- <link rel="preconnect" href="https://fonts.googleapis.com">

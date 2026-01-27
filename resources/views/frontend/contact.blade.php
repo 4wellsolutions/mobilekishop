@@ -23,7 +23,8 @@
                         <img src="{{URL::to('/images/icons/home.png')}}" alt="home-icon" width="16" height="16">
                     </a></li>
                 <li class="breadcrumb-item active text-secondary" aria-current="page">
-                    {{isset($brand->name) ? Str::title($brand->name) : $metas->name}}</li>
+                    {{isset($brand->name) ? Str::title($brand->name) : $metas->name}}
+                </li>
             </ol>
         </div>
     </nav>
@@ -83,86 +84,9 @@
 @stop
 
 
-@section("style")
-<style>
-    .form-floating label {
-        color: #888;
-    }
+@section("style") @stop
 
-    .form-control,
-    .form-control:focus {
-        border: 1px solid #ced4da;
-        color: #495057;
-    }
-
-    .form-control::placeholder {
-        color: transparent;
-    }
-
-    .form-control:focus::placeholder {
-        color: #adb5bd;
-    }
-
-    .btn-primary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-
-    .btn-primary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
-</style>
-<style type="text/css">
-    .filter-select {
-        height: 4rem !important;
-    }
-
-    .icon-angle-right {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 15px !important;
-        padding-right: 12px !important;
-        padding-bottom: 3px !important;
-    }
-
-    .icon-angle-left {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 12px !important;
-        padding-right: 15px !important;
-        padding-bottom: 3px !important;
-    }
-
-    .select-filter:after {
-        margin-top: 8px !important;
-    }
-
-    #sort_filter:after {
-        margin-top: -1px !important;
-    }
-
-    .fs-12 {
-        font-size: 12px !important;
-    }
-
-    .fs-14 {
-        font-size: 14px !important;
-    }
-
-    .fs-15 {
-        font-size: 15px !important;
-    }
-
-    .fs-16 {
-        font-size: 16px !important;
-    }
-
-    .ck-editor__editable_inline {
-        min-height: 200px;
-    }
-</style>
-@stop
+@section("script")
 
 @section('script')
 

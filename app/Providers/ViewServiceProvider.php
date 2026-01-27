@@ -26,17 +26,41 @@ class ViewServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        View::composer('includes.*', function ($view) {
+        View::composer(['includes.*', 'frontend.*', 'layouts.*'], function ($view) {
             // Use static caching to ensure DB queries run only ONCE per request
             if (!self::$requestDataLoaded) {
-                // Fetch country from URL or session, with a fallback
-                $countryCode = Request::segment(1);
-                $countryQuery = Country::where('country_code', $countryCode)->where('is_active', 1)->first();
+                // Fetch country from URL or fallback
+                $segment1 = Request::segment(1);
+                $countryQuery = Country::where('country_code', $segment1)->where('is_active', 1)->first();
+                $isRegional = (bool) $countryQuery;
+
                 self::$requestCountry = $countryQuery ?? Country::where('country_code', 'pk')->where('is_active', 1)->first();
 
-                // Fetch category from URL, with a fallback
-                $categorySlug = Request::segment(2);
-                self::$requestCategory = Category::where('slug', $categorySlug)->first() ?? Category::where('slug', 'mobile-phones')->first();
+                // Detect category slug based on URL structure
+                // /ae/category/{slug} -> segment 3
+                // /category/{slug} -> segment 2
+                // /{brand}/{category_slug} (Legacy) -> segment 2 or 3
+
+                $categorySlug = null;
+                $segments = Request::segments();
+                $count = count($segments);
+
+                if ($isRegional) {
+                    if ($count >= 3 && $segments[1] === 'category') {
+                        $categorySlug = $segments[2];
+                    } elseif ($count >= 3 && $segments[2] !== 'product') { // brand/category case
+                        $categorySlug = $segments[2];
+                    }
+                } else {
+                    if ($count >= 2 && $segments[0] === 'category') {
+                        $categorySlug = $segments[1];
+                    } elseif ($count >= 2 && $segments[0] !== 'product') { // brand/category case
+                        $categorySlug = $segments[1];
+                    }
+                }
+
+                self::$requestCategory = Category::where('slug', $categorySlug)->first()
+                    ?? (isset($view->category) ? $view->category : Category::where('slug', 'mobile-phones')->first());
 
                 self::$requestDataLoaded = true;
             }
@@ -44,10 +68,12 @@ class ViewServiceProvider extends ServiceProvider
             $country = self::$requestCountry;
             $category = self::$requestCategory;
 
-            // Check for null after fallbacks
-            if (!$country || !$category) {
-                $view->with(['categories' => [], 'brands' => [], 'filters' => [], 'priceRanges' => [], 'country' => null, 'category' => null]);
-                return;
+            // Final safety check
+            if (!$country) {
+                $country = Country::where('country_code', 'pk')->first();
+            }
+            if (!$category) {
+                $category = Category::where('slug', 'mobile-phones')->first();
             }
 
             $categoriesCacheKey = "categories_sidebar_{$country->id}";
@@ -80,7 +106,13 @@ class ViewServiceProvider extends ServiceProvider
                 return $priceRangesRecord ? json_decode($priceRangesRecord->price_range_json) : [];
             });
 
-            $view->with(compact('categories', 'brands', 'filters', 'priceRanges', 'country', 'category'));
+            $data = compact('categories', 'brands', 'filters', 'priceRanges', 'country', 'category');
+
+            foreach ($data as $key => $value) {
+                if (!isset($view->{$key})) {
+                    $view->with($key, $value);
+                }
+            }
         });
     }
 

@@ -6,6 +6,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property int $type_id
+ * @property string $phone_number
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -16,7 +23,15 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','phone_number','type_id',"newsletter","google_id","google_token","google_refresh_token"
+        'name',
+        'email',
+        'password',
+        'phone_number',
+        'type_id',
+        "newsletter",
+        "google_id",
+        "google_token",
+        "google_refresh_token"
     ];
 
     /**
@@ -25,7 +40,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -36,13 +52,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function Wishlists(){
+    public function wishlists()
+    {
         return $this->hasMany(Wishlist::class);
     }
-    public function Reviews(){
+    public function Reviews()
+    {
         return $this->hasMany(Review::class);
     }
-    public function Ads(){
+    public function Ads()
+    {
         return $this->hasMany(Ad::class);
     }
 }
