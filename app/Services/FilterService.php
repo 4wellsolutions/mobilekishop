@@ -204,16 +204,16 @@ class FilterService
     /**
      * Get tablets by price
      */
-    public function getTabletsUnderPrice(int $amount, string $countryCode): Builder
+    public function getTabletsUnderPrice(int $amount, int $countryId): Builder
     {
         return Product::where('category_id', 3)
-            ->whereHas('variants', function ($query) use ($amount, $countryCode) {
-                $query->where('country_code', $countryCode)
-                    ->where('price', '<=', $amount)
-                    ->where('price', '>', 0);
+            ->whereHas('variants', function ($query) use ($amount, $countryId) {
+                $query->where('product_variants.country_id', $countryId)
+                    ->where('product_variants.price', '<=', $amount)
+                    ->where('product_variants.price', '>', 0);
             })->with([
-                    'variants' => function ($query) use ($countryCode) {
-                        $query->where('country_code', $countryCode);
+                    'variants' => function ($query) use ($countryId) {
+                        $query->where('product_variants.country_id', $countryId);
                     }
                 ]);
     }

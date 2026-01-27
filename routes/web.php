@@ -115,6 +115,107 @@ Route::get('/password/reset', function () {
     return view("auth.login");
 });
 // Main domain routes (Pakistan default)
+// Country-specific routes using directory-based routing (e.g., /us/, /uk/)
+Route::prefix('{country_code}')->middleware(['default.country'])->group(function () {
+    // Logout route
+    Route::post('/logout', [LoginController::class, 'logout'])->name('country.logout');
+    Route::get('news', [NewsController::class, "index"]);
+    Route::get('news/{slug}', [NewsController::class, "show"]);
+    // Common routes
+    Route::get('/comparison', [HomeController::class, 'comparison'])->name('country.comparison');
+    Route::get('/compare/{slug}', [CountryController::class, 'compare'])->name('country.compare');
+    Route::get('/search', [CountryController::class, 'search'])->name('country.search');
+
+    // Static pages
+    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('country.privacy.policy');
+    Route::get('/terms-and-conditions', [HomeController::class, 'termsConditions'])->name('country.terms.conditions');
+    Route::get('/contact', [HomeController::class, 'contact'])->name('country.contact');
+    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('country.about');
+
+    Route::get('/sponsor', function () {
+        return view("frontend.new.sponsor");
+    });
+
+    // Product filters
+    Route::get('/power-banks/power-banks-with-{mah}-mah', [CountryController::class, 'FilterPowerBankAttributeProduct'])->name('country.powerbank.by.mah');
+    Route::get('/phone-covers/{slug}', [CountryController::class, 'FilterPhoneCoverProducts'])->name('country.phone.covers.by.model');
+    Route::get('/phone-covers/{brand}/{slug}', [CountryController::class, 'FilterPhoneCoverByBrandProducts'])->name('country.phone.covers.by.brand');
+
+    // Country-specific main route
+    Route::get('/', [HomeController::class, 'index'])->name('country.index');
+
+    // Mobile phone routes
+    Route::get('/4g-mobile-phones', [MobileController::class, 'mobilePhones4g'])->name('country.mobile.phones.4g');
+    Route::get('/5g-mobile-phones', [MobileController::class, 'mobilePhones5g'])->name('country.mobile.phones.5g');
+    Route::get('/mobile-phones-with-{ram}gb-ram-{rom}gb-storage', [CountryController::class, 'combinationRamRom']);
+    Route::get('/mobile-phones-{ram}gb-ram', [CountryController::class, 'underRam'])->name('country.mobile.phones.ram')->where('ram', '^(2|3|4|6|8|12|16|20|24)$');
+    Route::get('/mobile-phones-{rom}gb-storage', [CountryController::class, 'underRom'])->name('country.mobile.phones.rom');
+    Route::get('/mobile-phones-screen-{size}-inch', [CountryController::class, 'mobilePhonesScreen'])->name('country.mobile.phones.screen');
+
+    // Additional mobile phone types
+    Route::get('/folding-mobile-phones', [MobileController::class, 'mobilePhonesFolding'])->name('country.mobile.phones.folding');
+    Route::get('/up-coming-mobile-phones', [MobileController::class, 'upComingMobiles'])->name('country.up.coming.mobiles');
+    Route::get('/flip-mobile-phones', [MobileController::class, 'mobilePhonesFlip'])->name('country.mobile.phones.flip');
+    Route::get('/curved-display-mobile-phones', [MobileController::class, 'mobilePhonesCurved'])->name('country.mobile.phones.curved');
+    Route::get('/{brand}-curved-display-mobile-phones', [CountryController::class, 'mobilePhonesCurvedByBrand'])->name('mobile.phones.curved.brand');
+
+    // Processor-related routes
+    Route::get('/snapdragon-888-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/snapdragon-8-gen-1-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/snapdragon-8-gen-2-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/snapdragon-8-gen-3-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/filter/snapdragon-8-gen-3-mobile-phones-under-{amount}', [MobileController::class, 'filterUnderProcessorAmount'])->name('mobile.phones.processor.amount');
+    Route::get('/snapdragon-8-gen-4-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/mediatek-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/exynos-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/kirin-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+    Route::get('/google-tensor-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
+
+    // Camera-related routes
+    Route::get('/mobile-phones-{number}-camera', [CountryController::class, 'mobilePhonesNumberCamera'])->name('country.mobile.phones.number.camera')->where('number', '^(dual|triple|quad)$');
+    Route::get('/mobile-phones-{camera}mp-camera', [CountryController::class, 'mobilePhonesUnderCamera'])->where('camera', '^(12|16|24|48|64|108|200)$')->name('country.mobile.phones.under.camera');
+
+    // Price-related routes
+    Route::get('/mobile-phones-under-{price}', [CountryController::class, 'underPrice'])->name('country.mobile.under.amount');
+    Route::get('/{brand}-mobile-phones-under-{price}', [CountryController::class, 'productUnderMobileAmount'])->name('country.mobile.under.amount');
+
+    // Brand and category routes
+    Route::get('/brand/{slug}/{category_slug}', [CountryController::class, 'brandShow'])->name('country.brand.show');
+    Route::get('/brands/{category_slug}', [CountryController::class, 'showBrandsByCategory'])->name('country.brands.by.category');
+    Route::get('/category/{slug}', [CountryController::class, 'categoryShow'])->name('country.category.show');
+
+    // Tablet-related routes
+    Route::get('/tablets-under-{price}', [CountryController::class, 'tabletsUnderPrice'])->name('country.tablet.under.amount');
+    Route::get('/4g-tablets', [TabletController::class, 'tablets4g'])->name('country.tablet.4g');
+    Route::get('/5g-tablets', [TabletController::class, 'tablets5g'])->name('country.tablet.5g');
+    Route::get('/tablets-{ram}gb-ram', [CountryController::class, 'tabletsUnderRam'])->name('country.tablet.ram');
+    Route::get('/tablets-{rom}gb-storage', [CountryController::class, 'tabletsUnderRom'])->name('country.tablet.rom');
+    Route::get('/tablets-screen-{inch}-inch', [CountryController::class, 'tabletsUnderScreen'])->name('country.tablet.screen');
+    Route::get('/tablets-{mp}mp-camera', [CountryController::class, 'tabletsUnderCamera'])->name('country.tablet.camera');
+
+    // Smart watch route
+    Route::get('/smart-watches-under-{amount}', [CountryController::class, 'underAmountWatches'])->name('country.watch.under');
+
+    Route::get('/{watt}-watt-chargers', [CountryChargerController::class, 'capacity']);
+    Route::get('/usb-type-a-chargers', [CountryChargerController::class, 'typeACharger']);
+    Route::get('/usb-type-c-chargers', [CountryChargerController::class, 'typeCCharger']);
+    Route::get('/{watt}-usb-type-c-chargers', [CountryChargerController::class, 'wattTypeCCharger']);
+    Route::get('/{brand}-{watt}-chargers', [CountryChargerController::class, 'brandWattCharger']);
+    Route::get('/usb-c-to-usb-c-cables', [CountryCableController::class, 'typeCToC']);
+    Route::get('/usb-a-to-usb-c-cables', [CountryCableController::class, 'typeAToC']);
+    Route::get('/{brand}-{watt}-cables', [CountryCableController::class, 'brandWatt']);
+
+    // Product and old product routes
+    Route::get('/product/{slug}', [CountryController::class, 'showProduct'])->name('country.product.show');
+    Route::get('/{brand}/{slug}', [CountryController::class, 'showOld'])->name('country.product.show.old');
+
+    // Sitemap route
+    Route::get('/html-sitemap', [CountryController::class, 'htmlSitemap'])->name('country.html.sitemap');
+
+    // Robots.txt route
+    Route::get('robots.txt', [RobotsController::class, 'index']);
+});
+
 Route::middleware(['default.country'])->group(function () {
     Route::get('/sitemap/generate', [SitemapController::class, 'generate'])->name('sitemap.generate');
     Auth::routes();
@@ -334,106 +435,7 @@ Route::get('/brand/{slug}', function ($slug) {
     return new Response('', 301, ['Location' => $url]);
 });
 
-// Country-specific routes using directory-based routing (e.g., /us/, /uk/)
-Route::prefix('{country_code}')->middleware(['default.country'])->group(function () {
-    // Logout route
-    Route::post('/logout', [LoginController::class, 'logout'])->name('country.logout');
-    Route::get('news', [NewsController::class, "index"]);
-    Route::get('news/{slug}', [NewsController::class, "show"]);
-    // Common routes
-    Route::get('/comparison', [HomeController::class, 'comparison'])->name('country.comparison');
-    Route::get('/compare/{slug}', [CountryController::class, 'compare'])->name('country.compare');
-    Route::get('/search', [CountryController::class, 'search'])->name('country.search');
 
-    // Static pages
-    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('country.privacy.policy');
-    Route::get('/terms-and-conditions', [HomeController::class, 'termsConditions'])->name('country.terms.conditions');
-    Route::get('/contact', [HomeController::class, 'contact'])->name('country.contact');
-    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('country.about');
-
-    Route::get('/sponsor', function () {
-        return view("frontend.new.sponsor");
-    });
-
-    // Product filters
-    Route::get('/power-banks/power-banks-with-{mah}-mah', [CountryController::class, 'FilterPowerBankAttributeProduct'])->name('country.powerbank.by.mah');
-    Route::get('/phone-covers/{slug}', [CountryController::class, 'FilterPhoneCoverProducts'])->name('country.phone.covers.by.model');
-    Route::get('/phone-covers/{brand}/{slug}', [CountryController::class, 'FilterPhoneCoverByBrandProducts'])->name('country.phone.covers.by.brand');
-
-    // Country-specific main route
-    Route::get('/', [HomeController::class, 'index'])->name('country.index');
-
-    // Mobile phone routes
-    Route::get('/4g-mobile-phones', [MobileController::class, 'mobilePhones4g'])->name('country.mobile.phones.4g');
-    Route::get('/5g-mobile-phones', [MobileController::class, 'mobilePhones5g'])->name('country.mobile.phones.5g');
-    Route::get('/mobile-phones-with-{ram}gb-ram-{rom}gb-storage', [CountryController::class, 'combinationRamRom']);
-    Route::get('/mobile-phones-{ram}gb-ram', [CountryController::class, 'underRam'])->name('country.mobile.phones.ram')->where('ram', '^(2|3|4|6|8|12|16|20|24)$');
-    Route::get('/mobile-phones-{rom}gb-storage', [CountryController::class, 'underRom'])->name('country.mobile.phones.rom');
-    Route::get('/mobile-phones-screen-{size}-inch', [CountryController::class, 'mobilePhonesScreen'])->name('country.mobile.phones.screen');
-
-    // Additional mobile phone types
-    Route::get('/folding-mobile-phones', [MobileController::class, 'mobilePhonesFolding'])->name('country.mobile.phones.folding');
-    Route::get('/up-coming-mobile-phones', [MobileController::class, 'upComingMobiles'])->name('country.up.coming.mobiles');
-    Route::get('/flip-mobile-phones', [MobileController::class, 'mobilePhonesFlip'])->name('country.mobile.phones.flip');
-    Route::get('/curved-display-mobile-phones', [MobileController::class, 'mobilePhonesCurved'])->name('country.mobile.phones.curved');
-    Route::get('/{brand}-curved-display-mobile-phones', [CountryController::class, 'mobilePhonesCurvedByBrand'])->name('mobile.phones.curved.brand');
-
-    // Processor-related routes
-    Route::get('/snapdragon-888-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/snapdragon-8-gen-1-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/snapdragon-8-gen-2-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/snapdragon-8-gen-3-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/filter/snapdragon-8-gen-3-mobile-phones-under-{amount}', [MobileController::class, 'filterUnderProcessorAmount'])->name('mobile.phones.processor.amount');
-    Route::get('/snapdragon-8-gen-4-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/mediatek-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/exynos-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/kirin-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-    Route::get('/google-tensor-mobile-phones', [MobileController::class, 'underProcessor'])->name('country.mobile.phones.processor');
-
-    // Camera-related routes
-    Route::get('/mobile-phones-{number}-camera', [CountryController::class, 'mobilePhonesNumberCamera'])->name('country.mobile.phones.number.camera')->where('number', '^(dual|triple|quad)$');
-    Route::get('/mobile-phones-{camera}mp-camera', [CountryController::class, 'mobilePhonesUnderCamera'])->where('camera', '^(12|16|24|48|64|108|200)$')->name('country.mobile.phones.under.camera');
-
-    // Price-related routes
-    Route::get('/mobile-phones-under-{price}', [CountryController::class, 'underPrice'])->name('country.mobile.under.amount');
-    Route::get('/{brand}-mobile-phones-under-{price}', [CountryController::class, 'productUnderMobileAmount'])->name('country.mobile.under.amount');
-
-    // Brand and category routes
-    Route::get('/brand/{slug}/{category_slug}', [CountryController::class, 'brandShow'])->name('country.brand.show');
-    Route::get('/brands/{category_slug}', [CountryController::class, 'showBrandsByCategory'])->name('country.brands.by.category');
-    Route::get('/category/{slug}', [CountryController::class, 'categoryShow'])->name('country.category.show');
-
-    // Tablet-related routes
-    Route::get('/tablets-under-{price}', [CountryController::class, 'tabletsUnderPrice'])->name('country.tablet.under.amount');
-    Route::get('/4g-tablets', [TabletController::class, 'tablets4g'])->name('country.tablet.4g');
-    Route::get('/5g-tablets', [TabletController::class, 'tablets5g'])->name('country.tablet.5g');
-    Route::get('/tablets-{ram}gb-ram', [CountryController::class, 'tabletsUnderRam'])->name('country.tablet.ram');
-    Route::get('/tablets-{rom}gb-storage', [CountryController::class, 'tabletsUnderRom'])->name('country.tablet.rom');
-    Route::get('/tablets-screen-{inch}-inch', [CountryController::class, 'tabletsUnderScreen'])->name('country.tablet.screen');
-    Route::get('/tablets-{mp}mp-camera', [CountryController::class, 'tabletsUnderCamera'])->name('country.tablet.camera');
-
-    // Smart watch route
-    Route::get('/smart-watches-under-{amount}', [CountryController::class, 'underAmountWatches'])->name('country.watch.under');
-
-    Route::get('/{watt}-watt-chargers', [CountryChargerController::class, 'capacity']);
-    Route::get('/usb-type-a-chargers', [CountryChargerController::class, 'typeACharger']);
-    Route::get('/usb-type-c-chargers', [CountryChargerController::class, 'typeCCharger']);
-    Route::get('/{watt}-usb-type-c-chargers', [CountryChargerController::class, 'wattTypeCCharger']);
-    Route::get('/{brand}-{watt}-chargers', [CountryChargerController::class, 'brandWattCharger']);
-    Route::get('/usb-c-to-usb-c-cables', [CountryCableController::class, 'typeCToC']);
-    Route::get('/usb-a-to-usb-c-cables', [CountryCableController::class, 'typeAToC']);
-    Route::get('/{brand}-{watt}-cables', [CountryCableController::class, 'brandWatt']);
-
-    // Product and old product routes
-    Route::get('/product/{slug}', [CountryController::class, 'showProduct'])->name('country.product.show');
-    Route::get('/{brand}/{slug}', [CountryController::class, 'showOld'])->name('country.product.show.old');
-
-    // Sitemap route
-    Route::get('/html-sitemap', [CountryController::class, 'htmlSitemap'])->name('country.html.sitemap');
-
-    // Robots.txt route
-    Route::get('robots.txt', [RobotsController::class, 'index']);
-});
 
 // Authentication routes
 Route::post('/auth/login', [LoginController::class, 'postLogin'])->name('login.post');

@@ -32,12 +32,14 @@ class TabletFilterController extends Controller
     /**
      * Show tablets under a specific price
      */
-    public function underPrice(Request $request, int $amount)
+    public function underPrice(Request $request)
     {
-        $country = $request->attributes->get('country');
-        $countryCode = $country->country_code;
+        // Retrieve 'amount' from route parameters safely
+        $amount = (int) $request->route('amount');
 
-        $products = $this->filterService->getTabletsUnderPrice($amount, $countryCode);
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getTabletsUnderPrice($amount, $country->id);
 
         if ($request->has('filter')) {
             $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);

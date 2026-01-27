@@ -178,15 +178,15 @@
                 <ol class="breadcrumb pt-sm-1">
                     <!-- Home -->
                     <li class="breadcrumb-item">
-                        <a href="{{ URL::to('/') }}" class="text-decoration-none text-secondary">
+                        <a href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}" class="text-decoration-none text-secondary">
                             Home
                         </a>
                     </li>
 
-                    @if (!request()->is('brands/all'))
+                    @if (isset($category))
                         <!-- Category -->
                         <li class="breadcrumb-item">
-                            <a href="{{ url('/category/'.$category->slug) }}" class="text-decoration-none text-secondary">
+                            <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/'.$category->slug) }}" class="text-decoration-none text-secondary">
                                 {{ Str::title($category->category_name) }}
                             </a>
                         </li>

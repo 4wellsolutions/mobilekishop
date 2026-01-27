@@ -116,7 +116,8 @@
                         <button class="mobile-menu-toggler mr-2" type="button">
                             <i class="icon-menu"></i>
                         </button>
-                        <a href="{{URL::to('/')}}" class="">
+                        <a href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}"
+                            class="">
                             <img src="{{URL::to('/')}}/images/logo.png" alt="mobile-ki-site-Logo"
                                 class="img-fluid my-2 mks-logo" width="150" height="60" />
                             <!-- <h2 class="my-auto">MOBILE <span class="text-danger">KI</span> SITE</h2> -->
@@ -226,10 +227,12 @@
                         <nav class="main-nav">
                             <ul class="menu d-flex justify-content-center">
                                 <li class="active">
-                                    <a href="{{URL::to('/')}}">Home</a>
+                                    <a
+                                        href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}">Home</a>
                                 </li>
                                 <li>
-                                    <a href="{{route('brands.all')}}">Brands</a>
+                                    <a
+                                        href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brands/all')}}">Brands</a>
                                 </li>
                                 <li><a href="{{route('up.coming.mobiles')}}">Coming Soon</a></li>
                                 <li><a href="{{route('ad.index')}}">Ads <span class="badge badge-danger">New</span></a>
@@ -237,7 +240,9 @@
                                 <li><a href="{{route('package.index')}}">Packages <span
                                             class="badge badge-danger">New</span></a></li>
                                 <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
-                                <li><a href="{{URL::to('/contact')}}">Contact Us</a></li>
+                                <li><a
+                                        href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
+                                        Us</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -254,7 +259,8 @@
                         <div class="col-12 col-md-4 col-lg-5">
                             <div class="widget widget-about">
                                 <h4 class="widget-title">About Us</h4>
-                                <a href="{{URL::to('/')}}" class="logo mb-2">
+                                <a href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}"
+                                    class="logo mb-2">
                                     <h2 class="text-white">MobileKiShop</h2>
                                 </a>
                                 <p class="mb-3">Mobile ki shop (MKS) is the best mobile website that provides the latest
@@ -307,16 +313,24 @@
 
                                 <ul class="">
                                     <li>
-                                        <a href="{{route('about')}}">About Us</a>
+                                        <a
+                                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/about-us')}}">About
+                                            Us</a>
                                     </li>
                                     <li>
-                                        <a href="{{URL::to('/privacy-policy')}}">Privacy Policy</a>
+                                        <a
+                                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/privacy-policy')}}">Privacy
+                                            Policy</a>
                                     </li>
                                     <li>
-                                        <a href="{{URL::to('/terms-and-conditions')}}">Terms and Conditions</a>
+                                        <a
+                                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/terms-and-conditions')}}">Terms
+                                            and Conditions</a>
                                     </li>
                                     <li>
-                                        <a href="{{URL::to('/contact')}}">Contact Us</a>
+                                        <a
+                                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
+                                            Us</a>
                                     </li>
 
                                 </ul>
@@ -342,14 +356,18 @@
             <span class="mobile-menu-close"><i class="icon-cancel"></i></span>
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
-                    <li class="active"><a href="{{URL::to('/')}}">Home</a></li>
+                    <li class="active"><a
+                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}">Home</a>
+                    </li>
                     <li>
-                        <a href="{{route('brands.all')}}">Brands</a>
+                        <a
+                            href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brands/all')}}">Brands</a>
                     </li>
                     <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
                     <li><a href="{{route('ad.index')}}" class="font-weight-bold">Ads <span
                                 class="badge badge-danger">New</span></a></li>
-                    <li><a href="{{URL::to('/contact')}}">Contact Us</a></li>
+                    <li><a href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
+                            Us</a></li>
                 </ul>
             </nav><!-- End .mobile-nav -->
 
@@ -528,10 +546,10 @@
       "@@context": "https://schema.org/",
       "@type": "WebSite",
       "name": "MobileKiShop",
-      "url": "{{url('/')}}/",
+      "url": "{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "{{url('/')}}/search?query={search_term_string}",
+        "target": "{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/search')}}?query={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
