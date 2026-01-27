@@ -1,16 +1,84 @@
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-1" role="button" aria-expanded="true"
-            aria-controls="widget-body-1">Categories</a>
-    </p>
+@php
+    $mksCategories = [
+        ['name' => 'Mobile Phones', 'slug' => 'mobile-phones'],
+        ['name' => 'Smart Watches', 'slug' => 'smart-watch'],
+        ['name' => 'Tablets', 'slug' => 'tablets'],
+        ['name' => 'Earphones', 'slug' => 'earphone'],
+        ['name' => 'Phone Covers', 'slug' => 'phone-covers'],
+        ['name' => 'Power Banks', 'slug' => 'power-banks'],
+        ['name' => 'Chargers', 'slug' => 'chargers'],
+        ['name' => 'Cables', 'slug' => 'cables'],
+    ];
 
-    <div class="collapse show" id="widget-body-1">
-        <div class="widget-body">
-            <ul class="list-unstyled ps-2">
-                @foreach($categories as $categori)
-                    <li>
-                        <a href="{{route('category.show', $categori->slug)}}"
-                            class="{{ isset($category) ? ($category->slug == $categori->slug ? 'fw-bold' : '') : (Request::segment(2) == $categori->slug ? 'fw-bold' : '') }}">{{$categori->category_name}}</a>
+    $pk = $country->country_code == 'pk';
+    $prefix = $pk ? '' : '/' . $country->country_code;
+
+    // Use shared priceRanges if available, otherwise fallback to standard watch ranges
+    $watchPriceRanges = $priceRanges ?: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 150000];
+@endphp
+
+<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4">
+    <div class="widget-header p-2">
+        <h5 class="fw-bold mb-0">Categories</h5>
+    </div>
+    <div class="widget-body">
+        <ul class="list-unstyled ps-2 pt-1">
+            @foreach($mksCategories as $mksCat)
+                <li class="mb-1">
+                    <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
+                        class="{{ $category->slug == $mksCat['slug'] ? 'fw-bold text-dark' : 'text-muted' }} fs-14 text-decoration-none">
+                        {{ $mksCat['name'] }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+
+<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4">
+    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Brands</h5>
+        <a data-bs-toggle="collapse" href="#brands-collapse" role="button" aria-expanded="true" class="text-dark">
+            <i class="bi bi-caret-up-fill"></i>
+        </a>
+    </div>
+    <div class="collapse show" id="brands-collapse">
+        <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
+            <ul class="list-unstyled pt-1">
+                @foreach($brands as $brand)
+                    <li class="mb-1">
+                        <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
+                            class="text-muted fs-14 text-decoration-none hover-link">
+                            {{ $brand->name }}
+                        </a>
+                    </li>
+                @endforeach
+                <li class="mt-1">
+                    <a href="{{ route('brands.by.category', $category->slug) }}"
+                        class="fw-bold text-dark fs-14 text-decoration-none hover-link">View All Brands</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4">
+    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Prices</h5>
+        <a data-bs-toggle="collapse" href="#prices-collapse" role="button" aria-expanded="true" class="text-dark">
+            <i class="bi bi-caret-up-fill"></i>
+        </a>
+    </div>
+    <div class="collapse show" id="prices-collapse">
+        <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
+            <ul class="list-unstyled pt-1">
+                @foreach($watchPriceRanges as $range)
+                    @php $val = is_object($range) ? $range->max : $range; @endphp
+                    <li class="mb-1">
+                        <a href="{{ url($prefix . '/smart-watches-under-' . $val) }}"
+                            class="text-muted fs-14 text-decoration-none hover-link">
+                            Watches Under {{ number_format($val) }}
+                        </a>
                     </li>
                 @endforeach
             </ul>
@@ -18,159 +86,35 @@
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-1" role="button" aria-expanded="true"
-            aria-controls="widget-body-1">Network</a>
-    </p>
+<style>
+    .fs-14 {
+        font-size: 14px;
+    }
 
-    <div class="collapse show" id="widget-body-1">
-        <div class="widget-body">
-            <ul class="list-unstyled ps-2">
-                <li><a href="{{route('tablet.4g')}}" {{Request::is('4g-tablets') ? "class=fw-bold" : ''}}>4G</a></li>
-                <li><a href="{{route('tablet.5g')}}" {{Request::is('5g-tablets') ? "class=fw-bold" : ''}}>5G</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+    .scroll-container::-webkit-scrollbar {
+        width: 8px;
+    }
 
-<div class="widget-sidebar p-2 m-2 brandWidget">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-22" role="button" aria-expanded="true"
-            aria-controls="widget-body-22">Brands</a>
-    </p>
+    .scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
 
-    <div class="collapse show" id="widget-body-22">
-        <div class="widget-body p-0">
-            <ul class="list-unstyled ps-2">
-                @foreach($brands as $brnd)
-                    <li><a href="{{route('brand.show', [$brnd->slug, $category->slug ?? null])}}" class="{{Request::is("brand/" . $brnd->slug) ? "fw-bold" : ''}}>{{Str::title($brnd->name)}}</a></li>
-                @endforeach
-                <li><a href=" {{route('brands.by.category', $category->slug)}}" class="fw-bold">View All Brands</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+    .scroll-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
 
-@if(isset($filters) && $filters->isNotEmpty())
-    <div class="widget-sidebar p-2 m-2">
-        <p class="widget-title fw-bold mb-1">
-            <a data-toggle="collapse" href="#widget-body-4" role="button" aria-expanded="true"
-                aria-controls="widget-body-4">Filters</a>
-        </p>
-        <div class="collapse show" id="widget-body-4">
-            <div class="widget-body">
-                <ul class="list-unstyled p-2">
-                    @foreach($filters as $filter)
-                        <li>
-                            <a href="{{$filter->url}}"
-                                class="{{ str_contains(request()->url(), $filter->url) ? 'fw-bold' : '' }}">{{$filter->title}}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    </div>
-@endif
+    .scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-3" role="button" aria-expanded="true"
-            aria-controls="widget-body-3">Price</a>
-    </p>
-    <div class="collapse show" id="widget-body-3">
-        <div class="widget-body">
-            <ul class="list-unstyled p-2">
-                @if(isset($priceRanges))
-                    @foreach($priceRanges as $priceLimit)
-                        <li>
-                            <a href="{{route('tablet.under.amount', $priceLimit)}}">Tablets Under
-                                {{number_format($priceLimit)}}</a>
-                        </li>
-                    @endforeach
-                @endif
-            </ul>
-        </div>
-    </div>
-</div>
+    .hover-link:hover {
+        color: #0d6efd !important;
+    }
 
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-4" role="button" aria-expanded="true"
-            aria-controls="widget-body-4">RAM</a>
-    </p>
-    <div class="collapse show" id="widget-body-4">
-        <div class="widget-body">
-            <ul class="list-unstyled p-2">
-                @php
-                    $ramLimits = array_merge(
-                        range(2, 4, 1),
-                        range(6, 8, 2),
-                        range(12, 16, 4)
-                    );
-                @endphp
-                @foreach($ramLimits as $ramLimit)
-                    <li><a href="{{route('tablet.ram', $ramLimit)}}" {{Request::is('tablets-' . $ramLimit . 'gb-ram') ? "class=fw-bold" : ''}}>{{$ramLimit}}GB RAM</a></li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-5" role="button" aria-expanded="true"
-            aria-controls="widget-body-5">Storage</a>
-    </p>
-    <div class="collapse show" id="widget-body-5">
-        <div class="widget-body">
-            <ul class="list-unstyled p-2">
-                @php
-                    $romLimits = array_merge(
-                        range(16, 32, 16),
-                        range(64, 128, 64),
-                        range(256, 256, 128),
-                        range(512, 1024, 512),
-                    );
-                @endphp
-                @foreach($romLimits as $romLimit)
-                    <li><a href="{{route('tablet.rom', $romLimit)}}" {{Request::is('tablets-' . $romLimit . 'gb-storage') ? "class=fw-bold" : ''}}>{{$romLimit}}GB ROM</a></li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-6" role="button" aria-expanded="true"
-            aria-controls="widget-body-6">Screen Size</a>
-    </p>
-    <div class="collapse show" id="widget-body-6">
-        <div class="widget-body">
-            <ul class="list-unstyled p-2">
-                <li><a href="{{route('tablet.screen', [8])}}" {{Request::is('tablets-screen-8-inch') ? "class=fw-bold" : ''}}>8 Inch Display</a></li>
-                <li><a href="{{route('tablet.screen', [10])}}" {{Request::is('tablets-screen-10-inch') ? "class=fw-bold" : ''}}>10 Inch Display</a></li>
-                <li><a href="{{route('tablet.screen', [12])}}" {{Request::is('tablets-screen-12-inch') ? "class=fw-bold" : ''}}>12 Inch Display</a></li>
-                <li><a href="{{route('tablet.screen', [14])}}" {{Request::is('tablets-screen-14-inch') ? "class=fw-bold" : ''}}>14 Inch Display</a></li>
-                <li><a href="{{route('tablet.screen', [16])}}" {{Request::is('tablets-screen-16-inch') ? "class=fw-bold" : ''}}>16 Inch Display</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="widget-sidebar p-2 m-2">
-    <p class="widget-title fw-bold mb-1">
-        <a data-toggle="collapse" href="#widget-body-7" role="button" aria-expanded="false"
-            aria-controls="widget-body-7">Camera</a>
-    </p>
-    <div class="collapse show" id="widget-body-7">
-        <div class="widget-body">
-            <ul class="list-unstyled p-2">
-                <li><a href="{{route('tablet.camera', [5])}}" {{Request::is('tablets-5mp-camera') ? "class=fw-bold" : ''}}>5MP Camera</a></li>
-                <li><a href="{{route('tablet.camera', [13])}}" {{Request::is('tablets-13mp-camera') ? "class=fw-bold" : ''}}>13MP Camera</a></li>
-                <li><a href="{{route('tablet.camera', [24])}}" {{Request::is('tablets-24mp-camera') ? "class=fw-bold" : ''}}>24MP Camera</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+    .widget-sidebar {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, .05);
+    }
+</style>
