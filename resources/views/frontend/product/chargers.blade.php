@@ -1,4 +1,4 @@
-@php
+﻿@php
     $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
@@ -220,20 +220,21 @@
             <ol class="breadcrumb mb-1">
                 <!-- Home -->
                 <li class="breadcrumb-item">
-                    <a href="{{ URL::to('/') }}" class="text-decoration-none text-secondary">
+                    <a href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+                        class="text-decoration-none text-secondary">
                         Home
                     </a>
                 </li>
                 <!-- Category -->
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/category/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->category->category_name }}
                     </a>
                 </li>
                 <!-- Brand -->
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->brand->name }}
                     </a>
@@ -508,186 +509,186 @@
 
 @if($product->reviews->isEmpty())
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "{{Str::title($product->name)}}",
-            "image": [
-            "{{$product->thumbnail}}"
-            ],
-            "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
-            "sku": "{{$product->id}}",
-            "mpn": "{{$product->id}}",
-            "color": "{{ isset($colors) && !empty(explode(',', $colors)[0]) ? explode(',', $colors)[0] : 'default_color' }}",
-            "material": "Plastic",
-            "pattern": "N/A",
-            "brand": {
-                "@type": "Brand",
-                "name": "{{$product->brand->name}}"
-            },
-            "review": {
-                "@type": "Review",
-                "reviewRating": {
-                    "@type": "Rating",
-                    "ratingValue": "{{$rating}}",
-                    "bestRating": "5"
+            {
+                "@@context": "https://schema.org/",
+                "@type": "Product",
+                "name": "{{Str::title($product->name)}}",
+                "image": [
+                "{{$product->thumbnail}}"
+                ],
+                "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
+                "sku": "{{$product->id}}",
+                "mpn": "{{$product->id}}",
+                "color": "{{ isset($colors) && !empty(explode(',', $colors)[0]) ? explode(',', $colors)[0] : 'default_color' }}",
+                "material": "Plastic",
+                "pattern": "N/A",
+                "brand": {
+                    "@type": "Brand",
+                    "name": "{{$product->brand->name}}"
                 },
-                "author": {
-                    "@type": "Person",
-                    "name": "{{$reviewer}}"
-                }
-            },
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "{{$rating}}",
-                "reviewCount": "{{$review_count}}"
-            },
-            "offers": {
-                "@type": "Offer",
-                "url": "#",
-                "priceCurrency": "{{$country->iso_currency}}",
-                "price": "{{ $price_in_pkr }}",
-                "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                "itemCondition": "https://schema.org/NewCondition",
-                "availability": "https://schema.org/InStock",
-                "seller": {
-                    "@type": "Organization",
-                    "name": "MKS"
-                },
-                "hasMerchantReturnPolicy": {
-                  "@type": "MerchantReturnPolicy",
-                  "applicableCountry": "CH",
-                  "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                  "merchantReturnDays": 60,
-                  "returnMethod": "https://schema.org/ReturnByMail",
-                  "returnFees": "https://schema.org/FreeReturn"
-                },
-                "shippingDetails": {
-                  "@type": "OfferShippingDetails",
-                  "shippingRate": {
-                    "@type": "MonetaryAmount",
-                    "value": "0",
-                    "currency": "{{$country->iso_currency}}"
-                  },
-                  "shippingDestination": 
-                    {
-                      "@type": "DefinedRegion",
-                      "addressCountry": "{{$country->country_code}}"
+                "review": {
+                    "@type": "Review",
+                    "reviewRating": {
+                        "@type": "Rating",
+                        "ratingValue": "{{$rating}}",
+                        "bestRating": "5"
                     },
-                    "deliveryTime": {
-                        "@type": "ShippingDeliveryTime",
-                        "handlingTime": {
-                          "@type": "QuantitativeValue",
-                          "minValue": 0,
-                          "maxValue": 1,
-                          "unitCode": "DAY"
+                    "author": {
+                        "@type": "Person",
+                        "name": "{{$reviewer}}"
+                    }
+                },
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "{{$rating}}",
+                    "reviewCount": "{{$review_count}}"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "url": "#",
+                    "priceCurrency": "{{$country->iso_currency}}",
+                    "price": "{{ $price_in_pkr }}",
+                    "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                    "itemCondition": "https://schema.org/NewCondition",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                        "@type": "Organization",
+                        "name": "MKS"
+                    },
+                    "hasMerchantReturnPolicy": {
+                      "@type": "MerchantReturnPolicy",
+                      "applicableCountry": "CH",
+                      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                      "merchantReturnDays": 60,
+                      "returnMethod": "https://schema.org/ReturnByMail",
+                      "returnFees": "https://schema.org/FreeReturn"
+                    },
+                    "shippingDetails": {
+                      "@type": "OfferShippingDetails",
+                      "shippingRate": {
+                        "@type": "MonetaryAmount",
+                        "value": "0",
+                        "currency": "{{$country->iso_currency}}"
+                      },
+                      "shippingDestination": 
+                        {
+                          "@type": "DefinedRegion",
+                          "addressCountry": "{{$country->country_code}}"
                         },
-                        "transitTime": {
-                          "@type": "QuantitativeValue",
-                          "minValue": 1,
-                          "maxValue": 5,
-                          "unitCode": "DAY"
+                        "deliveryTime": {
+                            "@type": "ShippingDeliveryTime",
+                            "handlingTime": {
+                              "@type": "QuantitativeValue",
+                              "minValue": 0,
+                              "maxValue": 1,
+                              "unitCode": "DAY"
+                            },
+                            "transitTime": {
+                              "@type": "QuantitativeValue",
+                              "minValue": 1,
+                              "maxValue": 5,
+                              "unitCode": "DAY"
+                            }
                         }
                     }
                 }
             }
-        }
-    </script>
+        </script>
 @else
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "{{Str::title($product->name)}}",
-            "image": [
-            "{{$product->thumbnail}}"
-            ],
-            "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
-            "sku": "{{$product->id}}",
-            "mpn": "{{$product->id}}",
-            "color": "{{str_replace(',', '', $colors)}}",
-            "material": "N/A",
-            "pattern": "N/A",
-            "brand": {
-                "@type": "Brand",
-                "name": "{{$product->brand->name}}"
-            },
-            "review": [
-                @foreach($product->reviews as $review)
-                    {
-                        "@type": "Review",
-                        "reviewRating": {
-                            "@type": "Rating",
-                            "ratingValue": "{{ $review->stars }}",
-                            "bestRating": "5"
-                        },
-                        "author": {
-                            "@type": "Person",
-                            "name": "{{ $review->name }}"
-                        }
-                    }@if(!$loop->last),@endif
-                @endforeach
-            ],
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
-                "reviewCount": "{{ $product->reviews->count() }}"
-            },
-            "offers": {
-                "@type": "Offer",
-                "url": "#",
-                "priceCurrency": "{{$country->iso_currency}}",
-                "price": "{{$price_in_pkr}}",
-                "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                "itemCondition": "https://schema.org/NewCondition",
-                "availability": "https://schema.org/InStock",
-                "seller": {
-                    "@type": "Organization",
-                    "name": "MKS"
+            {
+                "@@context": "https://schema.org/",
+                "@type": "Product",
+                "name": "{{Str::title($product->name)}}",
+                "image": [
+                "{{$product->thumbnail}}"
+                ],
+                "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
+                "sku": "{{$product->id}}",
+                "mpn": "{{$product->id}}",
+                "color": "{{str_replace(',', '', $colors)}}",
+                "material": "N/A",
+                "pattern": "N/A",
+                "brand": {
+                    "@type": "Brand",
+                    "name": "{{$product->brand->name}}"
                 },
-                "hasMerchantReturnPolicy": {
-                  "@type": "MerchantReturnPolicy",
-                  "applicableCountry": "{{$country->country_code}}",
-                  "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                  "merchantReturnDays": 60,
-                  "returnMethod": "https://schema.org/ReturnByMail",
-                  "returnFees": "https://schema.org/FreeReturn"
+                "review": [
+                    @foreach($product->reviews as $review)
+                        {
+                            "@type": "Review",
+                            "reviewRating": {
+                                "@type": "Rating",
+                                "ratingValue": "{{ $review->stars }}",
+                                "bestRating": "5"
+                            },
+                            "author": {
+                                "@type": "Person",
+                                "name": "{{ $review->name }}"
+                            }
+                        }@if(!$loop->last),@endif
+                    @endforeach
+                ],
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
+                    "reviewCount": "{{ $product->reviews->count() }}"
                 },
-                "shippingDetails": {
-                  "@type": "OfferShippingDetails",
-                  "shippingRate": {
-                    "@type": "MonetaryAmount",
-                    "value": "0",
-                    "currency": "{{$country->iso_currency}}"
-                  },
-                  "shippingDestination": 
-                    {
-                      "@type": "DefinedRegion",
-                      "addressCountry": "{{$country->country_code}}"
+                "offers": {
+                    "@type": "Offer",
+                    "url": "#",
+                    "priceCurrency": "{{$country->iso_currency}}",
+                    "price": "{{$price_in_pkr}}",
+                    "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                    "itemCondition": "https://schema.org/NewCondition",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                        "@type": "Organization",
+                        "name": "MKS"
                     },
-                    "deliveryTime": {
-                        "@type": "ShippingDeliveryTime",
-                        "handlingTime": {
-                          "@type": "QuantitativeValue",
-                          "minValue": 0,
-                          "maxValue": 1,
-                          "unitCode": "DAY"
+                    "hasMerchantReturnPolicy": {
+                      "@type": "MerchantReturnPolicy",
+                      "applicableCountry": "{{$country->country_code}}",
+                      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                      "merchantReturnDays": 60,
+                      "returnMethod": "https://schema.org/ReturnByMail",
+                      "returnFees": "https://schema.org/FreeReturn"
+                    },
+                    "shippingDetails": {
+                      "@type": "OfferShippingDetails",
+                      "shippingRate": {
+                        "@type": "MonetaryAmount",
+                        "value": "0",
+                        "currency": "{{$country->iso_currency}}"
+                      },
+                      "shippingDestination": 
+                        {
+                          "@type": "DefinedRegion",
+                          "addressCountry": "{{$country->country_code}}"
                         },
-                        "transitTime": {
-                          "@type": "QuantitativeValue",
-                          "minValue": 1,
-                          "maxValue": 5,
-                          "unitCode": "DAY"
+                        "deliveryTime": {
+                            "@type": "ShippingDeliveryTime",
+                            "handlingTime": {
+                              "@type": "QuantitativeValue",
+                              "minValue": 0,
+                              "maxValue": 1,
+                              "unitCode": "DAY"
+                            },
+                            "transitTime": {
+                              "@type": "QuantitativeValue",
+                              "minValue": 1,
+                              "maxValue": 5,
+                              "unitCode": "DAY"
+                            }
                         }
                     }
                 }
             }
-        }
-    </script>
+        </script>
 @endif
 <script type="application/ld+json">
     {
-        "@context": "https://schema.org/",
+        "@@context": "https://schema.org/",
         "@type": "BreadcrumbList",
         "itemListElement": [
             {

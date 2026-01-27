@@ -265,7 +265,9 @@
     <nav aria-label="breadcrumb" class="breadcrumb-nav">
         <div class="my-1" style="font-size: 12px;">
             <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a href="{{URL::to('/')}}" class="text-decoration-none text-secondary">
+                <li class="breadcrumb-item"><a
+                        href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+                        class="text-decoration-none text-secondary">
                         Home
                     </a></li>
                 <li class="breadcrumb-item active text-secondary" aria-current="page">

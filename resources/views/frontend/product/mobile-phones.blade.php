@@ -87,16 +87,17 @@
         <div class="my-1" style="font-size: 12px;">
             <ol class="breadcrumb mb-1">
                 <li class="breadcrumb-item">
-                    <a href="{{ URL::to('/') }}" class="text-decoration-none text-secondary">Home</a>
+                    <a href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+                        class="text-decoration-none text-secondary">Home</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/category/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->category->category_name }}
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->brand->name }}
                     </a>

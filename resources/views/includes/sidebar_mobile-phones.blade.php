@@ -9,7 +9,9 @@
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
                 @foreach($category->brands as $brand)
-                    <li><a href="{{ url('/brand/' . $brand->slug . '/' . $category->slug) }}">{{$brand->name}}</a></li>
+                    <li><a
+                            href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'brand.show', ($country->country_code == 'pk' ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}">{{$brand->name}}</a>
+                    </li>
                 @endforeach
             </ul>
         </div>
@@ -67,7 +69,7 @@
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
                 {{-- @foreach($ramLimits as $ramLimit)
-                    <li><a href="{{request()->fullUrlWithQuery(['ram_in_gb' => $ramLimit])}}">{{$ramLimit}} GB</a></li>
+                <li><a href="{{request()->fullUrlWithQuery(['ram_in_gb' => $ramLimit])}}">{{$ramLimit}} GB</a></li>
                 @endforeach --}}
             </ul>
         </div>
@@ -85,7 +87,7 @@
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
                 {{-- @foreach($romLimits as $romLimit)
-                    <li><a href="{{request()->fullUrlWithQuery(['rom_in_gb' => $romLimit])}}">{{$romLimit}} GB</a></li>
+                <li><a href="{{request()->fullUrlWithQuery(['rom_in_gb' => $romLimit])}}">{{$romLimit}} GB</a></li>
                 @endforeach --}}
             </ul>
         </div>

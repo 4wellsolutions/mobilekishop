@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Services\ComparisonService;
 use App\Services\MetaService;
+use App\Category;
 use Illuminate\Http\Request;
 
 /**
@@ -58,6 +59,12 @@ class ComparisonController extends Controller
 
         $compares = $this->comparisonService->getAllComparisons();
 
+        $category = Category::where('slug', 'mobile-phones')->first();
+
+        if (!$category) {
+            abort(500, 'Mobile phones category not found');
+        }
+
         $metas = (object) [
             'title' => "Mobile Phone Comparison, Spec, Price in {$country->country_name}",
             'description' => "Get all Mobile Phone Comparison, specifications, features, reviews, prices on the Mobilekishop in {$country->country_name}.",
@@ -70,6 +77,6 @@ class ComparisonController extends Controller
             return view('includes.compare-partial', compact('compares'))->render();
         }
 
-        return view('frontend.comparison', compact('compares', 'metas', 'country'));
+        return view('frontend.comparison', compact('compares', 'metas', 'country', 'category'));
     }
 }

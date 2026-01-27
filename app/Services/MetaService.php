@@ -113,4 +113,13 @@ class MetaService
             'name' => "Search for {$query}"
         ];
     }
+
+    /**
+     * Alias for generatePriceFilterMeta for better naming consistency
+     */
+    public function generateForPriceFilter(int $amount, Country $country, ?Category $category = null): object
+    {
+        return $this->generatePriceFilterMeta($amount, $country, $category);
+    }
 }
+

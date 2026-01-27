@@ -99,7 +99,7 @@ class ProductService
     /**
      * Apply filters to product query
      */
-    private function applyFilters(Builder $products, array $filters, int $countryId, ?int $minPrice = null, ?int $maxPrice = null): Builder
+    public function applyFilters(Builder $products, $filters, int $countryId, ?int $minPrice = null, ?int $maxPrice = null): Builder
     {
         // Attribute filters
         $attributeFilters = array_intersect_key($filters, array_flip([

@@ -24,14 +24,27 @@ class CategoryController extends Controller
 
     /**
      * Show products in a category
+     * Handles both /category/{slug} and /{country}/category/{slug}
      */
-    public function show(string $slug, Request $request)
+    public function show(Request $request, $p1, $p2 = null)
     {
+        // Resolve category based on parameter type (handling localized vs global routes)
+        if ($p1 instanceof Category) {
+            $category = $p1;
+        } elseif ($p2 instanceof Category) {
+            $category = $p2;
+        } else {
+            // Fallback if binding didn't happen (should not occur with web middleware active)
+            $category = $p2 ?: $p1;
+        }
+
         // Get country from request (set by middleware)
         $country = $request->attributes->get('country');
 
-        // Find category or fail
-        $category = Category::whereSlug($slug)->firstOrFail();
+        // Check if category is resolved via binding or needs lookup
+        if (!($category instanceof Category)) {
+            $category = Category::whereSlug($category)->firstOrFail();
+        }
 
         // Get products using service
         $products = $this->productService->getProductsByCategory(

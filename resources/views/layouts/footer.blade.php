@@ -96,12 +96,12 @@
         <div class="widget widget-about pe-2">
           <p class="widget-title fs-6 fw-bolder">About Us</p>
           @php
-              // Extract country from current URL path
-              $pathSegments = explode('/', trim(request()->path(), '/'));
-              $firstSegment = $pathSegments[0] ?? null;
-              $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
-              $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
-              $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+            // Extract country from current URL path
+            $pathSegments = explode('/', trim(request()->path(), '/'));
+            $firstSegment = $pathSegments[0] ?? null;
+            $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+            $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+            $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
           @endphp
           <a href="{{$homeUrl}}" class="logo mb-2">
             <p class="text-white fs-4 fw-bolder">MOBILE KI SHOP</p>
@@ -247,12 +247,12 @@
           $('.validation-errors').html("");
           // console.log(data.errors);
           $.each(data.errors, function (key, value) {
-            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div');
+            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
           });
         }
       },
       error: function (data) {
-        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div');
+        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
       }
     });
   });
@@ -277,14 +277,14 @@
           $('.validation-errors').html("");
           $.each(data.errors, function (key, value) {
             console.log(key);
-            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div');
+            $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
           });
         }
         $(".register_button").html('Register').attr("disabled", false);
       },
       error: function (data) {
         $(".register_button").html('Register').attr("disabled", false);
-        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div');
+        $('.validation-errors').append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
       }
     });
   });

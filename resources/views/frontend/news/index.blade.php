@@ -1,4 +1,4 @@
-@php
+﻿@php
     $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
@@ -79,7 +79,7 @@
 </script>
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org/", 
+  "@@context": "https://schema.org/", 
   "@type": "BreadcrumbList", 
   "itemListElement": [{
     "@type": "ListItem", 

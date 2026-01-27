@@ -1,4 +1,4 @@
-@php
+﻿@php
     $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
@@ -108,7 +108,7 @@
 @section('script')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "Article",
   "headline": "{{ $news->name }}",
   "author": {
@@ -134,6 +134,7 @@
 }
 </script>
 @endsection
+
 
 
 

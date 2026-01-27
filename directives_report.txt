@@ -1,0 +1,26 @@
+﻿1: @php -> @php
+3: @endphp -> @endphp
+5: @extends -> @extends($layout)
+7: @section -> @section('title', $metas->title)
+9: @section -> @section('description', $metas->description)
+11: @section -> @section("keywords", "Mobiles prices, mobile specification, mobile phone features")
+13: @section -> @section("canonical", $metas->canonical)
+15: @section -> @section("og_graph") @stop
+15: @stop -> @section("og_graph") @stop
+17: @section -> @section("noindex")
+18: @if -> @if(str_contains(URL::full(), '?page='))
+20: @endif -> @endif
+21: @stop -> @stop
+22: @section -> @section("content")
+250: @include -> @include("includes.sidebar_" . $category->slug, ['category' => $category])
+255: @if -> @if(!$compares->isEmpty())
+256: @foreach -> @foreach($compares as $compare)
+257: @include -> @include("includes.compare-details", ["compare" => $compare])
+258: @endforeach -> @endforeach
+259: @else -> @else
+261: @endif -> @endif
+267: @stop -> @stop
+272: @section -> @section("script")
+365: @stop -> @stop
+367: @section -> @section("style")
+413: @stop -> @stop

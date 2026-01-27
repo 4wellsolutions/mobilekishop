@@ -8,366 +8,92 @@
 
 @section('description', $metas->description)
 
-@section("keywords","Mobiles prices, mobile specification, mobile phone features")
+@section('keywords', $metas->keywords ?? '')
 
-@section("canonical",$metas->canonical)
+@section('canonical', $metas->canonical)
 
-@section("og_graph") @stop
+@section("og_graph")
+{!! $metas->og_graph ?? '' !!}
+@stop
 
-@section("noindex",)
+@section("noindex")
 @if(str_contains(URL::full(), '?page='))
-<meta name="robots" content="noindex">
+    <meta name="robots" content="noindex">
 @endif
 @stop
+
 @section("content")
-
-<style type="text/css">
-    
-    .offcanvas-backdrop{
-        background: #FFF!important;
-    }
-    .widget a{
-        text-decoration: none !important;
-        color: #777;
-    }
-    .widget-title a{
-        text-decoration: none !important;
-        font-family: Poppins,sans-serif;
-        color: #343a40;
-        font-size: 18px;
-    }
-    .widget{
-        border-bottom: 1px solid #e7e7e7;
-        border-bottom-width: 1px;
-        border-bottom-style: solid;
-        border-bottom-color: rgb(231, 231, 231);
-        border: 1px solid #dee2e6!important;
-        margin-top: 5px;
-        margin-right: 5px;
-        margin-left: 5px;
-    }
-    .widget-body li a{
-        font-size: 14px;
-    }
-    .nav-tabs.nav-item a{
-        text-decoration: none !important;
-        color: #343a40;
-    }
-    .nav-tabs.nav-tabs .nav-link{
-        color: #31343a;
-        border: none;
-    }
-    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-        background-color: #fff;
-        border-color: #dee2e6 #dee2e6 #fff;
-        color: black !important;
-        border-bottom: 2px solid #000000 !important;
-    }
-    .nav-tabs.nav-link:hover{
-        border-bottom: 2px solid #000000 !important;
-    }
-    h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
-        font-weight: 700;
-        line-height: 1.1;
-        font-family: Poppins,sans-serif;
-    }
-    body{
-        font-family: "Open Sans",sans-serif;
-    }
-
-    
-    @media(max-width: 576px){
-        .mobileImage{
-            width:155px !important;
-            height: 205px !important;
-        }
-        .cameraBlock{
-            border: none !important;
-            border-bottom: 1px solid #dee2e6!important;
-        }
-        .screenBlock{
-            border-bottom: 1px solid #dee2e6!important;
-        }
-        .mobileTable tr td:first-child{ 
-            display: none; 
-        }
-        .mobileTable tr th{
-            color: #dc3545!important
-        }
-        .table{
-            font-size: .8rem;
-        }
-        .imgDiv{
-            height: 120px;
-        }
-        .detailDiv{
-            height: 120px;
-        }
-
-        .product-title{
-            font-size: 14px;
-            font-weight: normal;
-        }
-        .product-price{
-            font-size: 16px;
-        }
-    }
-    @media(min-width: 577px){
-        .mobileImage{
-            width:160px !important;
-            height: 212px !important;
-        }
-        .imgDiv{
-            height: 130px;
-        }
-        .detailDiv{
-            height: 130px;
-        }
-        .product-title{
-            font-size: 18px;
-            font-weight: normal;
-        }
-        .product-price{
-            font-size: 20px;
-        }
-    }
-    .nav-tabs .nav-link{
-        font-size: .9rem;
-        padding-right: 7px;
-        padding-left: 7px;
-    }
-    .mobile_image{
-        max-height: 160px;
-        width: auto;
-    }
-    .product-title > a{
-        text-decoration: none;
-    }
-    .category > a{
-        text-decoration: none;
-    }
-    .product-label{
-        animation: label-groups 2s infinite;
-        padding: 3px 6px;
-        background-color: #fe5858;
-        font-size: 11px;
-        color: white;
-        border-radius: 20px;
-    }
-    .label-groups{
-        position: absolute;
-        top: -0.3rem;
-        right: 1.0rem;
-    }
-    @keyframes label-groups{
-        0%      { background-color: #ed6161}
-        /*25%     { background-color: #1056c0;}*/
-        50%     { background-color: #ed6161;}
-        /*75%     { background-color: #254878;}*/
-        100%    { background-color: #7661ed;}
-    }
-    .product-default .group-new .product-label{
-        font-size: 8px;
-        animation: group-new 2s infinite;
-    }
-    @keyframes group-new{
-        0%      { background-color: #8abf6f}
-        /*25%     { background-color: #1056c0;}*/
-        /*50%     { background-color: #ed6161;}*/
-        /*75%     { background-color: #254878;}*/
-        100%    { background-color: #3e8f15;}
-    }
-    .page-link {
-        color: #000000 !important;
-    }
-    .filter-select{
-        height: 4rem !important;
-    }
-    .icon-angle-right{
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 15px !important;
-        padding-right: 12px !important;
-        padding-bottom: 3px !important;
-    }
-    .icon-angle-left{
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 12px !important;
-        padding-right: 15px !important;
-        padding-bottom: 3px !important;   
-    }
-    
-    .select-filter:after {
-        margin-top: 8px !important;
-    }
-    #sort_filter:after {
-        margin-top: -1px !important;
-    }
-    
-</style>
-
-<main class="main container-lg">
-        <nav aria-label="breadcrumb" class="breadcrumb-nav">
-            <div class="my-1" style="font-size: 12px;">
-                <ol class="breadcrumb pt-sm-1">
-                    <!-- Home -->
-                    <li class="breadcrumb-item">
-                        <a href="{{ URL::to('/') }}" class="text-decoration-none text-secondary">
-                            Home
-                        </a>
-                    </li>
-                    <!-- Category -->
-                    <li class="breadcrumb-item">
-                        <a href="{{ url('/category/'.$category->slug) }}" class="text-decoration-none text-secondary">
-                            {{ Str::title($category->category_name) }}
-                        </a>
-                    </li>
-                    <!-- Filter -->
-                    <li class="breadcrumb-item active text-secondary" aria-current="page">
-                        {{ isset($metas->name) ? Str::title($metas->name) : $metas  ->name }}
-                    </li>
-                </ol>
+<main class="main">
+    <div class="container-lg my-3">
+        <div class="row">
+            <div class="col-12 col-md-4 col-lg-3">
+                @include("includes.sidebar_" . $category->slug, ['category' => $category])
             </div>
-        </nav>
 
-        <div class="container-lg">
-            <div class="row">
-                <div class="col-12 col-md-4 col-lg-3 pe-1">
-                    @include("includes.sidebar_".$category->slug, ['category' => $category])
-                </div>
-                <div class="col-12 col-md-8 col-lg-9">
-                  <div class="row">
+            <div class="col-12 col-md-8 col-lg-9">
+                <div class="row">
                     <h1 class="fs-4">{{$metas->h1}}</h1>
-                  </div>
-                  @include("includes.filters")
+                </div>
+                @include("includes.filters")
                 <div class="row my-2" id="productList" data-next-page="2">
                     @if(!$products->isEmpty())
                         @foreach($products as $product)
-                        <div class="col-6 col-sm-4 col-md-4 col-lg-3">
-                            @include('includes.product-details', ['product' => $product])
-                        </div>
+                            <div class="col-6 col-sm-4 col-md-4 col-lg-3">
+                                @include('includes.product-details', ['product' => $product])
+                            </div>
                         @endforeach
                     @else
-                        @include('includes.product-not-found')        
+                        @include('includes.product-not-found')
                     @endif
                 </div>
-                    
-                    @include('includes.page-body')
-                    
-                </div>
+
+                @include('includes.page-body')
+
             </div>
         </div>
-    </main><!-- End .main -->
-
+    </div>
+</main>
 @stop
-
 
 @section("script")
 <script type="text/javascript">
     var baseUrl = "{!! Request::fullUrl() !!}";
-    $(".select-filter").change(function(){
-        console.log("change");
+    $(".select-filter").change(function () {
         $(".formFilter").submit();
     });
-    
-    $(document).ready(function() {
-    var isLoading = false;
-    var loadAfterProductNumber = 18;
-    
-    function loadData() {
-        // Check if we're already loading content
-        if (isLoading) return;
 
-        var nextPage = $('#productList').data('next-page');
-        
-        // Check if the URL already has query parameters
-        var separator = baseUrl.includes('?') ? '&' : '?';
-        
-        // Append the 'page' parameter correctly
-        var urlWithPageParam = baseUrl + separator + "page=";
-        
-        console.log(urlWithPageParam);
-
-        isLoading = true; // Set loading flag
-
-        $.ajax({
-            url: urlWithPageParam+nextPage,
-            type: 'GET',
-            beforeSend: function() {
-                $('#loadingSpinner').show(); // Show loading indicator
-            },
-            success: function(response) {
-                if (response.trim() === "") {
-                    // Handle no more content
-                    $(window).off('scroll');
-                    $('#loadingSpinner').hide();
-                    return;
+    $(document).ready(function () {
+        var isLoading = false;
+        function loadData() {
+            if (isLoading) return;
+            var nextPage = $('#productList').data('next-page');
+            var separator = baseUrl.includes('?') ? '&' : '?';
+            var urlWithPageParam = baseUrl + separator + "page=";
+            isLoading = true;
+            $.ajax({
+                url: urlWithPageParam + nextPage,
+                type: 'GET',
+                success: function (data) {
+                    if (data.success === false) {
+                        $('#productList').data('next-page', 'done');
+                    } else {
+                        $('#productList').append(data);
+                        $('#productList').data('next-page', nextPage + 1);
+                    }
+                    isLoading = false;
+                },
+                error: function (data) {
+                    isLoading = false;
                 }
-                
-                // Append new items above the marker
-                $('#productList').append(response);
-
-                // Update for next call
-                $('#productList').data('next-page', nextPage + 1);
-                isLoading = false;
-                $('#loadingSpinner').hide();
-                loadAfterProductNumber += 18;
-            },
-            error: function() {
-                console.error("Error loading more items");
-                isLoading = false;
-                $('#loadingSpinner').hide();
+            });
+        }
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() * 0.95) {
+                if ($('#productList').data('next-page') !== 'done') {
+                    loadData();
+                }
             }
         });
-    }
-
-    // Function to check scroll position relative to the 18th product
-    function checkScrollPosition() {
-        console.log(loadAfterProductNumber);
-        var $triggerProduct = $('.mobileImage').eq(loadAfterProductNumber - 1); // Adjust based on current loadAfterProductNumber
-        if ($triggerProduct.length) {
-            var topOfTriggerProduct = $triggerProduct.offset().top;
-            var bottomOfScreen = $(window).scrollTop() + $(window).height();
-            if (bottomOfScreen > topOfTriggerProduct && !isLoading) {
-                loadData();
-            }
-        }
-    }
-
-    // Attach scroll event
-    $(window).scroll(checkScrollPosition);
-});
+    });
 </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "{{ URL::to('/') }}"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "{{ Str::title($category->category_name) }}",
-      "item": "{{ url('/category/'.$category->slug) }}"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "{{ isset($metas->name) ? Str::title($metas->name) : $metas->name }}",
-      "item": "{{ $metas->canonical }}"
-    }
-  ]
-}
-</script>
-
-@stop
-
-@section("style")
-
 @stop

@@ -7,19 +7,26 @@ use Illuminate\Support\Facades\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
-        channels: __DIR__ . '/../routes/channels.php',
-        health: '/up',
-        then: function () {
-            // Load new architecture routes FIRST (higher priority)
+
+        using: function () {
+            file_put_contents(__DIR__ . '/../storage/logs/route_debug.txt', "Loading routes at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
+
             Route::middleware('web')
                 ->group(base_path('routes/web_v2.php'));
 
-            // Then load old routes
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/console.php')); // console routes often web or command
         },
+        commands: __DIR__ . '/../routes/console.php',
+        channels: __DIR__ . '/../routes/channels.php',
+        health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->use([

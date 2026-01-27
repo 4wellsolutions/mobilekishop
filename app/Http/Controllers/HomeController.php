@@ -32,9 +32,10 @@ class HomeController extends Controller
     {
         // $this->middleware('auth');
     }
-    public function index(){
+    public function index()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        $metas = (object)[
+        $metas = (object) [
             "title" => "Phone Reviews, Features, News, Price in {$country->country_name}",
             "description" => "Mobilekishop is the best mobile website that provides the latest mobile phone prices in {$country->country_name} with specifications, features, reviews and comparison.",
             "canonical" => "https://mobilekishop.net",
@@ -54,29 +55,31 @@ class HomeController extends Controller
                 return $category;
             });
 
-        return view('frontend.index',compact('categories','country','metas'));
+        return view('frontend.index', compact('categories', 'country', 'metas'));
     }
-    
-    public function wishlistPost(Request $request){
-        
-        $this->validate($request,[
+
+    public function wishlistPost(Request $request)
+    {
+
+        $this->validate($request, [
             "product_id" => "required",
             "type" => "required",
         ]);
-        if($wishlist = Wishlist::where(["product_id" => $request->product_id,"user_id" => Auth::User()->id])->first()){
+        if ($wishlist = Wishlist::where(["product_id" => $request->product_id, "user_id" => Auth::User()->id])->first()) {
             $wishlist->type = $request->type;
             $wishlist->update();
-        }else{
+        } else {
             $wishlist = new Wishlist();
             $wishlist->product_id = $request->product_id;
             $wishlist->type = $request->type;
             $wishlist->user_id = Auth::user()->id;
             $wishlist->save();
         }
-        $this->saveLog("save Wishlist",$request->all());
+        $this->saveLog("save Wishlist", $request->all());
         return true;
     }
-    public function compare($slug,$slug1=null){
+    public function compare($slug, $slug1 = null)
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
         $validator = Validator::make(['slug' => $slug], [
             'slug' => 'required|string',
@@ -91,7 +94,7 @@ class HomeController extends Controller
         $products = Product::whereIn('slug', $slugs)
             ->orderByRaw(DB::raw("FIELD(slug, '" . implode("','", $slugs) . "')"))
             ->get();
-        
+
         if ($products->isEmpty()) {
             return abort(404);
         }
@@ -107,12 +110,12 @@ class HomeController extends Controller
         $h1 = $products->pluck('name')->join(' VS ');
 
         $description = "Compare all the specifications, features, and price of " . $products->pluck('name')->join(', ') . " on the Mobilekishop.";
-        
+
         $compares = Compare::whereIn('product1', $slugs)
-                            ->orWhereIn('product2', $slugs)
-                            ->inRandomOrder()
-                            ->limit(6)
-                            ->get();
+            ->orWhereIn('product2', $slugs)
+            ->inRandomOrder()
+            ->limit(6)
+            ->get();
         if ($product && $product1 && !$product2) {
             $title = "{$product->name} vs {$product1->name} Specs & Prices";
             $description = "Compare {$product->name} vs {$product1->name} by specs, features, and prices. Detailed reviews to find the best choice for you.";
@@ -131,12 +134,12 @@ class HomeController extends Controller
         $metas = (object) [
             "title" => $title,
             "description" => $description,
-            "canonical" => URL::to('/compare/'.$slug),
+            "canonical" => URL::to('/compare/' . $slug),
             "h1" => $h1,
             "name" => "Compare Mobiles"
         ];
         $category = $products->first()->category->slug;
-        return view("frontend.compare.$category",compact('product','product1','product2','metas','compares','country'));
+        return view("frontend.compare.$category", compact('product', 'product1', 'product2', 'metas', 'compares', 'country'));
     }
     public function productUnder($amount, Request $request)
     {
@@ -146,8 +149,26 @@ class HomeController extends Controller
         return redirect()->to("/mobile-phones-under-{$amount}", 301);
         // Define price slabs for filtering
         $priceSlabs = [
-            15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000, 80000, 90000, 100000, 150000,
-            200000, 300000, 400000, 500000, 600000, 700000
+            15000,
+            20000,
+            25000,
+            30000,
+            35000,
+            40000,
+            45000,
+            50000,
+            60000,
+            70000,
+            80000,
+            90000,
+            100000,
+            150000,
+            200000,
+            300000,
+            400000,
+            500000,
+            600000,
+            700000
         ];
 
         // Initialize price range
@@ -166,7 +187,7 @@ class HomeController extends Controller
         // Fetch meta data for the current page
         $metas = Page::whereSlug(url()->current())->where("is_active", 1)->first();
         if (!$metas) {
-            $metas = (object)[
+            $metas = (object) [
                 "title" => "Latest Products under $amount Reviews, Features, Price in {$country->country_name}",
                 "description" => "Mobilekishop is the best website that provides the latest products under $amount price range in {$country->country_name} with specifications, features, reviews, and comparison.",
                 "canonical" => \Request::fullUrl(),
@@ -201,67 +222,19 @@ class HomeController extends Controller
         // Return the full view with product details
         return view("frontend.product_under_price", compact('products', 'metas', 'category', 'amount', 'lowerAmount', 'country'));
     }
-    public function categoryShow($slug){
+    public function categoryShow($slug)
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        
+
         $category = Category::whereSlug($slug)->first();
-        if(!$category){
+        if (!$category) {
             return abort(404);
         }
         $countryId = $country->id;
 
-        $products = $category->products()->whereHas('variants', function($query) use ($countryId) {
-                        $query->where('country_id', $countryId);
-                    });
-
-        if(\Request::has('filter')){
-            $products = $this->sortFilter($products, \Request::all(),$country->id);
-        }
-
-        $productsPerPage = 32;
-        if (\Request::ajax()) {
-            $products = $products->paginate($productsPerPage);
-            return view('includes.products-partial', compact('products','country'))->render();
-        }
-        
-        $products = $products->paginate($productsPerPage);
-        $metas = (object)[
-            "title" => "Latest $category->category_name Reviews, Features, Price in {$country->country_name}",
-            "description" => "Mobilekishop is the best $category->category_name website that provides the latest $category->category_name phone prices in {$country->country_name} with specifications, features, reviews and comparison.",
-            "canonical" => \Request::fullUrl(),
-            "h1" => "$category->category_name Price in {$country->country_name}",
-            "name" => "$category->category_name"
-        ];
-        
-        return view("frontend.category",compact('products','metas','category','country'));
-    }
-    public function brandShow($slug, $category_slug)
-    {
-        $country = app('App\Http\Controllers\CountryController')->getCountry();
-
-        $category = null;
-        $products = new Product();
-        $country = DB::table("countries")->where("country_code", "pk")->first();
-        $brand = Brand::whereSlug($slug)->first();
-
-        if (!$brand) {
-            return abort(404);
-        }
-
-        $products = $products->where("brand_id", $brand->id);
-
-        if (isset($category_slug)) {
-            $category = Category::whereSlug($category_slug)->first();
-            if (!$category) {
-                abort(404);
-            }
-            $products = $products->where("products.category_id", $category->id);
-        }
-
-        $products = $products->whereHas('variants', function($query) use ($country) {
-            $query->where('country_id', $country->id);
+        $products = $category->products()->whereHas('variants', function ($query) use ($countryId) {
+            $query->where('country_id', $countryId);
         });
-        
 
         if (\Request::has('filter')) {
             $products = $this->sortFilter($products, \Request::all(), $country->id);
@@ -272,7 +245,61 @@ class HomeController extends Controller
             $products = $products->paginate($productsPerPage);
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
-        
+
+        $products = $products->paginate($productsPerPage);
+        $metas = (object) [
+            "title" => "Latest $category->category_name Reviews, Features, Price in {$country->country_name}",
+            "description" => "Mobilekishop is the best $category->category_name website that provides the latest $category->category_name phone prices in {$country->country_name} with specifications, features, reviews and comparison.",
+            "canonical" => \Request::fullUrl(),
+            "h1" => "$category->category_name Price in {$country->country_name}",
+            "name" => "$category->category_name"
+        ];
+
+        return view("frontend.category", compact('products', 'metas', 'category', 'country'));
+    }
+    public function brandShow($slug, $category_slug)
+    {
+        \Log::info("Debugging brandShow: slug={$slug}, category_slug={$category_slug}");
+        $country = app('App\Http\Controllers\CountryController')->getCountry();
+
+        $category = null;
+        $products = new Product();
+        $country = DB::table("countries")->where("country_code", "pk")->first();
+        $brand = Brand::whereSlug($slug)->first();
+
+        if (!$brand) {
+            \Log::info("Brand not found: {$slug}");
+            return abort(404);
+        }
+        \Log::info("Brand found: {$brand->name} ({$brand->id})");
+
+        $products = $products->where("brand_id", $brand->id);
+
+        if (isset($category_slug)) {
+            $category = Category::whereSlug($category_slug)->first();
+            if (!$category) {
+                \Log::info("Category not found: {$category_slug}");
+                abort(404);
+            }
+            \Log::info("Category found: {$category->category_name} ({$category->id})");
+            $products = $products->where("products.category_id", $category->id);
+        }
+
+        $products = $products->whereHas('variants', function ($query) use ($country) {
+            $query->where('country_id', $country->id);
+        });
+
+
+        if (\Request::has('filter')) {
+            $products = $this->sortFilter($products, \Request::all(), $country->id);
+        }
+
+        $productsPerPage = 32;
+        if (\Request::ajax()) {
+            $products = $products->paginate($productsPerPage);
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
         $products = $products->simplepaginate(24);
         $name = isset($category) ? $category->category_name : 'Products';
         $metas = $this->getMeta(\Request::url(), $brand, $name, $country);
@@ -285,10 +312,12 @@ class HomeController extends Controller
 
         return view("frontend.brand", compact('products', 'brand', 'metas', 'category', 'country'));
     }
-    public function saveLog($name=null,$log=null){
-        DB::table("logs")->insert(["name"=>$name,"log"=>json_encode($log),"user_id"=> isset(Auth::user()->id) ? Auth::user()->id : null]);
-    } 
-    public function reviewPost(Request $request){
+    public function saveLog($name = null, $log = null)
+    {
+        DB::table("logs")->insert(["name" => $name, "log" => json_encode($log), "user_id" => isset(Auth::user()->id) ? Auth::user()->id : null]);
+    }
+    public function reviewPost(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'stars' => 'required',
             'review' => 'required',
@@ -347,53 +376,55 @@ class HomeController extends Controller
 
         return response()->json(['success' => true, "message" => 'Review posted successfully and pending approval'], 200);
     }
-    public function showBrandsByCategory($category_slug){
+    public function showBrandsByCategory($category_slug)
+    {
         $category = null;
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        if($category_slug == "all"){
-                $metas = (object)[
+        if ($category_slug == "all") {
+            $metas = (object) [
                 "title" => Str::title("All Brands Mobile Phones, Tablets, Smart Watches {$country->country_name}"),
                 "description" => "Get all the specifications, features, reviews, comparison, and price of All Mobile Phones Brands on the Mobilekishop in {$country->country_name}.",
                 "canonical" => URL::to("/brands/all"),
                 "h1" => "All Brands Mobile Phones in {$country->country_name}",
                 "name" => "All Brands"
-            ];  
+            ];
             $categories = Category::with('brands')->get();
             $brands = [];
-        }else{
-            $category = Category::where("slug",$category_slug)->first();
-            if(!$category){
+        } else {
+            $category = Category::where("slug", $category_slug)->first();
+            if (!$category) {
                 return abort(404);
             }
             $categories = [];
-            $metas = (object)[
+            $metas = (object) [
                 "title" => Str::title("Latest $category->category_name Brands Spec, Price in {$country->country_name}"),
                 "description" => "Get all the specifications, features, reviews, comparison, and price of All $category->category_name Brands on the Mobilekishop in {$country->country_name}.",
                 "canonical" => URL::to("/brands/$category->slug"),
                 "h1" => "$category->category_name Brands in {$country->country_name}",
                 "name" => "All Brands"
-            ];  
-            
+            ];
+
             $brands = Brand::whereHas('products', function ($query) use ($category) {
                 $query->where('category_id', $category->id)
-                      ->whereHas('variants', function ($variantQuery) {
-                          $variantQuery->where('price', '>', 0);
-                      });
+                    ->whereHas('variants', function ($variantQuery) {
+                        $variantQuery->where('price', '>', 0);
+                    });
             })->get();
 
-            
+
         }
-        
-        return view("frontend.brands",compact('brands','metas','category','country','categories'));
+
+        return view("frontend.brands", compact('brands', 'metas', 'category', 'country', 'categories'));
     }
-    public function search(Request $request){
+    public function search(Request $request)
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
-        if(!$request->has("query")){
-            return redirect()->back()->with("fail","Please try again with different query!");
+        if (!$request->has("query")) {
+            return redirect()->back()->with("fail", "Please try again with different query!");
         }
         $query = $request->get("query");
-        $metas = (object)[
+        $metas = (object) [
             "title" => "Search for $query Price in {$country->country_name}",
             "description" => "Search the mobile phones for $query on the Mobilekishop with specifications, features, reviews, comparison, and price in {$country->country_name}.",
             "canonical" => URL::route('search'),
@@ -403,67 +434,73 @@ class HomeController extends Controller
         $agent = new Agent();
         DB::table("searches")->insert([
             "query" => $query,
-            "user_agent" => "User Agent: "." browser:". $agent->browser()." platform:".$agent->platform()." device:".$agent->device(),
+            "user_agent" => "User Agent: " . " browser:" . $agent->browser() . " platform:" . $agent->platform() . " device:" . $agent->device(),
         ]);
         $countryId = $country->id;
-        $products = Product::whereHas('variants', function($query) use ($countryId) {
-                        $query->where('country_id', $countryId) ->where('price', '>', 0);;
-                    });
+        $products = Product::whereHas('variants', function ($query) use ($countryId) {
+            $query->where('country_id', $countryId)->where('price', '>', 0);
+            ;
+        });
         $products = $products->search($query);
         $products = $products->simplepaginate(32);
         $category = null;
-        
-        return view("frontend.search",compact('products','metas','category','country'));   
-    }  
-    public function aboutUs(){
+
+        return view("frontend.search", compact('products', 'metas', 'category', 'country'));
+    }
+    public function aboutUs()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
-        $metas = (object)[
+        $metas = (object) [
             "title" => "About Us - Mobilekishop",
             "description" => "About Us - Find latest Mobiles phones prices in {$country->country_name}.",
             "canonical" => URL::to('/about-us'),
             "h1" => "About Us",
             "name" => "About Us"
         ];
-        return view("frontend.about",compact('metas','country'));
+        return view("frontend.about", compact('metas', 'country'));
     }
-    public function privacyPolicy(){
+    public function privacyPolicy()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
-        $metas = (object)[
+        $metas = (object) [
             "title" => "Privacy Policy - Mobilekishop",
             "description" => "Privacy Policy - Find latest Mobiles phones prices in {$country->country_name}.",
             "canonical" => URL::to('/privacy-policy'),
             "h1" => "Privacy Policy",
             "name" => "Privacy Policy"
         ];
-        return view("frontend.privacy-policy",compact('metas','country'));
+        return view("frontend.privacy-policy", compact('metas', 'country'));
     }
-    public function termsConditions(){
+    public function termsConditions()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
-        $metas = (object)[
+        $metas = (object) [
             "title" => "Terms and Conditions - Mobilekishop",
             "description" => "Terms and Conditions - Find latest Mobiles phones prices in {$country->country_name}.",
             "canonical" => URL::to('/terms-and-conditions'),
             "h1" => "Terms and Conditions",
             "name" => "Terms and Conditions"
         ];
-        return view("frontend.terms",compact('metas','country'));
+        return view("frontend.terms", compact('metas', 'country'));
     }
-    public function contact(){
+    public function contact()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
-        $metas = (object)[
+        $metas = (object) [
             "title" => "Contact Us - Mobilekishop",
             "description" => "Contact Us - Find latest Mobiles phones prices in {$country->country_name}.",
             "canonical" => URL::to('/contact'),
             "h1" => "Contact Us",
             "name" => "contact us"
         ];
-        return view("frontend.contact",compact('metas','country'));
+        return view("frontend.contact", compact('metas', 'country'));
     }
-    public function contactPost(Request $request){
+    public function contactPost(Request $request)
+    {
         // Validate the request inputs
         $this->validate($request, [
             "name" => ["required", "regex:/^[a-zA-Z\s]+$/"],
@@ -489,7 +526,7 @@ class HomeController extends Controller
         $contact->save();
 
         // Send email notification
-        Mail::send("emails.contact", ['contact' => $contact], function($m) use ($contact) {
+        Mail::send("emails.contact", ['contact' => $contact], function ($m) use ($contact) {
             $m->from('info@mobilekishop.net', 'MobileKiShop');
             $m->cc("info@mobilekishop.net");
             $m->to($contact->email);
@@ -499,10 +536,15 @@ class HomeController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with("success", "We have received your query. You will get reply back soon.");
     }
-    public function sortFilter($products,$filter,$countryId,$lowerAmount=null,$upperBound=null){
-        
+    public function sortFilter($products, $filter, $countryId, $lowerAmount = null, $upperBound = null)
+    {
+
         $attributeFilters = \Request::only([
-            'ram_in_gb', 'rom_in_gb', 'pixels', 'year', 'network_band'
+            'ram_in_gb',
+            'rom_in_gb',
+            'pixels',
+            'year',
+            'network_band'
         ]);
         if (isset($filter['filter']) && $filter['filter'] == "true") {
             if (isset($filter['orderby']) && $filter['orderby'] == "price_asc") {
@@ -512,7 +554,7 @@ class HomeController extends Controller
                 $sortField = 'product_variants.price';
                 $sortOrder = 'DESC';
             }
-        }else{
+        } else {
             $sortField = 'id';
             $sortOrder = 'DESC';
         }
@@ -524,7 +566,7 @@ class HomeController extends Controller
                         if ($attribute === 'year') {
                             // Special case for 'year' attribute
                             $subQuery->where('name', "release_date")->whereYear('value', '=', $value);
-                        } else {    
+                        } else {
                             $subQuery->where('name', $attribute)->where('value', $value);
                         }
                     });
@@ -537,28 +579,31 @@ class HomeController extends Controller
             $products = $products->orderBy('release_date', 'DESC');
         }
 
-        if($lowerAmount && $upperBound && $filter["orderby"] != "new"){
-            $products = $products->orderBy($sortField,$sortOrder)->with(['variants' => function ($query) use ($countryId, $lowerAmount, $upperBound) {
-                $query->where('country_id', $countryId)
-                      ->where('price', '>=', $lowerAmount)
-                      ->where('price', '<=', $upperBound)
-                      ->orderBy('price', 'ASC')
-                      ->limit(1);
-            }]);
+        if ($lowerAmount && $upperBound && $filter["orderby"] != "new") {
+            $products = $products->orderBy($sortField, $sortOrder)->with([
+                'variants' => function ($query) use ($countryId, $lowerAmount, $upperBound) {
+                    $query->where('country_id', $countryId)
+                        ->where('price', '>=', $lowerAmount)
+                        ->where('price', '<=', $upperBound)
+                        ->orderBy('price', 'ASC')
+                        ->limit(1);
+                }
+            ]);
         }
 
         return $products;
     }
-    public function comparison(){
+    public function comparison()
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        $metas = (object)[
+        $metas = (object) [
             "title" => Str::title("Mobiles Phone Comparison, Spec, Price in {$country->country_name}"),
             "description" => "Get all Mobiles Phone Comparison, specifications, features, reviews, prices on the Mobilekishop in {$country->country_name}.",
             "canonical" => \Request::fullUrl(),
             "h1" => "Mobile Phones Comparison",
             "name" => "Comparison"
-        ]; 
-        $compares = Compare::orderBy("id","DESC");
+        ];
+        $compares = Compare::orderBy("id", "DESC");
         $productsPerPage = 32;
         if (\Request::ajax()) {
             $compares = $compares->paginate($productsPerPage);
@@ -566,14 +611,17 @@ class HomeController extends Controller
         }
         $compares = $compares->simplepaginate(32);
 
-        return view("frontend.comparison",compact('compares','metas','country'));
+        $category = Category::where('slug', 'mobile-phones')->first();
+
+        return view("frontend.comparison", compact('compares', 'metas', 'country', 'category'));
     }
-    public function FilterPhoneCoverProducts($slug){
+    public function FilterPhoneCoverProducts($slug)
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        $metas = Page::whereSlug(url()->current())->where("is_active",1)->first();
+        $metas = Page::whereSlug(url()->current())->where("is_active", 1)->first();
         $title = ucwords(str_replace('-', ' ', $slug));
-        if(!$metas){
-            $metas = (object)[
+        if (!$metas) {
+            $metas = (object) [
                 "title" => "Best $title Phone Cases in {$country->country_name}",
                 "description" => "Protect your $title with premium phone cases designed for durability, style, and functionality. Buy now in {$country->country_name}.",
                 "canonical" => \Request::fullUrl(),
@@ -583,11 +631,11 @@ class HomeController extends Controller
         }
         $products = Product::whereHas('attributes', function ($query) use ($slug) {
             $query->where('attribute_id', 312)
-                  ->where('value', $slug);
+                ->where('value', $slug);
         });
 
-        if(\Request::has('filter')){
-            $products = app('App\Http\Controllers\HomeController')->sortFilter($products, \Request::all(),$country->id);
+        if (\Request::has('filter')) {
+            $products = app('App\Http\Controllers\HomeController')->sortFilter($products, \Request::all(), $country->id);
         }
         $productsPerPage = 32;
         if (\Request::ajax()) {
@@ -595,28 +643,29 @@ class HomeController extends Controller
             if ($products->isEmpty()) {
                 return response()->json(['success' => false]);
             }
-            return view('includes.products-partial', compact('products','country'))->render();
+            return view('includes.products-partial', compact('products', 'country'))->render();
         }
         $products = $products->simplepaginate(32);
         $category = Category::find(8);
-        return view("frontend.brand",compact('products','metas','category','country')); 
+        return view("frontend.brand", compact('products', 'metas', 'category', 'country'));
     }
-    public function FilterPhoneCoverByBrandProducts($brand, $slug){
+    public function FilterPhoneCoverByBrandProducts($brand, $slug)
+    {
         $country = app('App\Http\Controllers\CountryController')->getCountry();
-        $metas = Page::whereSlug(url()->current())->where("is_active",1)->first();
+        $metas = Page::whereSlug(url()->current())->where("is_active", 1)->first();
         $title = ucwords(str_replace('-', ' ', $slug));
-        if(!$metas){
-            $metas = (object)[
-                "title" => "Best ".Str::title($brand)." $title Phone Cases in {$country->country_name}",
-                "description" => "Protect your ".Str::title($brand)." $title with premium phone cases designed for durability, style, and functionality. Buy now in {$country->country_name}.",
+        if (!$metas) {
+            $metas = (object) [
+                "title" => "Best " . Str::title($brand) . " $title Phone Cases in {$country->country_name}",
+                "description" => "Protect your " . Str::title($brand) . " $title with premium phone cases designed for durability, style, and functionality. Buy now in {$country->country_name}.",
                 "canonical" => \Request::fullUrl(),
-                "h1" => Str::title($brand)." $title Phone Cases {$country->country_name}",
-                "name" => Str::title($brand)." $title Phone Cases"
+                "h1" => Str::title($brand) . " $title Phone Cases {$country->country_name}",
+                "name" => Str::title($brand) . " $title Phone Cases"
             ];
         }
         $products = Product::whereHas('attributes', function ($query) use ($slug) {
             $query->where('attribute_id', 312)
-                  ->where('value', $slug);
+                ->where('value', $slug);
         });
 
         // Filter by brand slug
@@ -624,8 +673,8 @@ class HomeController extends Controller
             $query->where('slug', $brand);
         });
 
-        if(\Request::has('filter')){
-            $products = app('App\Http\Controllers\HomeController')->sortFilter($products, \Request::all(),$country->id);
+        if (\Request::has('filter')) {
+            $products = app('App\Http\Controllers\HomeController')->sortFilter($products, \Request::all(), $country->id);
         }
         $productsPerPage = 32;
         if (\Request::ajax()) {
@@ -633,22 +682,22 @@ class HomeController extends Controller
             if ($products->isEmpty()) {
                 return response()->json(['success' => false]);
             }
-            return view('includes.products-partial', compact('products','country'))->render();
+            return view('includes.products-partial', compact('products', 'country'))->render();
         }
         $products = $products->simplepaginate(32);
         $category = Category::find(8);
-        return view("frontend.brand",compact('products','metas','category','country')); 
+        return view("frontend.brand", compact('products', 'metas', 'category', 'country'));
     }
-    public function getMeta($slug, $brand,$name,$country)
+    public function getMeta($slug, $brand, $name, $country)
     {
         $metas = DB::table("pages")->whereSlug($slug)->first();
 
-        return $metas ?: (object)[
+        return $metas ?: (object) [
             "title" => "{$brand->name} Latest {$name} Reviews, Features, Price in {$country->country_name}",
             "description" => "Mobilekishop is the best website that provides the latest {$brand->name} {$name} prices in {$country->country_name} with specifications, features, reviews and comparison.",
             "canonical" => $slug,
             "h1" => "{$brand->name} {$name} Price in {$country->country_name}",
-            "name"      => $name
+            "name" => $name
         ];
     }
 }

@@ -88,7 +88,7 @@
                     // Extract country from current URL path
                     $pathSegments = explode('/', trim(request()->path(), '/'));
                     $firstSegment = $pathSegments[0] ?? null;
-                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+                    $allowedCountries = \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray();
                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                 @endphp
@@ -190,7 +190,7 @@
                                     // Extract country from current URL path, not session
                                     $pathSegments = explode('/', trim(request()->path(), '/'));
                                     $firstSegment = $pathSegments[0] ?? null;
-                                    $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in']; // Add your country codes
+                                    $allowedCountries = \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray();
                                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                                     $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;

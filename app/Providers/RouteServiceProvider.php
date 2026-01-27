@@ -47,6 +47,9 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
+            ->group(base_path('routes/web_v2.php'));
+
+        Route::middleware('web')
             ->group(base_path('routes/web.php'));
     }
 
@@ -70,5 +73,5 @@ class RouteServiceProvider extends ServiceProvider
      * These routes are prefixed with 'dashboard' and protected by 'auth' and 'admin' middleware.
      *
      * @return void
-     */    
+     */
 }

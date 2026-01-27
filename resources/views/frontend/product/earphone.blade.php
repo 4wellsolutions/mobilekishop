@@ -1,4 +1,4 @@
-@php
+﻿@php
     $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
@@ -233,20 +233,21 @@
             <ol class="breadcrumb mb-1">
                 <!-- Home -->
                 <li class="breadcrumb-item">
-                    <a href="{{ URL::to('/') }}" class="text-decoration-none text-secondary">
+                    <a href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+                        class="text-decoration-none text-secondary">
                         Home
                     </a>
                 </li>
                 <!-- Category -->
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/category/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->category->category_name }}
                     </a>
                 </li>
                 <!-- Brand -->
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
+                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
                         class="text-decoration-none text-secondary">
                         {{ $product->brand->name }}
                     </a>
@@ -272,7 +273,8 @@
                     <p class="bg-light p-2 mb-0 rounded-bottom">The {{$product->name}} released on {{ $release_date}} at
                         price {{$country->currency}}
                         {{ $product->getFirstVariantPriceForCountry($product->id, $country->id) }} in
-                        {{$country->country_name}}.</p>
+                        {{$country->country_name}}.
+                    </p>
                 </div>
             </div>
             <div class="row mb-2">
@@ -485,32 +487,32 @@
 
 <script type="application/ld+json">
     {
-        "@context": "https://schema.org/",
+        "@@context": "https://schema.org/",
         "@type": "BreadcrumbList",
         "itemListElement": [
             {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "{{ URL::to('/') }}"
+                "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "{{ $product->category->category_name }}",
-                "item": "{{ url('/category/' . $product->category->slug) }}"
+                "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
             },
             {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "{{ $product->brand->name }}",
-                "item": "{{ url('/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
+                "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
             },
             {
                 "@type": "ListItem",
                 "position": 4,
                 "name": "{{ Str::title($product->name) }}",
-                "item": "{{ url('/product/' . $product->slug) }}"
+                "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/product/' . $product->slug) }}"
             }
         ]
     }

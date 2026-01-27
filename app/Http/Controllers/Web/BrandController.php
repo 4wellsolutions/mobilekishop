@@ -25,12 +25,17 @@ class BrandController extends Controller
     /**
      * Show products by brand
      */
-    public function show(string $brandSlug, ?string $categorySlug = null, Request $request)
+    public function show($countrySlug, $brand, $categorySlug = null, Request $request)
     {
         $country = $request->attributes->get('country');
 
-        // Get brand
-        $brand = $this->brandService->getBrandBySlug($brandSlug);
+        // Handle Brand (Model or String)
+        if (!($brand instanceof \App\Brand)) {
+            // If not bound (passed as string), fetch it
+            $brandSlug = $brand;
+            $brand = $this->brandService->getBrandBySlug($brandSlug);
+        }
+
         if (!$brand) {
             abort(404);
         }

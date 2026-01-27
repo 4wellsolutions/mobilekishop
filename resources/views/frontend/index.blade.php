@@ -42,7 +42,7 @@
                                 <p class="text-center">No products available in this category.</p>
                             @endif
                         </div>
-                        <p class="text-end mt-2"><a href="{{url('/category/'.$category->slug)}}" class="fs-6 text-dark">View All</a></p>
+                        <p class="text-end mt-2"><a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'category.show', ($country->country_code == 'pk' ? $category->slug : ['country_code' => $country->country_code, 'category' => $category->slug])) }}" class="fs-6 text-dark">View All</a></p>
                     </div>
                 </section>
               @endforeach

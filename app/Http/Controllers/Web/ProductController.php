@@ -25,7 +25,7 @@ class ProductController extends Controller
      * 
      * @param Product $product - Automatically injected via route model binding
      */
-    public function show(Product $product, Request $request)
+    public function show($countrySlug, Product $product, Request $request)
     {
         $country = $request->attributes->get('country');
         $agent = new Agent();
