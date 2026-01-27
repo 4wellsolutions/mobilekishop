@@ -23,7 +23,9 @@ class FilterService
             ->with([
                 'variants' => function ($query) use ($countryCode) {
                     $query->where('country_code', $countryCode);
-                }
+                },
+                'brand',
+                'category'
             ]);
     }
 
@@ -36,7 +38,7 @@ class FilterService
             ->whereHas('attributes', function ($query) use ($ram) {
                 $query->where('attribute_id', 76)
                     ->where('value', 'like', $ram . 'GB');
-            })->with(['variants']);
+            })->with(['variants', 'brand', 'category']);
     }
 
     /**
@@ -48,7 +50,7 @@ class FilterService
             ->whereHas('attributes', function ($query) use ($rom) {
                 $query->where('attribute_id', 77)
                     ->where('value', 'like', $rom . 'GB');
-            })->with(['variants']);
+            })->with(['variants', 'brand', 'category']);
     }
 
     /**
@@ -63,7 +65,7 @@ class FilterService
             })->whereHas('attributes', function ($query) use ($rom) {
                 $query->where('attribute_id', 77)
                     ->where('value', $rom . 'GB');
-            })->with(['variants']);
+            })->with(['variants', 'brand', 'category']);
     }
 
     /**
@@ -89,7 +91,7 @@ class FilterService
             ->whereHas('attributes', function ($query) use ($range) {
                 $query->where('attribute_id', 75)
                     ->whereBetween('value', $range);
-            })->with(['variants']);
+            })->with(['variants', 'brand', 'category']);
     }
 
     /**
@@ -214,7 +216,9 @@ class FilterService
             })->with([
                     'variants' => function ($query) use ($countryId) {
                         $query->where('product_variants.country_id', $countryId);
-                    }
+                    },
+                    'brand',
+                    'category'
                 ]);
     }
 

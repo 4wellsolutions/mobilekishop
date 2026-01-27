@@ -49,6 +49,13 @@ class HomeController extends Controller
                     ->whereHas('variants', function ($query) use ($country) {
                         $query->where('country_id', $country->id);
                     })
+                    ->with([
+                        'variants' => function ($query) use ($country) {
+                            $query->where('product_variants.country_id', $country->id);
+                        },
+                        'brand',
+                        'category'
+                    ])
                     ->latest()
                     ->take(4)
                     ->get();
@@ -234,7 +241,13 @@ class HomeController extends Controller
 
         $products = $category->products()->whereHas('variants', function ($query) use ($countryId) {
             $query->where('country_id', $countryId);
-        });
+        })->with([
+                    'variants' => function ($query) use ($countryId) {
+                        $query->where('product_variants.country_id', $countryId);
+                    },
+                    'brand',
+                    'category'
+                ]);
 
         if (\Request::has('filter')) {
             $products = $this->sortFilter($products, \Request::all(), $country->id);
@@ -259,36 +272,35 @@ class HomeController extends Controller
     }
     public function brandShow($slug, $category_slug)
     {
-        \Log::info("Debugging brandShow: slug={$slug}, category_slug={$category_slug}");
         $country = app('App\Http\Controllers\CountryController')->getCountry();
 
         $category = null;
-        $products = new Product();
-        $country = DB::table("countries")->where("country_code", "pk")->first();
         $brand = Brand::whereSlug($slug)->first();
 
         if (!$brand) {
-            \Log::info("Brand not found: {$slug}");
             return abort(404);
         }
-        \Log::info("Brand found: {$brand->name} ({$brand->id})");
 
-        $products = $products->where("brand_id", $brand->id);
+        $countryId = $country->id;
+        $products = Product::where("brand_id", $brand->id);
 
         if (isset($category_slug)) {
             $category = Category::whereSlug($category_slug)->first();
             if (!$category) {
-                \Log::info("Category not found: {$category_slug}");
                 abort(404);
             }
-            \Log::info("Category found: {$category->category_name} ({$category->id})");
             $products = $products->where("products.category_id", $category->id);
         }
 
-        $products = $products->whereHas('variants', function ($query) use ($country) {
-            $query->where('country_id', $country->id);
-        });
-
+        $products = $products->whereHas('variants', function ($query) use ($countryId) {
+            $query->where('country_id', $countryId)->where('price', '>', 0);
+        })->with([
+                    'variants' => function ($query) use ($countryId) {
+                        $query->where('product_variants.country_id', $countryId);
+                    },
+                    'brand',
+                    'category'
+                ]);
 
         if (\Request::has('filter')) {
             $products = $this->sortFilter($products, \Request::all(), $country->id);

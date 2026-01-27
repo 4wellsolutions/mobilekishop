@@ -9,7 +9,7 @@
                         <tr class="">
                             <td rowspan="2" class="text-danger text-uppercase fw-bold">Price</td>
                             <th>{{$country->currency}}</th>
-                            <td colspan="2">{{ $product->getFirstVariantPriceForCountry($product->id,$country->id) }}</td>
+                            <td colspan="2">{{ $product->getFirstVariantPriceForCountry($product,$country->id) }}</td>
                         </tr>
                         <tr class="">
                             <th>Brand</th>

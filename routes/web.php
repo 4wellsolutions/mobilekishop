@@ -116,7 +116,7 @@ Route::get('/password/reset', function () {
 });
 // Main domain routes (Pakistan default)
 // Country-specific routes using directory-based routing (e.g., /us/, /uk/)
-Route::prefix('{country_code}')->middleware(['default.country'])->group(function () {
+Route::prefix('{country_code}')->where(['country_code' => '^[a-z]{2}$'])->middleware(['default.country'])->group(function () {
     // Logout route
     Route::post('/logout', [LoginController::class, 'logout'])->name('country.logout');
     Route::get('news', [NewsController::class, "index"]);

@@ -89,15 +89,39 @@ class Product extends Model
         return $ramAttribute ? $ramAttribute->attribute_value : null;
     }
 
-    public static function getFirstVariantPriceForCountry($productId, $countryId)
+    /**
+     * Get the first variant price for a given country.
+     * Optimized to use eager-loaded variants when available.
+     *
+     * @param int|Product $productOrId Product object or ID
+     * @param int $countryId
+     * @return int|float
+     */
+    public static function getFirstVariantPriceForCountry($productOrId, $countryId)
     {
-        // Retrieve the product along with its variants and pivot data
-        $product = self::find($productId);
+        // If passed a Product object, use it directly
+        if ($productOrId instanceof self) {
+            $product = $productOrId;
+        } else {
+            // Fallback: if passed an ID, we need to query (legacy support)
+            $product = self::find($productOrId);
+        }
 
-        // Get the first variant that matches the country_id
+        if (!$product) {
+            return 0;
+        }
+
+        // Check if variants are already eager-loaded
+        if ($product->relationLoaded('variants')) {
+            // Use the already-loaded collection
+            $variant = $product->variants->first(function ($variant) use ($countryId) {
+                return $variant->pivot->country_id == $countryId;
+            });
+            return $variant ? $variant->pivot->price : 0;
+        }
+
+        // Fallback: query the database (should be avoided via eager loading)
         $variant = $product->variants()->wherePivot('country_id', $countryId)->first();
-
-        // Return the price if variant is found, otherwise return 0
         return $variant ? $variant->pivot->price : 0;
     }
 

@@ -68,9 +68,14 @@
     <div class="collapse show" id="ram">
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
-                {{-- @foreach($ramLimits as $ramLimit)
-                <li><a href="{{request()->fullUrlWithQuery(['ram_in_gb' => $ramLimit])}}">{{$ramLimit}} GB</a></li>
-                @endforeach --}}
+                @php
+                    $ramLimits = [2, 3, 4, 6, 8, 12, 16];
+                @endphp
+                @foreach($ramLimits as $ramLimit)
+                    <li><a
+                            href="{{ $country->country_code == 'pk' ? url('/mobile-phones-' . $ramLimit . 'gb-ram') : url('/' . $country->country_code . '/mobile-phones-' . $ramLimit . 'gb-ram') }}">{{$ramLimit}}
+                            GB</a></li>
+                @endforeach
             </ul>
         </div>
     </div>
@@ -86,9 +91,14 @@
     <div class="collapse show" id="rom">
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
-                {{-- @foreach($romLimits as $romLimit)
-                <li><a href="{{request()->fullUrlWithQuery(['rom_in_gb' => $romLimit])}}">{{$romLimit}} GB</a></li>
-                @endforeach --}}
+                @php
+                    $romLimits = [32, 64, 128, 256, 512];
+                @endphp
+                @foreach($romLimits as $romLimit)
+                    <li><a
+                            href="{{ $country->country_code == 'pk' ? url('/mobile-phones-' . $romLimit . 'gb-storage') : url('/' . $country->country_code . '/mobile-phones-' . $romLimit . 'gb-storage') }}">{{$romLimit}}
+                            GB</a></li>
+                @endforeach
             </ul>
         </div>
     </div>
@@ -105,10 +115,10 @@
         <div class="widget-body">
             <ul class="list-unstyled ps-2 pt-2">
                 @php
-                    $cameraRange = [5, 8, 12, 13, 16, 20, 32, 48, 64, 108];
+                    $cameraRange = [12, 16, 24, 48, 64, 108, 200];
                 @endphp
                 @foreach($cameraRange as $range)
-                    <li><a href="{{request()->fullUrlWithQuery(['pixels' => $range])}}">{{$range}} MP</a></li>
+                    <li><a href="{{ $country->country_code == 'pk' ? url('/mobile-phones-' . $range . 'mp-camera') : url('/' . $country->country_code . '/mobile-phones-' . $range . 'mp-camera') }}">{{$range}} MP</a></li>
                 @endforeach
             </ul>
         </div>

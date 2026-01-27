@@ -42,7 +42,7 @@
       <div class="row">
         <div class="col-12 text-center">
           <span class="text-danger">{{$country->currency}}
-            {{ $product->getFirstVariantPriceForCountry($product->id, $country->id) }}</span>
+            {{ $product->getFirstVariantPriceForCountry($product, $country->id) }}</span>
         </div>
       </div>
     </div>

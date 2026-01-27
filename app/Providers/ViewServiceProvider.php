@@ -14,6 +14,11 @@ use Request;
 
 class ViewServiceProvider extends ServiceProvider
 {
+    // Static properties to hold data for the current request
+    protected static $requestCountry = null;
+    protected static $requestCategory = null;
+    protected static $requestDataLoaded = false;
+
     public function register()
     {
         //
@@ -22,23 +27,32 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('includes.*', function ($view) {
-            // Fetch country from URL or session, with a fallback
-            $countryCode = Request::segment(1);
-            $country = Country::where('country_code', $countryCode)->first() ?? Country::where('country_code', 'pk')->first();
-            
-            // Fetch category from URL, with a fallback
-            $categorySlug = Request::segment(2);
-            $category = Category::where('slug', $categorySlug)->first() ?? Category::where('slug', 'mobile-phones')->first();
-            
+            // Use static caching to ensure DB queries run only ONCE per request
+            if (!self::$requestDataLoaded) {
+                // Fetch country from URL or session, with a fallback
+                $countryCode = Request::segment(1);
+                $countryQuery = Country::where('country_code', $countryCode)->where('is_active', 1)->first();
+                self::$requestCountry = $countryQuery ?? Country::where('country_code', 'pk')->where('is_active', 1)->first();
+
+                // Fetch category from URL, with a fallback
+                $categorySlug = Request::segment(2);
+                self::$requestCategory = Category::where('slug', $categorySlug)->first() ?? Category::where('slug', 'mobile-phones')->first();
+
+                self::$requestDataLoaded = true;
+            }
+
+            $country = self::$requestCountry;
+            $category = self::$requestCategory;
+
             // Check for null after fallbacks
             if (!$country || !$category) {
-                $view->with(['categories' => [], 'brands' => [], 'filters' => [], 'priceRanges' => []]);
+                $view->with(['categories' => [], 'brands' => [], 'filters' => [], 'priceRanges' => [], 'country' => null, 'category' => null]);
                 return;
             }
 
             $categoriesCacheKey = "categories_sidebar_{$country->id}";
-            $brandsCacheKey     = "brands_sidebar_{$country->id}_{$category->id}";
-            $filtersCacheKey    = 'filters_sidebar_' . md5(Request::url());
+            $brandsCacheKey = "brands_sidebar_{$country->id}_{$category->id}";
+            $filtersCacheKey = 'filters_sidebar_' . md5(Request::url());
             $priceRangesCacheKey = "prices_sidebar_{$country->id}_{$category->id}";
 
             $categories = Cache::remember($categoriesCacheKey, 3600, function () {
@@ -46,27 +60,37 @@ class ViewServiceProvider extends ServiceProvider
             });
 
             $brands = Cache::remember($brandsCacheKey, 3600, function () use ($category, $country) {
-                return Brand::whereHas('products', function ($query) use ($category,$country) {
+                return Brand::whereHas('products', function ($query) use ($category, $country) {
                     $query->where('category_id', $category->id)
-                          ->whereHas('variants', function ($query) use ($country) {
-                              $query->where('country_id', $country->id)
-                                    ->where('price', '>', 0);
-                          });
+                        ->whereHas('variants', function ($query) use ($country) {
+                            $query->where('country_id', $country->id)
+                                ->where('price', '>', 0);
+                        });
                 })->get();
             });
-            
+
             $filters = Cache::remember($filtersCacheKey, 3600, function () {
                 return Filter::where("page_url", Request::url())->get();
             });
-            
-            $priceRanges = Cache::remember($priceRangesCacheKey, 3600, function() use ($country, $category) {
+
+            $priceRanges = Cache::remember($priceRangesCacheKey, 3600, function () use ($country, $category) {
                 $priceRangesRecord = CategoryPriceRange::where('country_id', $country->id)
-                                                         ->where('category_id', $category->id)
-                                                         ->first();
+                    ->where('category_id', $category->id)
+                    ->first();
                 return $priceRangesRecord ? json_decode($priceRangesRecord->price_range_json) : [];
             });
 
             $view->with(compact('categories', 'brands', 'filters', 'priceRanges', 'country', 'category'));
         });
+    }
+
+    /**
+     * Reset static properties. Called at the end of a request or for testing.
+     */
+    public static function resetRequestCache()
+    {
+        self::$requestCountry = null;
+        self::$requestCategory = null;
+        self::$requestDataLoaded = false;
     }
 }

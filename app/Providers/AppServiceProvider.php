@@ -23,6 +23,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // DB query logging disabled for production
+        // Uncomment below for debugging:
+        // \DB::listen(function ($query) {
+        //     \Log::info(
+        //         'SQL: ' . $query->sql . ' | Time: ' . $query->time . 'ms',
+        //         $query->bindings
+        //     );
+        // });
     }
 }
