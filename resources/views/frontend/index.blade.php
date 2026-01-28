@@ -35,7 +35,7 @@
                             @if ($category->latest_products->isNotEmpty())
                                 @foreach ($category->latest_products as $product)
                                     <div class="col-6 col-sm-4 col-md-3">
-                                        @include('includes.product-details', ['product' => $product])
+                                        <x-product-card :product="$product" :country="$country" />
                                     </div>
                                 @endforeach
                             @else

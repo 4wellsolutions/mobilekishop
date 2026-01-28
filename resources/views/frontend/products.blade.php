@@ -114,51 +114,7 @@
                     @if(!$products->isEmpty())
                         @foreach($products as $product)
                             <div class="col-6 col-sm-4 col-md-3">
-                                <!-- appear-animate -->
-                                <div class="p-2 text-center position-relative">
-                                    @if(\Carbon\Carbon::now()->lte(optional($product->attributes()->where('attribute_id', 80)->first())->value))
-                                        <div class="label-groups">
-                                            <span class="product-label label-upcoming fs-10">Upcoming</span>
-                                        </div>
-                                    @elseif(\Carbon\Carbon::now()->subDays(90)->lte($product->attributes()->where('attribute_id', 80)->first()->value))
-                                        <div class="label-groups group-new">
-                                            <span class="product-label label-upcoming fs-10">New</span>
-                                        </div>
-                                    @endif
-                                    <a href="{{route('product.show', [$product->brand->slug, $product->slug])}}">
-                                        <img src="{{URL::to('/images/thumbnail.png')}}" data-echo="{{$product->thumbnail}}"
-                                            alt="{{$product->slug}}" class="img-fluid mx-auto w-auto mobileImage" />
-                                    </a>
-                                    <div class="product-details">
-                                        <div class="d-flex justify-content-between my-1">
-                                            <div class="category">
-                                                <a href="{{route('brand.show', [$product->brand->slug, $product->category->slug])}}"
-                                                    class="text-dark fs-12">{{$product->brand->name}}</a>
-                                            </div>
-                                            @if(Auth::User())
-                                                <a href="#" class="btn-icon-wish fs-14">
-                                                    <img src="{{(Auth::User()->wishlists()->where('product_id', $product->id)->whereType(1)->first()) ? URL::to('/images/icons/heart-fill.png') : URL::to('/images/icons/heart.png') }}"
-                                                        alt="heart" width="16" height="16">
-                                                    <i class="fa-heart" data-id="{{$product->id}}" data-type="0"></i></a>
-                                            @else
-                                                <a href="#" class="btn-icon-wish fs-14">
-                                                    <img src="{{URL::to('/images/icons/heart.png')}}" data-id="{{$product->id}}"
-                                                        data-type="0" alt="heart" width="16" height="16">
-                                                </a>
-                                            @endif
-                                        </div>
-                                        <a href="{{route('product.show', [$product->brand->slug, $product->slug])}}"
-                                            class="text-dark text-decoration-none">
-                                            <h2 class="mx-auto fs-16 fw-normal">
-                                                {{Str::title($product->name)}}
-                                            </h2>
-                                        </a>
-                                        <div class="price-box mx-auto">
-                                            <span
-                                                class="fw-bold text-danger">Rs.{{number_format($product->price_in_pkr)}}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <x-product-card :product="$product" :country="$country" />
                             </div>
                         @endforeach
                     @else
