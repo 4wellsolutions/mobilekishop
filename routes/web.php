@@ -30,6 +30,7 @@ use App\Http\Controllers\CountryCableController;
 
 // Route to trigger sitemap generation
 Route::get('/sitemap.xml', [SitemapController::class, 'serveSitemap'])->name('sitemap.index');
+
 // Routes for serving additional sitemaps (brands, categories, filters, products)
 Route::get('/sitemap-{type}.xml', [SitemapController::class, 'serveSitemap'])
     ->where('type', 'brands|categories|filters|products|products-\d+')

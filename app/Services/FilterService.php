@@ -343,4 +343,18 @@ class FilterService
                     ->where('value', 'like', $mp . 'MP');
             })->with(['brand', 'category']);
     }
+
+    /**
+     * Get tablets by type (4g, 5g)
+     */
+    public function getTabletsByType(string $type): Builder
+    {
+        $type = strtolower($type);
+        $attrId = $type === '4g' ? 199 : 200;
+
+        return Product::where('category_id', 3)
+            ->whereHas('attributes', function ($query) use ($attrId) {
+                $query->where('attribute_id', $attrId);
+            })->with(['brand', 'category']);
+    }
 }

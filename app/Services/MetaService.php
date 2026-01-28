@@ -230,17 +230,23 @@ class MetaService
     }
 
     /**
-     * Type (Folding/Flip) Filter Meta
+     * Type (Folding/Flip/4G/5G) Filter Meta
      */
-    public function generateTypeFilterMeta(string $type, Country $country): object
+    public function generateTypeFilterMeta(string $type, Country $country, ?Category $category = null): object
     {
-        $typeName = ucfirst($type);
+        $typeName = strtoupper($type);
+        if (!in_array($type, ['4g', '5g'])) {
+            $typeName = ucfirst($type);
+        }
+
+        $categoryName = $category ? $category->category_name : 'Mobile Phones';
+
         return (object) [
-            'title' => "Best {$typeName} Mobile Phones in {$country->country_name}",
-            'description' => "Explore {$typeName} smartphones. Compare specs, features, and prices in {$country->country_name}.",
+            'title' => "Best {$typeName} {$categoryName} in {$country->country_name}",
+            'description' => "Explore {$typeName} {$categoryName}. Compare specs, features, and prices in {$country->country_name}.",
             'canonical' => url()->current(),
-            'h1' => "{$typeName} Mobile Phones in {$country->country_name}",
-            'name' => "{$typeName} Mobile Phones"
+            'h1' => "{$typeName} {$categoryName} in {$country->country_name}",
+            'name' => "{$typeName} {$categoryName}"
         ];
     }
 

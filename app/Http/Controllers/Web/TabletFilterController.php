@@ -209,4 +209,35 @@ class TabletFilterController extends Controller
 
         return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
     }
+
+    /**
+     * Show tablets by Network Type (4G, 5G)
+     */
+    public function byType(Request $request)
+    {
+        $type = $request->route('type');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getTabletsByType($type);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $metas = $this->metaService->generateTypeFilterMeta($type, $country, Category::find(3));
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(3);
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
 }

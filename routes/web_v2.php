@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Web\{
     ProductController,
     CategoryController,
@@ -214,6 +215,11 @@ $webRoutes = function () {
     Route::get('tablets-{mp}mp-camera', [TabletFilterController::class, 'byCameraMp'])
         ->name('filter.tablet.camera')
         ->where('mp', '[0-9]+');
+
+    // Network: {type}-tablets
+    Route::get('{type}-tablets', [TabletFilterController::class, 'byType'])
+        ->name('filter.tablet.type')
+        ->where('type', '4g|5g');
 
     // =========================================================================
     // Accessory Routes
