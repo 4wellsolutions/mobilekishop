@@ -37,13 +37,12 @@ class ViewServiceProvider extends ServiceProvider
                 self::$requestCountry = $countryQuery ?? Country::where('country_code', 'pk')->where('is_active', 1)->first();
 
                 // Detect category slug based on URL structure
-                // /ae/category/{slug} -> segment 3
-                // /category/{slug} -> segment 2
-                // /{brand}/{category_slug} (Legacy) -> segment 2 or 3
-
                 $categorySlug = null;
                 $segments = Request::segments();
                 $count = count($segments);
+
+                // Check if we are on the "all brands" page to avoid setting a default category
+                $isAllBrandsPage = (count($segments) >= 1 && $segments[0] === 'brands' && ($segments[1] ?? 'all') === 'all');
 
                 if ($isRegional) {
                     if ($count >= 3 && $segments[1] === 'category') {
@@ -59,8 +58,12 @@ class ViewServiceProvider extends ServiceProvider
                     }
                 }
 
-                self::$requestCategory = Category::where('slug', $categorySlug)->first()
-                    ?? (isset($view->category) ? $view->category : Category::where('slug', 'mobile-phones')->first());
+                if ($isAllBrandsPage) {
+                    self::$requestCategory = null;
+                } else {
+                    self::$requestCategory = Category::where('slug', $categorySlug)->first()
+                        ?? (isset($view->category) ? $view->category : Category::where('slug', 'mobile-phones')->first());
+                }
 
                 self::$requestDataLoaded = true;
             }
@@ -113,7 +116,12 @@ class ViewServiceProvider extends ServiceProvider
             $data = compact('categories', 'brands', 'filters', 'priceRanges', 'country', 'category');
 
             foreach ($data as $key => $value) {
-                if (!isset($view->{$key})) {
+                // For category, we want to allow null if it was explicitly set to null (like in all brands page)
+                if ($key === 'category') {
+                    if (!array_key_exists('category', $view->getData())) {
+                        $view->with($key, $value);
+                    }
+                } elseif (!isset($view->{$key})) {
                     $view->with($key, $value);
                 }
             }

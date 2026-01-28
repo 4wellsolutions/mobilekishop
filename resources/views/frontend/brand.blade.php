@@ -50,7 +50,7 @@
                 @if($category)
                     @include("includes.sidebar_" . $category->slug, ['category' => $category])
                 @else
-                    @include("frontend.sidebar_widget")
+                    @include("includes.sidebar_mobile-phones")
                 @endif
             </div>
             <div class="col-12 col-md-8 col-lg-9 pe-1">
@@ -112,10 +112,10 @@
     @endif
     {
       "@type": "ListItem",
-      "position": {{ $category ? 3 : 2 }},
-       "name": "{{ Str::title($brand->name) }}",
-       "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $brand->slug . ($category ? '/' . $category->slug : '/all')) }}"
-     }
+      "position": {{ (isset($category) && $category) ? 3 : 2 }},
+      "name": "{{ Str::title($brand->name ?? 'Brand') }}",
+      "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
+    }
   ]
 }
 </script>

@@ -56,7 +56,7 @@
             @foreach($mksCategories as $mksCat)
                 <li class="mb-1">
                     <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
-                        class="{{ $category->slug == $mksCat['slug'] ? 'fw-bold text-dark' : 'text-muted' }} fs-14 text-decoration-none hover-link">
+                        class="{{ (isset($category) && $category && $category->slug == $mksCat['slug']) ? 'fw-bold text-dark' : 'text-muted' }} fs-14 text-decoration-none hover-link">
                         {{ $mksCat['name'] }}
                     </a>
                 </li>
@@ -94,18 +94,20 @@
     <div class="collapse show" id="brands-collapse">
         <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
             <ul class="list-unstyled pt-1">
-                @foreach($category->brands as $brand)
-                    <li class="mb-1">
-                        <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
-                            {{ $brand->name }}
-                        </a>
+                @if(isset($category) && $category)
+                    @foreach($category->brands as $brand)
+                        <li class="mb-1">
+                            <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
+                                class="text-muted fs-14 text-decoration-none hover-link">
+                                {{ $brand->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                    <li class="mt-1">
+                        <a href="{{ route('brands.by.category', $category->slug) }}"
+                            class="fw-bold text-dark fs-14 text-decoration-none hover-link">View All Brands</a>
                     </li>
-                @endforeach
-                <li class="mt-1">
-                    <a href="{{ route('brands.by.category', $category->slug) }}"
-                        class="fw-bold text-dark fs-14 text-decoration-none hover-link">View All Brands</a>
-                </li>
+                @endif
             </ul>
         </div>
     </div>

@@ -181,16 +181,28 @@ class FilterService
     }
 
     /**
-     * Get products by type (folding, flip)
+     * Get products by type (folding, flip, 4g, 5g)
      */
     public function getProductsByType(string $type): Builder
     {
+        $type = strtolower($type);
+
+        // Handle 4G/5G network technology
+        if (in_array($type, ['4g', '5g'])) {
+            $tech = strtoupper($type);
+            return Product::where('category_id', 1)
+                ->whereHas('attributes', function ($query) use ($tech) {
+                    $query->where('attribute_id', 36)
+                        ->where('value', 'like', "%{$tech}%");
+                })->with(['brand', 'category']);
+        }
+
         $typeMap = [
             'folding' => 265,
             'flip' => 264,
         ];
 
-        $attrId = $typeMap[strtolower($type)] ?? null;
+        $attrId = $typeMap[$type] ?? null;
 
         if (!$attrId) {
             abort(404, 'Invalid type parameter');

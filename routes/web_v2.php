@@ -175,7 +175,7 @@ $webRoutes = function () {
     // Folding/Flip: folding-mobile-phones, flip-mobile-phones
     Route::get('{type}-mobile-phones', [FilterController::class, 'byType'])
         ->name('filter.type')
-        ->where('type', 'folding|flip');
+        ->where('type', 'folding|flip|4g|5g');
 
     // Upcoming: up-coming-mobile-phones
     Route::get('up-coming-mobile-phones', [FilterController::class, 'upcoming'])

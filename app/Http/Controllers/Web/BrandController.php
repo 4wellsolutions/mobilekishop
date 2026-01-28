@@ -33,13 +33,12 @@ class BrandController extends Controller
     {
         $country = $request->attributes->get('country');
         $brandParam = $request->route('brand') ?: $request->route('slug');
-        $categorySlug = $request->route('category_slug') ?: $request->route('category');
+        $categorySlug = $request->route('categorySlug') ?: $request->route('category_slug') ?: $request->route('category');
 
-        // Handle Brand
         if ($brandParam instanceof Brand) {
             $brand = $brandParam;
         } else {
-            $brand = $this->brandService->getBrandBySlug($brandParam);
+            $brand = \App\Brand::whereSlug($brandParam)->first();
         }
 
         if (!$brand) {
@@ -68,7 +67,6 @@ class BrandController extends Controller
         // Generate meta
         $metas = $this->metaService->generateBrandMeta($brand, $category, $country);
 
-        // Handle AJAX
         if ($request->ajax()) {
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
@@ -84,6 +82,7 @@ class BrandController extends Controller
         $country = $request->attributes->get('country');
         $categorySlug = $request->route('category_slug') ?: 'all';
         $category = null;
+
 
         if ($categorySlug === 'all') {
             $metas = (object) [
@@ -101,6 +100,8 @@ class BrandController extends Controller
                     });
                 }
             ])->get();
+
+
             $brands = collect([]);
         } else {
             $category = Category::where("slug", $categorySlug)->firstOrFail();
