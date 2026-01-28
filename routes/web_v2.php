@@ -242,6 +242,21 @@ $webRoutes = function () {
         ->name('filter.smartwatch.price')
         ->where('amount', '[0-9]+');
 
+    // Chargers: usb-type-a-chargers, usb-type-c-chargers
+    Route::get('usb-type-{type}-chargers', [AccessoryController::class, 'chargersByPortType'])
+        ->name('filter.charger.port')
+        ->where('type', 'a|c');
+
+    // Chargers: {watt}watt-chargers
+    Route::get('{watt}watt-chargers', [AccessoryController::class, 'chargersByWatt'])
+        ->name('filter.charger.watt')
+        ->where('watt', '[0-9]+');
+
+    // Chargers: {watt}w-usb-type-c-chargers
+    Route::get('{watt}w-usb-type-c-chargers', [AccessoryController::class, 'chargersByWattAndPortType'])
+        ->name('filter.charger.watt_type')
+        ->where('watt', '[0-9]+');
+
     // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
     // We add a regex to ensure it doesn't match routes like 'category/xxx', 'product/xxx', etc.
     Route::get('{brand}/{product}', [ProductController::class, 'show'])

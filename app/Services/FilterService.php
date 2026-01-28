@@ -357,4 +357,70 @@ class FilterService
                 $query->where('attribute_id', $attrId);
             })->with(['brand', 'category']);
     }
+
+    /**
+     * Get chargers by port type (Attribute 315)
+     */
+    public function getChargersByPortType(string $portType): Builder
+    {
+        // Category 10 for Chargers
+        $tech = str_replace('-', ' ', $portType);
+        return Product::where('category_id', 10)
+            ->whereHas('attributes', function ($query) use ($tech) {
+                $query->where('attribute_id', 315)
+                    ->where('value', 'like', "%{$tech}%");
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get chargers by wattage (Attribute 323)
+     */
+    public function getChargersByWatt(int $watt): Builder
+    {
+        $watt_values = [0, 15, 20, 25, 35, 45, 65, 75, 100, 120, 150, 180, 200, 240];
+        $lowerWatt = $this->getLowerValue($watt, $watt_values);
+
+        return Product::where('category_id', 10)
+            ->whereHas('attributes', function ($query) use ($lowerWatt, $watt) {
+                $query->where('attribute_id', 323)
+                    ->whereBetween('value', [$lowerWatt, $watt]);
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get chargers by wattage and port type (USB Type C specific likely)
+     */
+    public function getChargersByWattAndPortType(int $watt, string $portType): Builder
+    {
+        $watt_values = [0, 30, 45, 60, 65, 67, 140];
+        $lowerWatt = $this->getLowerValue($watt, $watt_values);
+        $tech = str_replace('-', ' ', $portType);
+
+        return Product::where('category_id', 10)
+            ->whereHas('attributes', function ($query) use ($lowerWatt, $watt) {
+                $query->where('attribute_id', 323)
+                    ->whereBetween('value', [$lowerWatt, $watt]);
+            })
+            ->whereHas('attributes', function ($query) use ($tech) {
+                $query->where('attribute_id', 315)
+                    ->where('value', 'like', "%{$tech}%");
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Helper to get lower value for wattage range
+     */
+    protected function getLowerValue($value, $watt_values)
+    {
+        sort($watt_values);
+        foreach ($watt_values as $index => $watt) {
+            if ($watt >= $value) {
+                if ($index === 0 && $watt == $value) {
+                    return null;
+                }
+                return $watt_values[$index - 1] + 1;
+            }
+        }
+        return null;
+    }
 }

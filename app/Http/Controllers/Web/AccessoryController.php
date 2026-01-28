@@ -182,4 +182,118 @@ class AccessoryController extends Controller
 
         return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'filters'));
     }
+
+    /**
+     * Show chargers by port type (USB Type A/C)
+     */
+    public function chargersByPortType(Request $request)
+    {
+        $portType = $request->route('type');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getChargersByPortType($portType);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $typeName = Str::title(str_replace('-', ' ', $portType));
+        $metas = (object) [
+            'title' => "{$typeName} – Fast & Reliable Charging Adapters in {$country->country_name}",
+            'description' => "Discover {$typeName} designed for fast and efficient power delivery. Compatible with various devices for safe and reliable charging in {$country->country_name}.",
+            'canonical' => request()->fullUrl(),
+            'h1' => "{$typeName} in {$country->country_name}",
+            'name' => "{$typeName}"
+        ];
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(10); // Chargers
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show chargers by wattage
+     */
+    public function chargersByWatt(Request $request)
+    {
+        $watt = (int) $request->route('watt');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getChargersByWatt($watt);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $metas = (object) [
+            'title' => "{$watt}W Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
+            'description' => "Discover {$watt} Watt chargers designed for fast and efficient power delivery. Compatible with various devices for safe and reliable charging in {$country->country_name}.",
+            'canonical' => request()->fullUrl(),
+            'h1' => "{$watt}Watt Chargers in {$country->country_name}",
+            'name' => "{$watt}Watt Chargers"
+        ];
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(10); // Chargers
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show chargers by wattage and port type (combined)
+     */
+    public function chargersByWattAndPortType(Request $request)
+    {
+        $watt = (int) $request->route('watt');
+        $country = $request->attributes->get('country');
+        $portType = 'usb-type-c'; // Currently only Type C is used in specific watt routes in sidebar
+
+        $products = $this->filterService->getChargersByWattAndPortType($watt, $portType);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $typeName = Str::upper($watt) . 'W USB Type C';
+        $metas = (object) [
+            'title' => "{$typeName} Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
+            'description' => "Discover {$typeName} chargers designed for fast and efficient power delivery. Compatible with various devices for safe and reliable charging in {$country->country_name}.",
+            'canonical' => request()->fullUrl(),
+            'h1' => "{$typeName} Chargers in {$country->country_name}",
+            'name' => "{$typeName} Chargers"
+        ];
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(10); // Chargers
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
 }
