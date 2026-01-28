@@ -1,5 +1,5 @@
 ﻿@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
+  $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
 @extends($layout)
@@ -14,9 +14,9 @@
 
 @section("og_graph") @stop
 
-@section("noindex", )
+@section("noindex")
 @if(str_contains(URL::full(), '?page='))
-    <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex">
 @endif
 @stop
 @section("content")
@@ -63,48 +63,48 @@
 
 @section("style")
 <style type="text/css">
-    .filter-select {
-        height: 4rem !important;
-    }
+  .filter-select {
+    height: 4rem !important;
+  }
 
-    .icon-angle-right {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 15px !important;
-        padding-right: 12px !important;
-        padding-bottom: 3px !important;
-    }
+  .icon-angle-right {
+    background: #928989ad;
+    margin-left: 10px;
+    padding-left: 15px !important;
+    padding-right: 12px !important;
+    padding-bottom: 3px !important;
+  }
 
-    .icon-angle-left {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 12px !important;
-        padding-right: 15px !important;
-        padding-bottom: 3px !important;
-    }
+  .icon-angle-left {
+    background: #928989ad;
+    margin-left: 10px;
+    padding-left: 12px !important;
+    padding-right: 15px !important;
+    padding-bottom: 3px !important;
+  }
 
-    .select-filter:after {
-        margin-top: 8px !important;
-    }
+  .select-filter:after {
+    margin-top: 8px !important;
+  }
 
-    #sort_filter:after {
-        margin-top: -1px !important;
-    }
+  #sort_filter:after {
+    margin-top: -1px !important;
+  }
 
-    .fs-12 {
-        font-size: 12px !important;
-    }
+  .fs-12 {
+    font-size: 12px !important;
+  }
 
-    .fs-14 {
-        font-size: 14px !important;
-    }
+  .fs-14 {
+    font-size: 14px !important;
+  }
 
-    .fs-15 {
-        font-size: 15px !important;
-    }
+  .fs-15 {
+    font-size: 15px !important;
+  }
 
-    .fs-16 {
-        font-size: 16px !important;
-    }
+  .fs-16 {
+    font-size: 16px !important;
+  }
 </style>
 @stop

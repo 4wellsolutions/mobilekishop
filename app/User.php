@@ -56,11 +56,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Wishlist::class);
     }
-    public function Reviews()
+    public function reviews()
     {
         return $this->hasMany(Review::class);
     }
-    public function Ads()
+    public function ads()
     {
         return $this->hasMany(Ad::class);
     }

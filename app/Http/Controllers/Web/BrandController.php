@@ -7,7 +7,11 @@ use App\Services\CountryService;
 use App\Services\ProductService;
 use App\Services\BrandService;
 use App\Services\MetaService;
+use App\Category;
+use App\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Brand Controller - Handles brand listing and brand product pages
@@ -25,16 +29,14 @@ class BrandController extends Controller
     /**
      * Show products by brand
      */
-    public function show($countrySlug, $brand, $categorySlug = null, Request $request)
+    public function show(Request $request)
     {
         $country = $request->attributes->get('country');
+        $brandSlug = $request->route('slug') ?: $request->route('brand');
+        $categorySlug = $request->route('category_slug') ?: $request->route('category');
 
-        // Handle Brand (Model or String)
-        if (!($brand instanceof \App\Brand)) {
-            // If not bound (passed as string), fetch it
-            $brandSlug = $brand;
-            $brand = $this->brandService->getBrandBySlug($brandSlug);
-        }
+        // Handle Brand
+        $brand = $this->brandService->getBrandBySlug($brandSlug);
 
         if (!$brand) {
             abort(404);
@@ -68,5 +70,53 @@ class BrandController extends Controller
         }
 
         return view('frontend.brand', compact('products', 'brand', 'metas', 'category', 'country'));
+    }
+
+    /**
+     * Show all brands or brands by category
+     */
+    public function index(Request $request)
+    {
+        $country = $request->attributes->get('country');
+        $categorySlug = $request->route('category_slug') ?: 'all';
+        $category = null;
+
+        if ($categorySlug === 'all') {
+            $metas = (object) [
+                "title" => Str::title("All Brands Mobile Phones, Tablets, Smart Watches {$country->country_name}"),
+                "description" => "Get all the specifications, features, reviews, comparison, and price of All Mobile Phones Brands on the Mobilekishop in {$country->country_name}.",
+                "canonical" => URL::to("/brands/all"),
+                "h1" => "All Brands Mobile Phones in {$country->country_name}",
+                "name" => "All Brands"
+            ];
+            $categories = Category::with([
+                'brands' => function ($q) use ($country) {
+                    // Approximate logic from legacy: brands with active products in country
+                    $q->whereHas('products.variants', function ($qv) use ($country) {
+                        $qv->where('country_id', $country->id)->where('price', '>', 0);
+                    });
+                }
+            ])->get();
+            $brands = [];
+        } else {
+            $category = Category::where("slug", $categorySlug)->firstOrFail();
+            $categories = [];
+            $metas = (object) [
+                "title" => Str::title("Latest {$category->category_name} Brands Spec, Price in {$country->country_name}"),
+                "description" => "Get all the specifications, features, reviews, comparison, and price of All {$category->category_name} Brands on the Mobilekishop in {$country->country_name}.",
+                "canonical" => URL::to("/brands/{$category->slug}"),
+                "h1" => "{$category->category_name} Brands in {$country->country_name}",
+                "name" => "All Brands"
+            ];
+
+            $brands = Brand::whereHas('products', function ($query) use ($category, $country) {
+                $query->where('category_id', $category->id)
+                    ->whereHas('variants', function ($variantQuery) use ($country) {
+                        $variantQuery->where('country_id', $country->id)->where('price', '>', 0);
+                    });
+            })->get();
+        }
+
+        return view("frontend.brands", compact('brands', 'metas', 'category', 'country', 'categories'));
     }
 }

@@ -34,13 +34,13 @@ class Product extends Model
     protected $casts = [
         'release_date' => 'datetime',
     ];
-    public function Attributes()
+    public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'product_attributes')
             ->withPivot('value')
             ->withTimestamps();
     }
-    public function Variants()
+    public function variants()
     {
         return $this->belongsToMany(Variant::class, 'product_variants')
             ->withPivot('price', 'country_id');
@@ -61,19 +61,19 @@ class Product extends Model
     //     $attribute = $this->attributes()->where('name', $attributeName)->first();
     //     return $attribute ? $attribute->pivot->value : null;
     // }
-    public function Brand()
+    public function brand()
     {
         return $this->belongsTo(Brand::class, "brand_id");
     }
-    public function Category()
+    public function category()
     {
         return $this->belongsTo(Category::class, "category_id");
     }
-    public function Images()
+    public function images()
     {
         return $this->hasMany(Image::class);
     }
-    public function Reviews()
+    public function reviews()
     {
         $Reviews = $this->hasMany(Review::class);
         $Reviews->getQuery()->where('is_active', 1);

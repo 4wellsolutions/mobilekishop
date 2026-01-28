@@ -18,7 +18,7 @@
     $nowDate = Carbon\Carbon::now();
     $price_in_pkr = $product->getFirstVariantPriceForCountry($product->id, $country->id);
 
-    $attributes = $product->Attributes()->get()->keyBy(function ($item) {
+    $attributes = $product->attributes()->get()->keyBy(function ($item) {
         return strtolower(str_replace([' ', '(', ')'], ['_', '', ''], $item->label));
     });
 

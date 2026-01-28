@@ -14,7 +14,7 @@
 
 @section("og_graph") @stop
 
-@section("noindex", )
+@section("noindex")
 @if(str_contains(URL::full(), '?page='))
     <meta name="robots" content="noindex">
 @endif

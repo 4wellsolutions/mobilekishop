@@ -108,18 +108,183 @@ class MetaService
         return (object) [
             'title' => "Search for {$query} Price in {$country->country_name}",
             'description' => "Search the mobile phones for {$query} on the Mobilekishop with specifications, features, reviews, comparison, and price in {$country->country_name}.",
-            'canonical' => route('search'),
+            'canonical' => url()->current(),
             'h1' => "Search for {$query}",
             'name' => "Search for {$query}"
         ];
     }
 
     /**
-     * Alias for generatePriceFilterMeta for better naming consistency
+     * Brand + Price Filter Meta
      */
-    public function generateForPriceFilter(int $amount, Country $country, ?Category $category = null): object
+    public function generateBrandPriceFilterMeta(?Brand $brand, int $amount, Country $country): object
     {
-        return $this->generatePriceFilterMeta($amount, $country, $category);
+        $brandName = $brand ? $brand->name : 'Mobile';
+        return (object) [
+            'title' => "Latest {$brandName} Mobile Phones Under {$country->currency} {$amount} Price in {$country->country_name}",
+            'description' => "Find the latest {$brandName} mobile phones under {$country->currency} {$amount} on the Mobilekishop with specifications, features, reviews, comparison, and price in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$brandName} Mobile Phones Under {$country->currency} {$amount} in {$country->country_name}",
+            'name' => "{$brandName} Mobile Phones under {$amount}"
+        ];
+    }
+
+    /**
+     * RAM Filter Meta
+     */
+    public function generateRamFilterMeta(int $ram, Country $country): object
+    {
+        return (object) [
+            'title' => "Best {$ram}GB RAM Mobile Phones in {$country->country_name} - Prices & Specs",
+            'description' => "Explore information about {$ram}GB RAM mobile phones in {$country->country_name}. Compare prices, specs, and features.",
+            'canonical' => url()->current(),
+            'h1' => "{$ram}GB RAM Mobile Phones in {$country->country_name}",
+            'name' => "{$ram}GB RAM Mobiles"
+        ];
+    }
+
+    /**
+     * ROM Filter Meta
+     */
+    public function generateRomFilterMeta(int $rom, Country $country): object
+    {
+        return (object) [
+            'title' => "Best {$rom}GB Storage Mobile Phones in {$country->country_name}",
+            'description' => "Find mobile phones with {$rom}GB internal storage in {$country->country_name}. Compare latest prices and full specifications.",
+            'canonical' => url()->current(),
+            'h1' => "{$rom}GB Storage Mobile Phones in {$country->country_name}",
+            'name' => "{$rom}GB Storage Mobiles"
+        ];
+    }
+
+    /**
+     * RAM + ROM Combo Meta
+     */
+    public function generateRamRomFilterMeta(int $ram, int $rom, Country $country): object
+    {
+        return (object) [
+            'title' => "{$ram}GB RAM & {$rom}GB ROM Mobile Phones in {$country->country_name}",
+            'description' => "Explore mobile phones featuring {$ram}GB RAM and {$rom}GB internal storage. Compare latest prices and specs in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$ram}GB + {$rom}GB Mobile Phones in {$country->country_name}",
+            'name' => "{$ram}GB + {$rom}GB Mobiles"
+        ];
+    }
+
+    /**
+     * Screen Size Filter Meta
+     */
+    public function generateScreenFilterMeta(float $size, Country $country): object
+    {
+        return (object) [
+            'title' => "Mobile Phones with Screen Size up to {$size} inches in {$country->country_name}",
+            'description' => "Find smartphones with display sizes around {$size} inches. Compare screen types, resolutions, and prices in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$size}\" Screen Mobile Phones in {$country->country_name}",
+            'name' => "{$size}\" Display Mobiles"
+        ];
+    }
+
+    /**
+     * Camera Count Filter Meta
+     */
+    public function generateCameraCountFilterMeta(string $parameter, Country $country): object
+    {
+        $name = ucfirst($parameter);
+        return (object) [
+            'title' => "Best {$name} Camera Mobile Phones in {$country->country_name}",
+            'description' => "Explore mobile phones with {$parameter} cameras. Compare photography features and prices in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$name} Camera Phones in {$country->country_name}",
+            'name' => "{$name} Camera Mobiles"
+        ];
+    }
+
+    /**
+     * Camera MP Filter Meta
+     */
+    public function generateCameraMpFilterMeta(int $mp, Country $country): object
+    {
+        return (object) [
+            'title' => "{$mp}MP Camera Mobile Phones in {$country->country_name} - High Res Photography",
+            'description' => "Find smartphones with {$mp}MP cameras in {$country->country_name}. Compare camera specs, sensors, and latest prices.",
+            'canonical' => url()->current(),
+            'h1' => "{$mp}MP Camera Phones in {$country->country_name}",
+            'name' => "{$mp}MP Camera Mobiles"
+        ];
+    }
+
+    /**
+     * Processor Filter Meta
+     */
+    public function generateProcessorFilterMeta(string $processor, Country $country): object
+    {
+        $processor = ucfirst($processor);
+        return (object) [
+            'title' => "Best {$processor} Mobile Phones in {$country->country_name}",
+            'description' => "Explore smartphones powered by {$processor}. Compare specs and prices in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$processor} Mobile Phones in {$country->country_name}",
+            'name' => "{$processor} Mobile Phones"
+        ];
+    }
+
+    /**
+     * Type (Folding/Flip) Filter Meta
+     */
+    public function generateTypeFilterMeta(string $type, Country $country): object
+    {
+        $typeName = ucfirst($type);
+        return (object) [
+            'title' => "Best {$typeName} Mobile Phones in {$country->country_name}",
+            'description' => "Explore {$typeName} smartphones. Compare specs, features, and prices in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$typeName} Mobile Phones in {$country->country_name}",
+            'name' => "{$typeName} Mobile Phones"
+        ];
+    }
+
+    /**
+     * Curved Filter Meta
+     */
+    public function generateCurvedFilterMeta(?Brand $brand, Country $country): object
+    {
+        $brandName = $brand ? $brand->name : 'Curved Display';
+        return (object) [
+            'title' => "{$brandName} Mobile Phones in {$country->country_name}",
+            'description' => "Explore {$brandName} smartphones with curved displays. Compare specs, features, and prices in {$country->country_name}.",
+            'canonical' => url()->current(),
+            'h1' => "{$brandName} Phones in {$country->country_name}",
+            'name' => "{$brandName} Phones"
+        ];
+    }
+
+    /**
+     * Upcoming Meta
+     */
+    public function generateUpcomingMeta(Country $country): object
+    {
+        return (object) [
+            'title' => "Upcoming Mobile Phones in {$country->country_name} - Launch Dates & Specs",
+            'description' => "Stay updated with upcoming mobile phone launches in {$country->country_name}. Get expected prices, specifications, and release dates.",
+            'canonical' => url()->current(),
+            'h1' => "Upcoming Mobile Phones in {$country->country_name}",
+            'name' => "Upcoming Mobile Phones"
+        ];
+    }
+
+    /**
+     * Home Page Meta
+     */
+    public function generateHomeMeta(Country $country): object
+    {
+        return (object) [
+            'title' => "Mobile phones prices in {$country->country_name} - Specifications & Reviews",
+            'description' => "Mobilekishop is the best mobile website that provides the latest mobile prices in {$country->country_name} with specifications, features, reviews and comparison.",
+            'canonical' => url('/'),
+            'h1' => "Mobile Ki Shop",
+            'name' => "Home"
+        ];
     }
 }
 

@@ -13,20 +13,38 @@ class FilterService
      */
     public function getProductsUnderPrice(int $amount, string $countryCode): Builder
     {
-        // ID 1 for Mobile Phones
+        // Category 1 for Mobile Phones
         return Product::where('category_id', 1)
-            ->whereHas('countries', function ($query) use ($amount, $countryCode) {
-                $query->where('country_code', $countryCode)
-                    ->where('product_variants.price', '<=', $amount)
-                    ->where('product_variants.price', '>', 0);
+            ->whereHas('variants', function ($query) use ($amount, $countryCode) {
+                $query->where('country_id', function ($sub) use ($countryCode) {
+                    $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
+                })
+                    ->where('price', '<=', $amount)
+                    ->where('price', '>', 0);
             })
             ->with([
-                'countries' => function ($query) use ($countryCode) {
-                    $query->where('country_code', $countryCode);
-                },
                 'brand',
                 'category'
             ]);
+    }
+
+    /**
+     * Get products by brand and price
+     */
+    public function getProductsByBrandAndPrice(string $brandSlug, int $amount, string $countryCode): Builder
+    {
+        return Product::where('category_id', 1)
+            ->whereHas('brand', function ($query) use ($brandSlug) {
+                $query->where('slug', $brandSlug);
+            })
+            ->whereHas('variants', function ($query) use ($amount, $countryCode) {
+                $query->where('country_id', function ($sub) use ($countryCode) {
+                    $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
+                })
+                    ->where('price', '<=', $amount)
+                    ->where('price', '>', 0);
+            })
+            ->with(['brand', 'category']);
     }
 
     /**
@@ -38,7 +56,7 @@ class FilterService
             ->whereHas('attributes', function ($query) use ($ram) {
                 $query->where('attribute_id', 76)
                     ->where('value', 'like', $ram . 'GB');
-            })->with(['variants', 'brand', 'category']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -50,7 +68,7 @@ class FilterService
             ->whereHas('attributes', function ($query) use ($rom, $unit) {
                 $query->where('attribute_id', 77)
                     ->where('value', 'like', $rom . strtoupper($unit));
-            })->with(['countries', 'brand', 'category']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -65,7 +83,7 @@ class FilterService
             })->whereHas('attributes', function ($query) use ($rom) {
                 $query->where('attribute_id', 77)
                     ->where('value', $rom . 'GB');
-            })->with(['variants', 'brand', 'category']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -78,20 +96,20 @@ class FilterService
             5 => [4.1, 5],
             6 => [5.1, 6],
             7 => [6.1, 7],
-            8 => [7.1, 8],
+            8 => [7.1, 24], // 8+ means up to very large
         ];
 
-        if (!array_key_exists($maxSize, $ranges)) {
+        if (!array_key_exists((int) $maxSize, $ranges)) {
             abort(404, 'Invalid screen size');
         }
 
-        $range = $ranges[$maxSize];
+        $range = $ranges[(int) $maxSize];
 
         return Product::where('category_id', 1)
             ->whereHas('attributes', function ($query) use ($range) {
                 $query->where('attribute_id', 75)
                     ->whereBetween('value', $range);
-            })->with(['variants', 'brand', 'category']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -99,15 +117,14 @@ class FilterService
      */
     public function getProductsByCameraCount(string $parameter): Builder
     {
-        // Parameter can be like "dual-camera", "triple-camera", "quad-camera"
         $cameraMap = [
-            'dual-camera' => 2,
-            'triple-camera' => 3,
-            'quad-camera' => 4,
-            'penta-camera' => 5,
+            'dual' => 2,
+            'triple' => 3,
+            'quad' => 4,
+            'penta' => 5,
         ];
 
-        $count = $cameraMap[$parameter] ?? null;
+        $count = $cameraMap[strtolower($parameter)] ?? null;
 
         if (!$count) {
             abort(404, 'Invalid camera parameter');
@@ -115,9 +132,9 @@ class FilterService
 
         return Product::where('category_id', 1)
             ->whereHas('attributes', function ($query) use ($count) {
-                $query->where('attribute_id', 74) // Legacy ID 74
+                $query->where('attribute_id', 74)
                     ->where('value', $count);
-            })->with(['variants']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -127,9 +144,21 @@ class FilterService
     {
         return Product::where('category_id', 1)
             ->whereHas('attributes', function ($query) use ($mp) {
-                $query->where('attribute_id', 73) // Legacy ID 73
-                    ->where('value', $mp); // Exact match as per legacy
-            })->with(['variants']);
+                $query->where('attribute_id', 73)
+                    ->where('value', $mp);
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get products by processor types
+     */
+    public function getProductsByProcessor(string $processor): Builder
+    {
+        return Product::where('category_id', 1)
+            ->whereHas('attributes', function ($query) use ($processor) {
+                $query->where('attribute_id', 34)
+                    ->where('value', 'like', "%" . $processor . "%");
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -137,45 +166,77 @@ class FilterService
      */
     public function getCurvedScreensByBrand(string $brandSlug): Builder
     {
-        return Product::where('category_id', 1)
-            ->whereHas('brand', function ($query) use ($brandSlug) {
-                $query->where('slug', $brandSlug);
-            })->whereHas('attributes', function ($query) {
-                $query->where('attribute_id', 263) // Legacy ID 263
-                    ->where('value', 1); // Legacy value 1
-            })->with(['variants', 'brand']);
+        $query = Product::where('category_id', 1)
+            ->whereHas('attributes', function ($query) {
+                $query->where('attribute_id', 263)->where('value', 1);
+            });
+
+        if ($brandSlug !== 'all') {
+            $query->whereHas('brand', function ($q) use ($brandSlug) {
+                $q->where('slug', $brandSlug);
+            });
+        }
+
+        return $query->with(['brand', 'category']);
     }
 
     /**
-     * Get all curved screen phones
+     * Get products by type (folding, flip)
      */
-    public function getCurvedScreens(): Builder
+    public function getProductsByType(string $type): Builder
+    {
+        $typeMap = [
+            'folding' => 265,
+            'flip' => 264,
+        ];
+
+        $attrId = $typeMap[strtolower($type)] ?? null;
+
+        if (!$attrId) {
+            abort(404, 'Invalid type parameter');
+        }
+
+        return Product::where('category_id', 1)
+            ->whereHas('attributes', function ($query) use ($attrId) {
+                $query->where('attribute_id', $attrId)
+                    ->where('value', 1);
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get upcoming products
+     */
+    public function getUpcomingProducts(): Builder
     {
         return Product::where('category_id', 1)
             ->whereHas('attributes', function ($query) {
-                $query->where('attribute_id', 263)
-                    ->where('value', 1);
-            })->with(['variants', 'brand']);
+                $query->where('attribute_id', 80)
+                    ->where('value', '>', now());
+            })->with(['brand', 'category']);
     }
 
     /**
-     * Get products by brand and price
+     * Get power banks by capacity (mAh)
      */
-    public function getProductsByBrandAndPrice(string $brandSlug, int $amount, string $countryCode): Builder
+    public function getPowerBanksByCapacity(int $mah): Builder
     {
-        return Product::where('category_id', 1)
-            ->whereHas('brand', function ($query) use ($brandSlug) {
-                $query->where('slug', $brandSlug);
-            })->whereHas('variants', function ($query) use ($amount, $countryCode) {
-                $query->where('country_code', $countryCode)
-                    ->where('price', '<=', $amount)
-                    ->where('price', '>', 0);
-            })->with([
-                    'variants' => function ($query) use ($countryCode) {
-                        $query->where('country_code', $countryCode);
-                    },
-                    'brand'
-                ]);
+        return Product::where('category_id', 9)
+            ->whereHas('attributes', function ($query) use ($mah) {
+                $query->where('attribute_id', 302)
+                    ->where('value', 'like', "%" . $mah . "%");
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get phone covers by model slug
+     */
+    public function getPhoneCoversByModel(string $slug): Builder
+    {
+        return Product::where('category_id', 8)
+            ->whereHas('attributes', function ($query) use ($slug) {
+                $query->where('attribute_id', 312)
+                    ->where('value', $slug);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -183,12 +244,11 @@ class FilterService
      */
     public function getTabletsByRam(int $ram): Builder
     {
-        // Legacy ID 3 for Tablets (Corrected from 2)
         return Product::where('category_id', 3)
             ->whereHas('attributes', function ($query) use ($ram) {
-                $query->where('attribute_id', 239) // ID 239 for tablet RAM from legacy code
+                $query->where('attribute_id', 239)
                     ->where('value', 'like', $ram . 'GB');
-            })->with(['variants']);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -198,52 +258,24 @@ class FilterService
     {
         return Product::where('category_id', 3)
             ->whereHas('attributes', function ($query) use ($rom) {
-                $query->where('attribute_id', 77) // Verify if 77 is correct for tablets? Legacy code didn't show getTabletsByRom but likely same.
+                $query->where('attribute_id', 77)
                     ->where('value', 'like', $rom . 'GB');
-            })->with(['variants']);
+            })->with(['brand', 'category']);
     }
 
     /**
-     * Get tablets by price
+     * Get tablets under price
      */
-    public function getTabletsUnderPrice(int $amount, int $countryId): Builder
+    public function getTabletsUnderPrice(int $amount, string $countryCode): Builder
     {
         return Product::where('category_id', 3)
-            ->whereHas('variants', function ($query) use ($amount, $countryId) {
-                $query->where('product_variants.country_id', $countryId)
-                    ->where('product_variants.price', '<=', $amount)
-                    ->where('product_variants.price', '>', 0);
-            })->with([
-                    'variants' => function ($query) use ($countryId) {
-                        $query->where('product_variants.country_id', $countryId);
-                    },
-                    'brand',
-                    'category'
-                ]);
-    }
-
-    /**
-     * Get tablets by screen size
-     */
-    public function getTabletsByScreenSize(float $inch): Builder
-    {
-        return Product::where('category_id', 3)
-            ->whereHas('attributes', function ($query) use ($inch) {
-                $query->where('attribute_id', 75)
-                    ->where('value', '>=', $inch);
-            })->with(['variants']);
-    }
-
-    /**
-     * Get tablets by camera megapixels
-     */
-    public function getTabletsByCameraMp(int $mp): Builder
-    {
-        return Product::where('category_id', 3)
-            ->whereHas('attributes', function ($query) use ($mp) {
-                $query->where('attribute_id', 79)
-                    ->where('value', '>=', $mp);
-            })->with(['variants']);
+            ->whereHas('variants', function ($query) use ($amount, $countryCode) {
+                $query->where('country_id', function ($sub) use ($countryCode) {
+                    $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
+                })
+                    ->where('price', '<=', $amount)
+                    ->where('price', '>', 0);
+            })->with(['brand', 'category']);
     }
 
     /**
@@ -251,52 +283,28 @@ class FilterService
      */
     public function getSmartWatchesUnderPrice(int $amount, string $countryCode): Builder
     {
-        // Legacy ID 2 for Smart Watches (Corrected from 3)
         return Product::where('category_id', 2)
             ->whereHas('variants', function ($query) use ($amount, $countryCode) {
-                $query->where('country_code', $countryCode)
+                $query->where('country_id', function ($sub) use ($countryCode) {
+                    $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
+                })
                     ->where('price', '<=', $amount)
                     ->where('price', '>', 0);
-            })->with([
-                    'variants' => function ($query) use ($countryCode) {
-                        $query->where('country_code', $countryCode);
-                    }
-                ]);
+            })->with(['brand', 'category']);
     }
 
     /**
-     * Get upcoming/unreleased products
+     * Get phone covers by brand and model slug
      */
-    public function getUpcomingProducts(): Builder
+    public function getPhoneCoversByBrand(string $brandSlug, string $modelSlug): Builder
     {
-        return Product::where('status', 'upcoming')
-            ->orWhere('release_date', '>', now())
-            ->with(['variants', 'brand']);
-    }
-
-    /**
-     * Get power banks by capacity (mAh)
-     */
-    public function getPowerBanksByCapacity(int $mah): Builder
-    {
-        // Legacy ID 9 for Power Banks
-        return Product::where('category_id', 9)
-            ->whereHas('attributes', function ($query) use ($mah) {
-                $query->where('attribute_id', 302)
-                    ->where('value', 'like', "%" . $mah . "%");
-            })->with(['variants']);
-    }
-
-    /**
-     * Get phone covers by model slug
-     */
-    public function getPhoneCoversByModel(string $slug): Builder
-    {
-        // Legacy ID 8 for Phone Covers
         return Product::where('category_id', 8)
-            ->whereHas('attributes', function ($query) use ($slug) {
-                $query->where('attribute_id', 312)
-                    ->where('value', $slug);
-            })->with(['variants']);
+            ->whereHas('brand', function ($q) use ($brandSlug) {
+                $q->where('slug', $brandSlug);
+            })
+            ->whereHas('attributes', function ($q) use ($modelSlug) {
+                $q->where('attribute_id', 312)
+                    ->where('value', $modelSlug);
+            })->with(['brand', 'category']);
     }
 }

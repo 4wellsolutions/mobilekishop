@@ -9,7 +9,9 @@ use App\Http\Controllers\Web\{
     SearchController,
     FilterController,
     TabletFilterController,
-    AccessoryController
+    AccessoryController,
+    HomeController,
+    SitemapController
 };
 
 
@@ -45,33 +47,37 @@ Route::bind('product', function ($value) {
 
 // Shared Routing Logic Closure
 $webRoutes = function () {
-    // Product details
-    // Product details
-    // Product details
-    Route::get('product/{product}', function (\Illuminate\Http\Request $request) {
-        $params = $request->route()->parameters();
-        $product = $params['product'] ?? null;
-        $countryCode = $params['country_code'] ?? null;
+    // Home
+    Route::get('/', [HomeController::class, 'index'])->name('index');
 
-        $controller = app(ProductController::class);
-        return $controller->show($countryCode, $product, $request);
-    })->name('product.show');
+    // Static Pages
+    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
+    Route::get('/terms-and-conditions', [HomeController::class, 'termsConditions'])->name('terms.conditions');
+    Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
+
+    // Search
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+    // Comparison
+    Route::get('/comparison', [ComparisonController::class, 'index'])->name('comparison');
+    Route::get('/compare/{slug}', [ComparisonController::class, 'show'])->name('compare');
+
+    // Product details
+    Route::get('product/{product}', [ProductController::class, 'show'])->name('product.show');
+    Route::get('products-show/{id}', [ProductController::class, 'getRedirect'])->name('product.redirect');
+    Route::get('product/autocomplete', [ProductController::class, 'autocomplete'])->name('product.autocomplete');
+    Route::get('mobile/embed/{product}', [ProductController::class, 'showEmbed'])->name('product.embed');
+    Route::get('mobile/embeds/{product}', [ProductController::class, 'showEmbedWithButton'])->name('product.embed.button');
+
+
 
     // Categories
-    Route::get('category/{category}', [CategoryController::class, 'show'])
-        ->name('category.show');
+    Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show');
 
     // Brands
-    Route::get('brand/{brand}/{categorySlug?}', function (\Illuminate\Http\Request $request) {
-        $params = $request->route()->parameters();
-        $brand = $params['brand'] ?? null;
-        $categorySlug = $params['categorySlug'] ?? null;
-        $countryCode = $params['country_code'] ?? null;
-
-        $controller = app(BrandController::class);
-        // Map arguments correctly: $countrySlug, $brand, $categorySlug, $request
-        return $controller->show($countryCode, $brand, $categorySlug, $request);
-    })->name('brand.show');
+    Route::get('brand/{brand}/{categorySlug?}', [BrandController::class, 'show'])->name('brand.show');
+    Route::get('brands/{category_slug?}', [BrandController::class, 'index'])->name('brands.by.category');
 
     // Comparisons
     Route::get('compare/{slug}', [ComparisonController::class, 'show'])
@@ -82,6 +88,21 @@ $webRoutes = function () {
     // Search
     Route::get('search', [SearchController::class, 'search'])
         ->name('search');
+
+    // Sitemaps
+    Route::get('html-sitemap', [SitemapController::class, 'htmlSitemap'])->name('html.sitemap');
+    Route::get('sitemap.xml', [SitemapController::class, 'serveSitemap'])->name('sitemap.main');
+    Route::get('sitemaps/{sitemap}', [SitemapController::class, 'serveSitemap'])->name('sitemap.file');
+    Route::get('sitemap-{sitemap}', [SitemapController::class, 'serveSitemap'])->name('sitemap.file.prefixed');
+
+    Route::get('sponsor', function () {
+        return view('frontend.new.sponsor');
+    })->name('sponsor');
+
+    // POST Actions
+    Route::post('review', [HomeController::class, 'reviewPost'])->name('review.post');
+    Route::post('wishlist', [HomeController::class, 'wishlistPost'])->name('wishlist.post');
+    Route::post('contact', [HomeController::class, 'contactPost'])->name('contact.post');
 
     // =========================================================================
     // Filter Routes (Mobiles)
@@ -140,9 +161,19 @@ $webRoutes = function () {
         ->name('filter.curved.brand')
         ->where('brandSlug', '[a-z0-9-]+');
 
+    // Folding/Flip: folding-mobile-phones, flip-mobile-phones
+    Route::get('{type}-mobile-phones', [FilterController::class, 'byType'])
+        ->name('filter.type')
+        ->where('type', 'folding|flip');
+
     // Upcoming: up-coming-mobile-phones
     Route::get('up-coming-mobile-phones', [FilterController::class, 'upcoming'])
         ->name('filter.upcoming');
+
+    // Processor filters: {processor}-mobile-phones
+    Route::get('{processor}-mobile-phones', [FilterController::class, 'byProcessor'])
+        ->name('filter.processor')
+        ->where('processor', 'snapdragon-[a-z0-9-]+|mediatek|exynos|kirin|google-tensor');
 
     // =========================================================================
     // Tablet Filter Routes
@@ -186,10 +217,16 @@ $webRoutes = function () {
     Route::get('phone-covers/{slug}', [AccessoryController::class, 'phoneCoversByModel'])
         ->name('filter.phonecover.model');
 
+    Route::get('phone-covers/{brand}/{slug}', [AccessoryController::class, 'phoneCoversByBrand'])
+        ->name('filter.phonecover.brand');
+
     // Smart Watches: smart-watches-under-{amount}
     Route::get('smart-watches-under-{amount}', [AccessoryController::class, 'smartWatchesUnderPrice'])
         ->name('filter.smartwatch.price')
         ->where('amount', '[0-9]+');
+
+    // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
+    Route::get('{brand}/{product}', [ProductController::class, 'show'])->name('product.show.legacy');
 };
 
 // 1. Default Country Routes (No Prefix) - Matches 'domain.com/path'

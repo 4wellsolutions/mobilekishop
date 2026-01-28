@@ -45,7 +45,7 @@
     <div class="collapse show" id="brands-collapse">
         <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
             <ul class="list-unstyled pt-1">
-                @foreach($brands as $brand)
+                @foreach($category->brands as $brand)
                     <li class="mb-1">
                         <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
                             class="text-muted fs-14 text-decoration-none hover-link">

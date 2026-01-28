@@ -22,9 +22,10 @@ class ComparisonController extends Controller
     /**
      * Show comparison page
      */
-    public function show(string $slug, Request $request)
+    public function show(Request $request)
     {
         $country = $request->attributes->get('country');
+        $slug = $request->route('slug');
 
         // Get products for comparison
         $productsData = $this->comparisonService->getProductsForComparison($slug);

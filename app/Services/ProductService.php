@@ -15,7 +15,7 @@ class ProductService
      */
     public function getProductsByCategory(Category $category, Country $country, array $filters = []): Builder
     {
-        $products = Product::where('category_id', $category->id)
+        $products = Product::query()->where('category_id', $category->id)
             ->whereHas('variants', function ($query) use ($country) {
                 $query->where('country_id', $country->id)
                     ->where('price', '>', 0);
@@ -39,7 +39,7 @@ class ProductService
      */
     public function getProductsByBrand(Brand $brand, Country $country, ?Category $category = null, array $filters = []): Builder
     {
-        $products = Product::where('brand_id', $brand->id)
+        $products = Product::query()->where('brand_id', $brand->id)
             ->whereHas('variants', function ($query) use ($country) {
                 $query->where('country_id', $country->id)
                     ->where('price', '>', 0);
@@ -67,7 +67,7 @@ class ProductService
      */
     public function getProductsByPriceRange(Country $country, int $minPrice, int $maxPrice, ?Category $category = null, array $filters = []): Builder
     {
-        $products = Product::whereHas('variants', function ($query) use ($country, $minPrice, $maxPrice) {
+        $products = Product::query()->whereHas('variants', function ($query) use ($country, $minPrice, $maxPrice) {
             $query->where('country_id', $country->id)
                 ->whereBetween('price', [$minPrice, $maxPrice]);
         });
@@ -88,7 +88,7 @@ class ProductService
      */
     public function searchProducts(string $query, Country $country): Builder
     {
-        $products = Product::whereHas('variants', function ($q) use ($country) {
+        $products = Product::query()->whereHas('variants', function ($q) use ($country) {
             $q->where('country_id', $country->id)
                 ->where('price', '>', 0);
         });
@@ -99,7 +99,7 @@ class ProductService
     /**
      * Apply filters to product query
      */
-    public function applyFilters(Builder $products, $filters, int $countryId, ?int $minPrice = null, ?int $maxPrice = null): Builder
+    public function applyFilters(\Illuminate\Database\Eloquent\Builder $products, $filters, int $countryId, ?int $minPrice = null, ?int $maxPrice = null): \Illuminate\Database\Eloquent\Builder
     {
         // Attribute filters
         $attributeFilters = array_intersect_key($filters, array_flip([
@@ -111,38 +111,49 @@ class ProductService
         ]));
 
         foreach ($attributeFilters as $attribute => $value) {
-            if (!is_null($value)) {
-                $products = $products->whereHas('productAttributes', function ($query) use ($attribute, $value) {
-                    $query->whereHas('attribute', function ($subQuery) use ($attribute, $value) {
-                        if ($attribute === 'year') {
-                            $subQuery->where('name', 'release_date')
-                                ->whereYear('value', '=', $value);
-                        } else {
-                            $subQuery->where('name', $attribute)
-                                ->where('value', $value);
-                        }
-                    });
+            if (!empty($value)) {
+                $products = $products->whereHas('attributes', function ($query) use ($attribute, $value) {
+                    if ($attribute === 'year') {
+                        // For year, we actually want to filter Products directly by release_date column or use pivot
+                        // But since year is passed as a filter, let's assume it refers to release_date attribute
+                        $query->where('name', 'release_date')
+                            ->where('product_attributes.value', 'like', "%$value%");
+                    } else {
+                        $query->where('name', $attribute)
+                            ->where('product_attributes.value', $value);
+                    }
                 });
             }
         }
 
+        // Price filters if passed via request query instead of route
+        if (isset($filters['min']) || isset($filters['max'])) {
+            $min = (int) ($filters['min'] ?? 0);
+            $max = (int) ($filters['max'] ?? 1000000);
+            $products->whereHas('variants', function ($query) use ($countryId, $min, $max) {
+                $query->where('country_id', $countryId)->whereBetween('price', [$min, $max]);
+            });
+        }
+
         // Sorting
-        if (isset($filters['orderby'])) {
-            switch ($filters['orderby']) {
-                case 'price_asc':
-                    $products = $this->sortByPrice($products, $countryId, 'ASC', $minPrice, $maxPrice);
-                    break;
-                case 'price_desc':
-                    $products = $this->sortByPrice($products, $countryId, 'DESC', $minPrice, $maxPrice);
-                    break;
-                case 'new':
-                    $products = $products->orderBy('release_date', 'DESC');
-                    break;
-                default:
-                    $products = $products->orderBy('id', 'DESC');
-            }
+        $orderby = $filters['orderby'] ?? 'new';
+
+        if ($orderby == 'price_asc') {
+            $products->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                ->where('product_variants.country_id', $countryId)
+                ->where('product_variants.price', '>', 0)
+                ->orderBy('product_variants.price', 'ASC')
+                ->select('products.*');
+        } elseif ($orderby == 'price_desc') {
+            $products->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                ->where('product_variants.country_id', $countryId)
+                ->where('product_variants.price', '>', 0)
+                ->orderBy('product_variants.price', 'DESC')
+                ->select('products.*');
+        } elseif ($orderby == 'new') {
+            $products->orderBy('release_date', 'DESC');
         } else {
-            $products = $products->orderBy('id', 'DESC');
+            $products->orderBy('products.id', 'DESC');
         }
 
         return $products;

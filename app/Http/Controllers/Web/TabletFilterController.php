@@ -65,8 +65,9 @@ class TabletFilterController extends Controller
     /**
      * Show tablets by RAM
      */
-    public function byRam(Request $request, int $ram)
+    public function byRam(Request $request)
     {
+        $ram = (int) $request->route('ram');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getTabletsByRam($ram);
@@ -101,8 +102,9 @@ class TabletFilterController extends Controller
     /**
      * Show tablets by ROM/Storage
      */
-    public function byRom(Request $request, int $rom)
+    public function byRom(Request $request)
     {
+        $rom = (int) $request->route('rom');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getTabletsByRom($rom);
@@ -137,8 +139,9 @@ class TabletFilterController extends Controller
     /**
      * Show tablets by Screen Size
      */
-    public function byScreenSize(Request $request, int $inch)
+    public function byScreenSize(Request $request)
     {
+        $inch = (int) $request->route('inch');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getTabletsByScreenSize($inch);
@@ -173,8 +176,9 @@ class TabletFilterController extends Controller
     /**
      * Show tablets by Camera MP
      */
-    public function byCameraMp(Request $request, int $mp)
+    public function byCameraMp(Request $request)
     {
+        $mp = (int) $request->route('mp');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getTabletsByCameraMp($mp);

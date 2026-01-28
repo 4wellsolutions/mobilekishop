@@ -388,8 +388,9 @@ class HomeController extends Controller
 
         return response()->json(['success' => true, "message" => 'Review posted successfully and pending approval'], 200);
     }
-    public function showBrandsByCategory($category_slug)
+    public function showBrandsByCategory(Request $request, $category_slug = "all")
     {
+        $category_slug = $request->route('category_slug');
         $category = null;
         $country = app('App\Http\Controllers\CountryController')->getCountry();
         if ($category_slug == "all") {

@@ -9,10 +9,12 @@ class Attribute extends Model
 {
     use HasFactory;
     protected $fillable = ['name'];
-    public function Category(){
-    	return $this->belongsTo(Category::class);
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
-    public function Products(){
+    public function products()
+    {
         return $this->belongsToMany(Product::class, 'product_attributes')->withPivot('value');
     }
 }

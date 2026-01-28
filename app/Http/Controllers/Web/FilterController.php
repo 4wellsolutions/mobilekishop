@@ -13,40 +13,27 @@ use Illuminate\Http\Request;
 
 class FilterController extends Controller
 {
-    protected $countryService;
-    protected $filterService;
-    protected $metaService;
-    protected $productService;
-    protected $priceFilterService;
-
     public function __construct(
-        CountryService $countryService,
-        FilterService $filterService,
-        MetaService $metaService,
-        ProductService $productService,
-        PriceFilterService $priceFilterService
+        private FilterService $filterService,
+        private ProductService $productService,
+        private MetaService $metaService
     ) {
-        $this->countryService = $countryService;
-        $this->filterService = $filterService;
-        $this->metaService = $metaService;
-        $this->productService = $productService;
-        $this->priceFilterService = $priceFilterService;
     }
 
     /**
      * Show products under a specific price
      */
-    public function underPrice(Request $request, int $amount)
+    public function underAmount(Request $request)
     {
+        $amount = (int) $request->route('price');
         $country = $request->attributes->get('country');
-        $countryCode = $country->country_code;
         $filters = collect($request->input('filter', [])); // Pass as collection
         if ($filters->isEmpty() && $request->has('min')) {
             $filters = collect($request->all());
         }
 
         // Get products
-        $products = $this->filterService->getProductsUnderPrice($amount, $countryCode);
+        $products = $this->filterService->getProductsUnderPrice($amount, $country->country_code);
 
         // Apply additional filters if present
         if ($request->has('filter')) {
@@ -64,10 +51,7 @@ class FilterController extends Controller
         }
 
         // Get metadata
-        $metas = $this->metaService->generateForPriceFilter($amount, $country);
-
-        // Get price slabs for sidebar
-        $priceSlabs = $this->priceFilterService->getPriceSlabsForCountry($countryCode);
+        $metas = $this->metaService->generatePriceFilterMeta($amount, $country);
 
         // Paginate
         $products = $products->simplePaginate(32);
@@ -76,14 +60,47 @@ class FilterController extends Controller
         // Pass filters explicitly
         $filters = collect($request->query());
 
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'priceSlabs', 'filters'));
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show products by brand and under price
+     */
+    public function brandUnderAmount(Request $request)
+    {
+        $brandSlug = $request->route('brand');
+        $amount = (int) $request->route('price');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getProductsByBrandAndPrice($brandSlug, $amount, $country->country_code);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $brand = \App\Brand::whereSlug($brandSlug)->first();
+        $metas = $this->metaService->generateBrandPriceFilterMeta($brand, $amount, $country);
+        $products = $products->simplePaginate(32);
+        $category = Category::find(1);
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'filters'));
     }
 
     /**
      * Show products by RAM size
      */
-    public function byRam(Request $request, int $ram)
+    public function underRam(Request $request)
     {
+        $ram = (int) $request->route('ram');
         $country = $request->attributes->get('country');
 
         // Get products
@@ -104,13 +121,7 @@ class FilterController extends Controller
         }
 
         // Metadata
-        $metas = (object) [
-            'title' => "Best {$ram}GB RAM Smartphones in {$country->country_name}: Prices, Specs & Deals",
-            'description' => "Explore top {$ram}GB Memory smartphones on MobileKiShop. Compare specs, features, and prices in {$country->country_name}. Read user reviews and find the best deals. Shop smart today!",
-            'canonical' => request()->fullUrl(),
-            'h1' => "All {$ram}GB RAM Mobile Phones Price in {$country->country_name}",
-            'name' => "Mobile phones with {$ram}GB RAM"
-        ];
+        $metas = $this->metaService->generateRamFilterMeta($ram, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -122,12 +133,12 @@ class FilterController extends Controller
     /**
      * Show products by ROM/Storage size
      */
-    public function byRom(Request $request, int $rom, string $unit = 'GB')
+    public function underRom(Request $request)
     {
+        $rom = (int) $request->route('rom');
         $country = $request->attributes->get('country');
-        $unit = strtoupper($unit);
 
-        $products = $this->filterService->getProductsByRom($rom, $unit);
+        $products = $this->filterService->getProductsByRom($rom);
 
         if ($request->has('filter')) {
             $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
@@ -141,26 +152,22 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $metas = (object) [
-            'title' => "Latest {$rom}{$unit} Storage Mobile Phones Price in {$country->country_name}",
-            'description' => "Discover top {$rom}{$unit} storage smartphones on MobileKiShop. Compare specs, features, and prices in {$country->country_name}. Read expert reviews and make an informed choice. Shop now!",
-            'canonical' => request()->fullUrl(),
-            'h1' => "Best {$rom}{$unit} Storage Smartphones in {$country->country_name}: Top Picks & Deals",
-            'name' => "Mobile phones with {$rom}{$unit} Storage"
-        ];
+        $metas = $this->metaService->generateRomFilterMeta($rom, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
         $filters = collect($request->query());
 
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'rom', 'filters'));
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
     }
 
     /**
      * Show products by RAM and ROM combination
      */
-    public function ramRomCombo(Request $request, int $ram, int $rom)
+    public function combinationRamRom(Request $request)
     {
+        $ram = (int) $request->route('ram');
+        $rom = (int) $request->route('rom');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByRamRom($ram, $rom);
@@ -177,13 +184,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $metas = (object) [
-            'title' => "Mobile Phones with {$ram}GB RAM and {$rom}GB storage in {$country->country_name}",
-            'description' => "Mobile phones with {$ram}GB RAM and {$rom}GB storage on the Mobilekishop with specifications, features, reviews, comparison, and price in {$country->country_name}.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "Mobile Phones with {$ram}GB RAM and {$rom}GB storage in {$country->country_name}",
-            'name' => "Mobile phones with {$ram}GB RAM and {$rom}GB storage"
-        ];
+        $metas = $this->metaService->generateRamRomFilterMeta($ram, $rom, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -195,8 +196,9 @@ class FilterController extends Controller
     /**
      * Show products by screen size
      */
-    public function byScreenSize(Request $request, int $maxSize)
+    public function byScreenSize(Request $request)
     {
+        $maxSize = (float) $request->route('size');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByScreenSize($maxSize);
@@ -213,13 +215,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $metas = (object) [
-            'title' => "All {$maxSize}-Inch Screen Size Mobile Phones Price in {$country->country_name}",
-            'description' => "Find the latest mobile phones on the Mobilekishop with {$maxSize}-inch screen size and Their specifications, features, reviews, comparison, and price in {$country->country_name}.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "{$maxSize}-Inch Screen Size Mobile Phones in {$country->country_name}",
-            'name' => "Mobile phones with {$maxSize} Inch Screen"
-        ];
+        $metas = $this->metaService->generateScreenFilterMeta($maxSize, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -231,8 +227,9 @@ class FilterController extends Controller
     /**
      * Show products by camera count (dual, triple, quad)
      */
-    public function byCameraCount(Request $request, string $parameter)
+    public function byCameraCount(Request $request)
     {
+        $parameter = $request->route('number');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByCameraCount($parameter);
@@ -249,15 +246,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $cameraLabel = ucfirst(str_replace('-', ' ', $parameter));
-
-        $metas = (object) [
-            'title' => "{$cameraLabel} Mobile Phones in {$country->country_name}",
-            'description' => "Explore {$cameraLabel} smartphones with advanced photography features. Compare specs and prices in {$country->country_name}.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "{$cameraLabel} Mobile Phones in {$country->country_name}",
-            'name' => "{$cameraLabel} Mobile Phones"
-        ];
+        $metas = $this->metaService->generateCameraCountFilterMeta($parameter, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -269,8 +258,9 @@ class FilterController extends Controller
     /**
      * Show products by camera megapixels
      */
-    public function byCameraMp(Request $request, int $mp)
+    public function byCameraMp(Request $request)
     {
+        $mp = (int) $request->route('camera');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByCameraMp($mp);
@@ -287,13 +277,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $metas = (object) [
-            'title' => "Mobile Phones with {$mp}MP+ Camera in {$country->country_name}",
-            'description' => "Discover smartphones with {$mp}MP or higher camera. Compare specs, features, and prices in {$country->country_name}.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "Mobile Phones with {$mp}MP+ Camera in {$country->country_name}",
-            'name' => "{$mp}MP+ Camera Phones"
-        ];
+        $metas = $this->metaService->generateCameraMpFilterMeta($mp, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -303,17 +287,14 @@ class FilterController extends Controller
     }
 
     /**
-     * Show curved screen phones by brand
+     * Show products by processor type
      */
-    public function curvedScreensByBrand(Request $request, string $brandSlug)
+    public function byProcessor(Request $request)
     {
+        $processor = $request->route('processor');
         $country = $request->attributes->get('country');
 
-        if ($brandSlug === 'all') {
-            $products = $this->filterService->getCurvedScreens();
-        } else {
-            $products = $this->filterService->getCurvedScreensByBrand($brandSlug);
-        }
+        $products = $this->filterService->getProductsByProcessor($processor);
 
         if ($request->has('filter')) {
             $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
@@ -327,16 +308,70 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $brand = $products->first()->brand ?? null;
-        $brandName = $brand ? $brand->name : ($brandSlug === 'all' ? 'Curved Display' : ucfirst($brandSlug));
+        $metas = $this->metaService->generateProcessorFilterMeta($processor, $country);
 
-        $metas = (object) [
-            'title' => "{$brandName} Mobile Phones in {$country->country_name}",
-            'description' => "Explore {$brandName} smartphones. Compare specs, features, and prices in {$country->country_name}.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "{$brandName} Phones in {$country->country_name}",
-            'name' => "{$brandName} Phones"
-        ];
+        $products = $products->simplePaginate(32);
+        $category = Category::find(1);
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show products by type (folding, flip)
+     */
+    public function byType(Request $request)
+    {
+        $type = $request->route('type');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getProductsByType($type);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $metas = $this->metaService->generateTypeFilterMeta($type, $country);
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(1);
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show curved screen phones by brand
+     */
+    public function curvedScreensByBrand(Request $request)
+    {
+        $brandSlug = $request->route('brandSlug') ?: 'all';
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getCurvedScreensByBrand($brandSlug);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $brand = $brandSlug !== 'all' ? \App\Brand::whereSlug($brandSlug)->first() : null;
+        $metas = $this->metaService->generateCurvedFilterMeta($brand, $country);
 
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -361,19 +396,11 @@ class FilterController extends Controller
             }
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
-
-        $metas = (object) [
-            'title' => "Upcoming Mobile Phones in {$country->country_name} - Launch Dates & Specs",
-            'description' => "Stay updated with upcoming mobile phone launches in {$country->country_name}. Get expected prices, specifications, and release dates.",
-            'canonical' => request()->fullUrl(),
-            'h1' => "Upcoming Mobile Phones in {$country->country_name}",
-            'name' => "Upcoming Mobile Phones"
-        ];
-
+        $metas = $this->metaService->generateUpcomingMeta($country);
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
         $filters = collect($request->query());
 
-        return view('frontend.upcoming', compact('products', 'metas', 'category', 'country', 'filters'));
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
     }
 }
