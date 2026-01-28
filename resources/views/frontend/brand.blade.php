@@ -31,11 +31,11 @@
                         Home
                     </a></li>
                 @if($category)
-                <li class="breadcrumb-item"><a
-                        href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
-                        class="text-decoration-none text-secondary">
-                        {{ Str::title($category->category_name) }}
-                    </a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                            class="text-decoration-none text-secondary">
+                            {{ Str::title($category->category_name) }}
+                        </a></li>
                 @endif
                 <li class="breadcrumb-item active text-secondary" aria-current="page">
                     {{ Str::title($brand->name) }}
@@ -93,7 +93,7 @@
 @section("script")
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org/",
+  "@@context": "https://schema.org/",
   "@type": "BreadcrumbList",
   "itemListElement": [
     {
@@ -103,12 +103,12 @@
        "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
      },
     @if($category)
-    {
-      "@type": "ListItem",
-      "position": 2,
-       "name": "{{ Str::title($category->category_name) }}",
-       "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
-     },
+        {
+          "@type": "ListItem",
+          "position": 2,
+           "name": "{{ Str::title($category->category_name) }}",
+           "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+         },
     @endif
     {
       "@type": "ListItem",

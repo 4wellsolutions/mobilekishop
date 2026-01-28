@@ -23,9 +23,9 @@ class FilterController extends Controller
     /**
      * Show products under a specific price
      */
-    public function underAmount(Request $request)
+    public function underPrice(Request $request)
     {
-        $amount = (int) $request->route('price');
+        $amount = (int) $request->route('amount');
         $country = $request->attributes->get('country');
         $filters = collect($request->input('filter', [])); // Pass as collection
         if ($filters->isEmpty() && $request->has('min')) {
@@ -68,8 +68,9 @@ class FilterController extends Controller
      */
     public function brandUnderAmount(Request $request)
     {
-        $brandSlug = $request->route('brand');
-        $amount = (int) $request->route('price');
+        $brandParam = $request->route('brand');
+        $brandSlug = ($brandParam instanceof \App\Brand) ? $brandParam->slug : $brandParam;
+        $amount = (int) $request->route('amount');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByBrandAndPrice($brandSlug, $amount, $country->country_code);
@@ -98,7 +99,7 @@ class FilterController extends Controller
     /**
      * Show products by RAM size
      */
-    public function underRam(Request $request)
+    public function byRam(Request $request)
     {
         $ram = (int) $request->route('ram');
         $country = $request->attributes->get('country');
@@ -133,7 +134,7 @@ class FilterController extends Controller
     /**
      * Show products by ROM/Storage size
      */
-    public function underRom(Request $request)
+    public function byRom(Request $request)
     {
         $rom = (int) $request->route('rom');
         $country = $request->attributes->get('country');
@@ -164,7 +165,7 @@ class FilterController extends Controller
     /**
      * Show products by RAM and ROM combination
      */
-    public function combinationRamRom(Request $request)
+    public function ramRomCombo(Request $request)
     {
         $ram = (int) $request->route('ram');
         $rom = (int) $request->route('rom');
@@ -198,7 +199,7 @@ class FilterController extends Controller
      */
     public function byScreenSize(Request $request)
     {
-        $maxSize = (float) $request->route('size');
+        $maxSize = (float) $request->route('maxSize');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByScreenSize($maxSize);
@@ -229,7 +230,7 @@ class FilterController extends Controller
      */
     public function byCameraCount(Request $request)
     {
-        $parameter = $request->route('number');
+        $parameter = $request->route('parameter');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByCameraCount($parameter);
@@ -260,7 +261,7 @@ class FilterController extends Controller
      */
     public function byCameraMp(Request $request)
     {
-        $mp = (int) $request->route('camera');
+        $mp = (int) $request->route('mp');
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByCameraMp($mp);

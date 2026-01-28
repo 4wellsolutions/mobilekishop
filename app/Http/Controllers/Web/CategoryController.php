@@ -29,14 +29,15 @@ class CategoryController extends Controller
     public function show(Request $request)
     {
         // Get category slug from route
-        $categorySlug = $request->route('category') ?: $request->route('slug');
-        $country = $request->attributes->get('country');
-
-        // Get country from request (set by middleware)
+        $categoryParam = $request->route('category') ?: $request->route('slug');
         $country = $request->attributes->get('country');
 
         // Check if category needs lookup
-        $category = Category::whereSlug($categorySlug)->firstOrFail();
+        if ($categoryParam instanceof Category) {
+            $category = $categoryParam;
+        } else {
+            $category = Category::whereSlug($categoryParam)->firstOrFail();
+        }
 
         // Get products using service
         $products = $this->productService->getProductsByCategory(

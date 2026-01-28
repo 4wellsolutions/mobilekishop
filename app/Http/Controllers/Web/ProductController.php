@@ -28,10 +28,14 @@ class ProductController extends Controller
     public function show(Request $request)
     {
         $country = $request->attributes->get('country');
-        $productSlug = $request->route('product') ?: $request->route('slug');
+        $productParam = $request->route('product');
 
-        // Handle Product - Fetch if not bound
-        $product = Product::where('slug', $productSlug)->firstOrFail();
+        // Handle Product - Fetch if not already bound
+        if ($productParam instanceof Product) {
+            $product = $productParam;
+        } else {
+            $product = Product::where('slug', $productParam)->firstOrFail();
+        }
 
         $agent = new Agent();
 

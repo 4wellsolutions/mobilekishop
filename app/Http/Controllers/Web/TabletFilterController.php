@@ -39,7 +39,7 @@ class TabletFilterController extends Controller
 
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsUnderPrice($amount, $country->id);
+        $products = $this->filterService->getTabletsUnderPrice($amount, $country->country_code);
 
         if ($request->has('filter')) {
             $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
@@ -53,7 +53,7 @@ class TabletFilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $metas = $this->metaService->generateForPriceFilter($amount, $country, Category::find(3));
+        $metas = $this->metaService->generatePriceFilterMeta($amount, $country, Category::find(3));
 
         $products = $products->simplePaginate(32);
         $category = Category::find(3); // Tablets (Legacy ID 3)

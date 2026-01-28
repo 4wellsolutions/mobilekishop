@@ -143,7 +143,8 @@ class AccessoryController extends Controller
      */
     public function phoneCoversByBrand(Request $request)
     {
-        $brandSlug = $request->route('brand');
+        $brandParam = $request->route('brand');
+        $brandSlug = ($brandParam instanceof \App\Brand) ? $brandParam->slug : $brandParam;
         $slug = $request->route('slug');
         $country = $request->attributes->get('country');
 

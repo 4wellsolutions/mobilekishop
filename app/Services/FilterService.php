@@ -307,4 +307,28 @@ class FilterService
                     ->where('value', $modelSlug);
             })->with(['brand', 'category']);
     }
+
+    /**
+     * Get tablets by screen size
+     */
+    public function getTabletsByScreenSize(float $inch): Builder
+    {
+        return Product::where('category_id', 3)
+            ->whereHas('attributes', function ($query) use ($inch) {
+                $query->where('attribute_id', 1) // Using same attribute ID as mobile for screen size
+                    ->where('value', 'like', $inch . '%');
+            })->with(['brand', 'category']);
+    }
+
+    /**
+     * Get tablets by camera MP
+     */
+    public function getTabletsByCameraMp(int $mp): Builder
+    {
+        return Product::where('category_id', 3)
+            ->whereHas('attributes', function ($query) use ($mp) {
+                $query->where('attribute_id', 5) // Using same attribute ID as mobile for camera
+                    ->where('value', 'like', $mp . 'MP');
+            })->with(['brand', 'category']);
+    }
 }

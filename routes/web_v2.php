@@ -28,20 +28,26 @@ use App\Http\Controllers\Web\{
 
 // Route Model Bindings - Automatic model injection by slug
 Route::bind('category', function ($value) {
+    if ($value instanceof \App\Category)
+        return $value;
     return \App\Category::whereSlug($value)->firstOrFail();
 });
 
 Route::bind('brand', function ($value) {
+    if ($value instanceof \App\Brand)
+        return $value;
     \Log::info("Attempting to bind brand with slug: " . $value);
     $brand = \App\Brand::whereSlug($value)->first();
     if (!$brand) {
         \Log::error("Brand binding failed for slug: " . $value);
-        abort(404);
+        return $value; // Return the slug itself so the controller can handle it or fall through
     }
     return $brand;
 });
 
 Route::bind('product', function ($value) {
+    if ($value instanceof \App\Product)
+        return $value;
     return \App\Product::whereSlug($value)->firstOrFail();
 });
 
@@ -112,6 +118,11 @@ $webRoutes = function () {
     Route::get('mobile-phones-under-{amount}', [FilterController::class, 'underPrice'])
         ->name('filter.price')
         ->where('amount', '[0-9]+');
+
+    // Brand specific price filters: {brand}-mobile-phones-under-{amount}
+    Route::get('{brand}-mobile-phones-under-{amount}', [FilterController::class, 'brandUnderAmount'])
+        ->name('filter.brand.price')
+        ->where(['amount' => '[0-9]+']);
 
     // RAM filters: mobile-phones-{ram}gb-ram
     Route::get('mobile-phones-{ram}gb-ram', [FilterController::class, 'byRam'])
@@ -226,17 +237,22 @@ $webRoutes = function () {
         ->where('amount', '[0-9]+');
 
     // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
-    Route::get('{brand}/{product}', [ProductController::class, 'show'])->name('product.show.legacy');
+    // We add a regex to ensure it doesn't match routes like 'category/xxx', 'product/xxx', etc.
+    Route::get('{brand}/{product}', [ProductController::class, 'show'])
+        ->name('product.show.legacy')
+        ->where([
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|news)).*'
+        ]);
 };
 
-// 1. Default Country Routes (No Prefix) - Matches 'domain.com/path'
-Route::middleware(['default.country'])
-    ->group($webRoutes);
-
-// 2. Specific Country Routes (With Prefix) - Matches 'domain.com/ae/path'
+// 1. Specific Country Routes (With Prefix) - Matches 'domain.com/ae/path'
 Route::group([
     'prefix' => '{country_code}',
     'middleware' => ['default.country'],
     'as' => 'country.', // Prefix route names with 'country.'
     'where' => ['country_code' => '[a-z]{2}']
 ], $webRoutes);
+
+// 2. Default Country Routes (No Prefix) - Matches 'domain.com/path'
+Route::middleware(['default.country'])
+    ->group($webRoutes);

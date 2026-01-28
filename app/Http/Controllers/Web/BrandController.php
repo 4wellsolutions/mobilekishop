@@ -32,11 +32,15 @@ class BrandController extends Controller
     public function show(Request $request)
     {
         $country = $request->attributes->get('country');
-        $brandSlug = $request->route('slug') ?: $request->route('brand');
+        $brandParam = $request->route('brand') ?: $request->route('slug');
         $categorySlug = $request->route('category_slug') ?: $request->route('category');
 
         // Handle Brand
-        $brand = $this->brandService->getBrandBySlug($brandSlug);
+        if ($brandParam instanceof Brand) {
+            $brand = $brandParam;
+        } else {
+            $brand = $this->brandService->getBrandBySlug($brandParam);
+        }
 
         if (!$brand) {
             abort(404);
@@ -97,10 +101,10 @@ class BrandController extends Controller
                     });
                 }
             ])->get();
-            $brands = [];
+            $brands = collect([]);
         } else {
             $category = Category::where("slug", $categorySlug)->firstOrFail();
-            $categories = [];
+            $categories = collect([]);
             $metas = (object) [
                 "title" => Str::title("Latest {$category->category_name} Brands Spec, Price in {$country->country_name}"),
                 "description" => "Get all the specifications, features, reviews, comparison, and price of All {$category->category_name} Brands on the Mobilekishop in {$country->country_name}.",

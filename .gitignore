@@ -11,7 +11,7 @@
 # Public folder (DO NOT TRACK)
 # =========================
 /public/*
-!/public/index.php
+
 
 # =========================
 # Storage & Logs

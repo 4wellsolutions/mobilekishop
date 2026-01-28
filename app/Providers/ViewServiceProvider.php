@@ -100,10 +100,14 @@ class ViewServiceProvider extends ServiceProvider
             });
 
             $priceRanges = Cache::remember($priceRangesCacheKey, 3600, function () use ($country, $category) {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('category_price_ranges')) {
+                    return [15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000];
+                }
+
                 $priceRangesRecord = CategoryPriceRange::where('country_id', $country->id)
                     ->where('category_id', $category->id)
                     ->first();
-                return $priceRangesRecord ? json_decode($priceRangesRecord->price_range_json) : [];
+                return $priceRangesRecord ? json_decode($priceRangesRecord->price_range_json) : [15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000];
             });
 
             $data = compact('categories', 'brands', 'filters', 'priceRanges', 'country', 'category');
