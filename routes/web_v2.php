@@ -241,7 +241,7 @@ $webRoutes = function () {
     Route::get('{brand}/{product}', [ProductController::class, 'show'])
         ->name('product.show.legacy')
         ->where([
-            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|news)).*'
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under)).*'
         ]);
 };
 

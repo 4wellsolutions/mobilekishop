@@ -8,7 +8,6 @@ use Spatie\Sitemap\Tags\Url;
 use Illuminate\Support\Facades\Http;
 use App\Product;
 use App\Category;
-use App\News;
 use App\Brand;
 use App\Filter;
 use App\Country;
@@ -31,7 +30,7 @@ class SitemapService
     {
         // Define the base path for sitemaps
         $this->baseSitemapPath = public_path('sitemaps');
-        
+
         // Ensure the base sitemap directory exists
         if (!File::exists($this->baseSitemapPath)) {
             File::makeDirectory($this->baseSitemapPath, 0755, true);
@@ -45,41 +44,40 @@ class SitemapService
      * @return void
      */
     public function generateSitemapsForCountry($country)
-	{
+    {
         $countryCode = $country->country_code;
-	    $domain = $country->domain;
+        $domain = $country->domain;
 
-	    // Remove trailing slash if present
-	    $baseUrl = rtrim($domain, '/');
+        // Remove trailing slash if present
+        $baseUrl = rtrim($domain, '/');
 
-	    // Directory to store sitemaps for this country
-	    $sitemapDir = "{$this->baseSitemapPath}/{$countryCode}";
-	    if (!File::exists($sitemapDir)) {
-	        File::makeDirectory($sitemapDir, 0755, true);
-	    }
+        // Directory to store sitemaps for this country
+        $sitemapDir = "{$this->baseSitemapPath}/{$countryCode}";
+        if (!File::exists($sitemapDir)) {
+            File::makeDirectory($sitemapDir, 0755, true);
+        }
 
-	    // 1. Generate Categories Sitemap
-	    $this->generateCategoriesSitemap($baseUrl, $sitemapDir);
+        // 1. Generate Categories Sitemap
+        $this->generateCategoriesSitemap($baseUrl, $sitemapDir);
 
-	    // 2. Generate Brands Sitemap
-	    // Inside generateSitemapsForCountry method
-		$this->generateBrandsSitemap($baseUrl, $sitemapDir, $country);
+        // 2. Generate Brands Sitemap
+        // Inside generateSitemapsForCountry method
+        $this->generateBrandsSitemap($baseUrl, $sitemapDir, $country);
 
 
-	    // 3. Generate Filters Sitemap
-	    $this->generateFiltersSitemap($baseUrl, $sitemapDir, $domain);
+        // 3. Generate Filters Sitemap
+        $this->generateFiltersSitemap($baseUrl, $sitemapDir, $domain);
 
-	    // 4. Generate Products Sitemaps with Pagination
-	    $this->generateProductsSitemaps($baseUrl, $sitemapDir, $country);
+        // 4. Generate Products Sitemaps with Pagination
+        $this->generateProductsSitemaps($baseUrl, $sitemapDir, $country);
 
-        $this->generateNewsSitemaps($baseUrl, $sitemapDir, $country);
 
-	    // 5. Generate Sitemap Index for the Country
-	    $this->generateSitemapIndex($baseUrl, $sitemapDir);
+        // 5. Generate Sitemap Index for the Country
+        $this->generateSitemapIndex($baseUrl, $sitemapDir);
 
-	    // 6. Ping Search Engines
-	    $this->pingSearchEngines($baseUrl, $sitemapDir);
-	}
+        // 6. Ping Search Engines
+        $this->pingSearchEngines($baseUrl, $sitemapDir);
+    }
 
 
     /**
@@ -115,53 +113,53 @@ class SitemapService
     }
 
     /**
-	 * Generate Brands Sitemap.
-	 *
-	 * @param string $baseUrl
-	 * @param string $sitemapDir
-	 * @param \App\Models\Country $country
-	 * @return void
-	 */
-	protected function generateBrandsSitemap(string $baseUrl, string $sitemapDir, Country $country)
-	{
+     * Generate Brands Sitemap.
+     *
+     * @param string $baseUrl
+     * @param string $sitemapDir
+     * @param \App\Models\Country $country
+     * @return void
+     */
+    protected function generateBrandsSitemap(string $baseUrl, string $sitemapDir, Country $country)
+    {
 
-	    // Fetch all categories to check brands for each category and country
-	    $categories = Category::where("is_active",1)->get();
+        // Fetch all categories to check brands for each category and country
+        $categories = Category::where("is_active", 1)->get();
 
-	    $sitemap = Sitemap::create();
+        $sitemap = Sitemap::create();
 
-	    // Loop through each category
-	    foreach ($categories as $category) {
+        // Loop through each category
+        foreach ($categories as $category) {
 
-	        // Get brands that have at least one product in the specified category and country
-	        $brands = Brand::whereHas('products', function ($query) use ($category, $country) {
-	            $query->where('category_id', $category->id)
-	                ->whereHas('variants', function ($query) use ($country) {
-	                    $query->where('country_id', $country->id)
-	                        ->where('price', '>', 0);
-	                });
-	        })->select('slug', 'updated_at')->get();
-            
-	        // Add each brand for this category to the sitemap
-	        foreach ($brands as $brand) {
-	            $url = Url::create("{$baseUrl}/brand/{$brand->slug}/{$category->slug}");
+            // Get brands that have at least one product in the specified category and country
+            $brands = Brand::whereHas('products', function ($query) use ($category, $country) {
+                $query->where('category_id', $category->id)
+                    ->whereHas('variants', function ($query) use ($country) {
+                        $query->where('country_id', $country->id)
+                            ->where('price', '>', 0);
+                    });
+            })->select('slug', 'updated_at')->get();
 
-	            // Set last modification date
-	            if ($brand->updated_at instanceof \DateTimeInterface) {
-	                $url->setLastModificationDate($brand->updated_at);
-	            } elseif ($brand->created_at instanceof \DateTimeInterface) {
-	                $url->setLastModificationDate($brand->created_at);
-	            } else {
-	                $url->setLastModificationDate(now());
-	            }
+            // Add each brand for this category to the sitemap
+            foreach ($brands as $brand) {
+                $url = Url::create("{$baseUrl}/brand/{$brand->slug}/{$category->slug}");
 
-	            $sitemap->add($url);
-	        }
-	    }
+                // Set last modification date
+                if ($brand->updated_at instanceof \DateTimeInterface) {
+                    $url->setLastModificationDate($brand->updated_at);
+                } elseif ($brand->created_at instanceof \DateTimeInterface) {
+                    $url->setLastModificationDate($brand->created_at);
+                } else {
+                    $url->setLastModificationDate(now());
+                }
 
-	    $filePath = "{$sitemapDir}/sitemap-brands.xml";
-	    File::put($filePath, $sitemap->render());
-	}
+                $sitemap->add($url);
+            }
+        }
+
+        $filePath = "{$sitemapDir}/sitemap-brands.xml";
+        File::put($filePath, $sitemap->render());
+    }
 
 
     /**
@@ -178,8 +176,8 @@ class SitemapService
         $domain = rtrim($domain, '/');
         // Filter filters where page_url contains the current domain
         $filters = Filter::where('page_url', 'like', "%{$domain}%")
-                         ->select('url', 'updated_at')
-                         ->get();
+            ->select('url', 'updated_at')
+            ->get();
 
         $sitemap = Sitemap::create();
 
@@ -213,11 +211,11 @@ class SitemapService
      */
     protected function generateProductsSitemaps(string $baseUrl, string $sitemapDir, Country $country)
     {
-        
+
         // Count total products that meet the criteria
         $totalProducts = Product::whereHas('variants', function ($query) use ($country) {
             $query->where('country_id', $country->id)
-                  ->where('price', '>', 0);
+                ->where('price', '>', 0);
         })->count();
 
         $perPage = $this->maxUrlsPerSitemap;
@@ -230,7 +228,7 @@ class SitemapService
         Product::with('brand') // Eager load the brand relationship
             ->whereHas('variants', function ($query) use ($country) {
                 $query->where('country_id', $country->id)
-                      ->where('price', '>', 0);
+                    ->where('price', '>', 0);
             })
             ->select('slug', 'updated_at', 'brand_id') // Select necessary fields
             ->orderBy('id') // Ensure consistent ordering
@@ -258,7 +256,7 @@ class SitemapService
 
                     $sitemap->add($url);
                 }
-                
+
                 // Define the filename with the current page number
                 $filePath = "{$sitemapDir}/sitemap-products-{$currentPage}.xml";
                 File::put($filePath, $sitemap->render());
@@ -267,80 +265,46 @@ class SitemapService
             });
     }
 
-    protected function generateNewsSitemaps(string $baseUrl, string $sitemapDir, Country $country)
-    {
-        // Count total news articles for the given country
-        $totalNews = News::where('country_id', $country->id)->count();
-
-        // Use chunking to process large datasets efficiently
-        News::where('country_id', $country->id) // Filter by country
-            ->select('slug', 'updated_at', 'created_at') // Select necessary fields
-            ->orderBy('id') // Ensure consistent ordering
-            ->chunk($this->maxUrlsPerSitemap, function ($newsItems) use ($baseUrl, $sitemapDir, $country) {
-
-                $sitemap = Sitemap::create();
-
-                foreach ($newsItems as $news) {
-                    // Construct the URL for each news article
-                    $url = Url::create("{$baseUrl}/news/{$news->slug}");
-
-                    // Set last modification date for the news
-                    if ($news->updated_at instanceof \DateTimeInterface) {
-                        $url->setLastModificationDate($news->updated_at);
-                    } elseif ($news->created_at instanceof \DateTimeInterface) {
-                        $url->setLastModificationDate($news->created_at);
-                    } else {
-                        $url->setLastModificationDate(now());
-                    }
-
-                    $sitemap->add($url);
-                }
-
-                // Define the filename (single sitemap)
-                $filePath = "{$sitemapDir}/sitemap-news.xml";
-                File::put($filePath, $sitemap->render());
-            });
-    }
 
     /**
-	 * Generate Sitemap Index for the Country.
-	 *
-	 * @param string $baseUrl
-	 * @param string $sitemapDir
-	 * @return void
-	 */
-	protected function generateSitemapIndex(string $baseUrl, string $sitemapDir)
-	{
+     * Generate Sitemap Index for the Country.
+     *
+     * @param string $baseUrl
+     * @param string $sitemapDir
+     * @return void
+     */
+    protected function generateSitemapIndex(string $baseUrl, string $sitemapDir)
+    {
 
-	    $sitemapIndex = SitemapIndex::create();
+        $sitemapIndex = SitemapIndex::create();
 
-	    // Define the path prefix for sitemaps
-	    $sitemapPathPrefix = "{$baseUrl}/sitemap";
+        // Define the path prefix for sitemaps
+        $sitemapPathPrefix = "{$baseUrl}/sitemap";
 
-	    // List of sitemap files to include
-	    $sections = ['categories', 'brands', 'filters','news'];
+        // List of sitemap files to include
+        $sections = ['categories', 'brands', 'filters', 'news'];
 
-	    foreach ($sections as $section) {
-	        $sitemapUrl = "{$sitemapPathPrefix}-{$section}.xml";
-	        $sitemapIndex->add($sitemapUrl, now());
-	    }
+        foreach ($sections as $section) {
+            $sitemapUrl = "{$sitemapPathPrefix}-{$section}.xml";
+            $sitemapIndex->add($sitemapUrl, now());
+        }
 
-	    // Add Products sitemaps
-	    $files = File::files($sitemapDir);
-	    foreach ($files as $file) {
-	        $filename = $file->getFilename();
+        // Add Products sitemaps
+        $files = File::files($sitemapDir);
+        foreach ($files as $file) {
+            $filename = $file->getFilename();
 
-	        if (preg_match('/sitemap-products-\d+\.xml$/', $filename)) {
-	            // Corrected: Use the filename as-is without adding 'sitemap-'
-	            $sitemapUrl = "{$baseUrl}/{$filename}";
-	            $sitemapIndex->add($sitemapUrl, now());
-	        }
-	    }
+            if (preg_match('/sitemap-products-\d+\.xml$/', $filename)) {
+                // Corrected: Use the filename as-is without adding 'sitemap-'
+                $sitemapUrl = "{$baseUrl}/{$filename}";
+                $sitemapIndex->add($sitemapUrl, now());
+            }
+        }
 
-	    // Save Sitemap Index
-	    $filePath = "{$sitemapDir}/sitemap.xml";
-	    File::put($filePath, $sitemapIndex->render());
-	}
+        // Save Sitemap Index
+        $filePath = "{$sitemapDir}/sitemap.xml";
+        File::put($filePath, $sitemapIndex->render());
+    }
 
 
     /**

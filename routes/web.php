@@ -21,7 +21,6 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CountryController;
-use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ChargerController;
 use App\Http\Controllers\CountryChargerController;
 use App\Http\Controllers\CableController;
@@ -33,7 +32,7 @@ use App\Http\Controllers\CountryCableController;
 Route::get('/sitemap.xml', [SitemapController::class, 'serveSitemap'])->name('sitemap.index');
 // Routes for serving additional sitemaps (brands, categories, filters, products)
 Route::get('/sitemap-{type}.xml', [SitemapController::class, 'serveSitemap'])
-    ->where('type', 'brands|categories|news|filters|products|products-\d+')
+    ->where('type', 'brands|categories|filters|products|products-\d+')
     ->name('sitemap.type');
 
 Route::get('/extract-prices/{slug}', [PriceController::class, 'extractPrices']);
@@ -121,8 +120,6 @@ require base_path('routes/web_v2.php');
 Route::middleware(['default.country'])->group(function () {
     Route::get('/sitemap/generate', [SitemapController::class, 'generate'])->name('sitemap.generate');
     Auth::routes();
-    Route::get('news', [NewsController::class, "index"]);
-    Route::get('news/{slug}', [NewsController::class, "show"]);
     // Common routes (Now handled by web_v2.php)
     /*
     Route::get('/comparison', [HomeController::class, 'comparison'])->name('comparison');

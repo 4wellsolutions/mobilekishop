@@ -459,12 +459,6 @@
                                 <input type="password" name="password" class="form-input form-wide mb-2"
                                     id="register-password" required>
 
-                                <div class="custom-control custom-checkbox my-2">
-                                    <input type="checkbox" name="newsletter" class="custom-control-input"
-                                        id="newsletter-signup" checked>
-                                    <label class="custom-control-label" for="newsletter-signup">Sign up our
-                                        Newsletter</label>
-                                </div><!-- End .custom-checkbox -->
 
                                 <div class="form-footer">
                                     <button type="submit" class="btn btn-primary btn-md">Register</button>

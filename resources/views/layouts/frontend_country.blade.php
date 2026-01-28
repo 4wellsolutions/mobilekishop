@@ -221,16 +221,6 @@
                                 <a class="nav-link position-relative {{ Route::currentRouteNamed('comparison') ? 'active' : '' }}"
                                     href="{{ url($urlPrefix . '/comparison') }}">Compares</a>
                             </li>
-                            @php
-                                $hasNews = \App\News::where('country_id', $country->id)->exists();
-                            @endphp
-
-                            @if($hasNews)
-                                <li class="nav-item">
-                                    <a class="nav-link position-relative {{ Request::is('news/*') ? 'active' : '' }}"
-                                        href="{{url($urlPrefix . '/news')}}">News</a>
-                                </li>
-                            @endif
                         </ul>
                         <div class="mobileMenu d-none"></div>
                     </div>
