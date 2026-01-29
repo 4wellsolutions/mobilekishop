@@ -162,13 +162,14 @@ $(document).ready(function () {
             const $loginModal = $('#loginModal');
             if ($loginModal.length) $loginModal.modal('show');
         } else {
-            const val = $(this).data('value');
+            const val = $(this).data('value') || $(this).attr('id');
             $('#stars').val(val);
             $('.stars').attr('src', config.baseUrl + "/images/icons/star.png");
             for (let i = 1; i <= val; i++) {
-                $('#star-' + i).attr('src', config.baseUrl + "/images/icons/star-fill.png");
+                $('.star-' + i + ', #star-' + i).attr('src', config.baseUrl + "/images/icons/star-fill.png");
             }
             $('#stars-error').hide();
+            $(".submitButton").attr("disabled", false);
         }
     });
 
@@ -432,6 +433,134 @@ $(document).ready(function () {
                     $submitBtn.html(originalText).removeAttr('disabled');
                 }
             });
+        });
+    }
+
+    // 15. PTA Calculator Logic
+    const $brandIdPta = $('#brand_id');
+    const $ptaForm = $('#ptaForm');
+    if ($brandIdPta.length && $ptaForm.length) {
+        if ($.fn.select2) {
+            $('#brand_id').select2();
+            $('#product_id').select2();
+        }
+        $brandIdPta.on('change', function () {
+            const brandId = $(this).val();
+            $(".taxTable").fadeOut("fast");
+            $("#taxOnPassport").text("");
+            $("#taxOnCNIC").text("");
+
+            const url = config.routes && config.routes.getProductsByBrandPta ? config.routes.getProductsByBrandPta : '/get-products-by-brand-pta';
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { brand_id: brandId },
+                dataType: 'json',
+                success: function (response) {
+                    const $productSelect = $('#product_id');
+                    $productSelect.empty();
+                    $productSelect.append($('<option>', { value: '', text: 'Select Model' }));
+                    if (response.products && response.products.length > 0) {
+                        $.each(response.products, function (index, product) {
+                            $productSelect.append($('<option>', {
+                                value: product.id,
+                                text: product.name
+                            }));
+                        });
+                    }
+                }
+            });
+        });
+
+        $ptaForm.on('submit', function (e) {
+            e.preventDefault();
+            const url = config.routes && config.routes.getPta ? config.routes.getPta : '/get-pta';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { brand_id: $("#brand_id").val(), product_id: $("#product_id").val() },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $(".taxTable").fadeIn("fast");
+                        $("#taxOnPassport").text(response.tax.tax_on_passport);
+                        $("#taxOnCNIC").text(response.tax.tax_on_cnic);
+                    }
+                }
+            });
+        });
+    }
+
+    // 16. Edit Review / Wishlist handlers
+    $(".editReview").on('click', function () {
+        const id = $(this).data("id");
+        const stars = $(this).data("star");
+        const review = $(".comment-text-" + id).text();
+        $("#review_id").val(id);
+        $("#stars").val(stars);
+        $(".star-" + stars).addClass("active");
+        $("#review").html(review);
+    });
+
+    $(".submitButton").on('click', function () {
+        $("#reviewForm").submit();
+    });
+
+    // 17. Account Password Toggle
+    $("#change-pass-checkbox").on('change', function () {
+        if (this.checked) {
+            $("#account-chage-pass").fadeIn().removeClass("d-none");
+            $("#password").attr("required", true);
+            $("#password_confirmation").attr("required", true);
+        } else {
+            $("#account-chage-pass").fadeOut();
+            $("#password").attr("required", false);
+            $("#password_confirmation").attr("required", false);
+        }
+    });
+
+    // 18. Comparison Search (Bloodhound)
+    if ($(".search").length > 0) {
+        var routeCompare = MKS_STATE.routes.autocomplete;
+        var categoryId = $("#category_id").val() || 1;
+
+        var engine = new Bloodhound({
+            remote: {
+                url: routeCompare + "?query=%QUERY%&category_id=" + categoryId,
+                wildcard: '%QUERY%'
+            },
+            datumTokenizer: Bloodhound.tokenizers.whitespace('query'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace
+        });
+
+        $(".search").typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        }, {
+            source: engine.ttAdapter(),
+            limit: 11,
+            name: 'usersList',
+            displayKey: 'name',
+            templates: {
+                empty: '<div class="list-group search-results-dropdown"><div class="list-group-item">Nothing found.</div></div>',
+                header: '<div class="list-group search-results-dropdown">',
+                suggestion: function (data) {
+                    return '<div class="row bg-white border-bottom"><div class="col-4"><img src="' + data.thumbnail + '" class="img-fluid searchImage my-1"></div><div class="col-8 text-uppercase text-start" style="font-weight:600;">' + data.name + '</div></div>'
+                }
+            }
+        });
+
+        $('.search').on('typeahead:select', function (ev, suggestion) {
+            $("#input-" + $(this).attr("id")).val(suggestion.slug);
+            var base_url = MKS_STATE.baseUrl + "/compare/";
+            var param1 = $("#input-search1").val() || "";
+            var param2 = $("#input-search2").val() ? "-vs-" + $("#input-search2").val() : "";
+            var param3 = $("#input-search3").val() ? "-vs-" + $("#input-search3").val() : "";
+            if (param1) {
+                window.location.replace(base_url + param1 + param2 + param3);
+            }
         });
     }
 });

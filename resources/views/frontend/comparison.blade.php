@@ -20,72 +20,46 @@
 @endsection
 
 @section("content")
+<main class="main container-lg">
+    <div class="container my-3">
+        <div class="row">
+            <h1 class="heading1 fs-4">{{$metas->h1}}</h1>
+        </div>
+        @if(!$compares->isEmpty())
+            <div class="row" id="compareList" data-next-page="2">
+                @foreach($compares as $compare)
+                    @include('includes.compare-card')
+                @endforeach
+            </div>
+            <div id="dynamicContentEnd"></div>
+            <div id="loadingSpinner" class="text-center" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        @endif
+    </div>
+</main>
+@stop
+
 @section("style") @stop
 
 @section("script")
     <script type="application/ld+json">
-                {
-                  "@@context": "https://schema.org/", 
-                  "@type": "BreadcrumbList", 
-                  "itemListElement": [{
-                    "@type": "ListItem", 
-                    "position": 1, 
-                    "name": "Home",
-                    "item": "{{url('/')}}/"  
-                  },{
-                    "@type": "ListItem", 
-                    "position": 2, 
-                    "name": "{{$metas->name}}",
-                    "item": "{{$metas->canonical}}"  
-                  }]
-                }
-                </script>
-@endsection
-
-@section("style")
-    <style type="text/css">
-        .filter-select {
-            height: 4rem !important;
+        {
+            "@context": "https://schema.org/", 
+            "@type": "BreadcrumbList", 
+            "itemListElement": [{
+            "@type": "ListItem", 
+            "position": 1, 
+            "name": "Home",
+            "item": "{{url('/')}}/"  
+            },{
+            "@type": "ListItem", 
+            "position": 2, 
+            "name": "{{$metas->name}}",
+            "item": "{{$metas->canonical}}"  
+            }]
         }
-
-        .icon-angle-right {
-            background: #928989ad;
-            margin-left: 10px;
-            padding-left: 15px !important;
-            padding-right: 12px !important;
-            padding-bottom: 3px !important;
-        }
-
-        .icon-angle-left {
-            background: #928989ad;
-            margin-left: 10px;
-            padding-left: 12px !important;
-            padding-right: 15px !important;
-            padding-bottom: 3px !important;
-        }
-
-        .select-filter:after {
-            margin-top: 8px !important;
-        }
-
-        #sort_filter:after {
-            margin-top: -1px !important;
-        }
-
-        .fs-12 {
-            font-size: 12px !important;
-        }
-
-        .fs-14 {
-            font-size: 14px !important;
-        }
-
-        .fs-15 {
-            font-size: 15px !important;
-        }
-
-        .fs-16 {
-            font-size: 16px !important;
-        }
-    </style>
+        </script>
 @endsection

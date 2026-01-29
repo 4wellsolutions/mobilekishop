@@ -1,340 +1,122 @@
-// Consolidated Frontend View Styles
-// specific page styles extracted from blade templates
+/* Centralized Frontend View Styles */
 
-/* Styles from index.blade.php */
-.mobileImage {
-    /*width:140px !important;*/
-    height: 185px !important;
+/* PTA Calculator Styles */
+.taxTable {
+    margin-top: 20px;
 }
 
-.offcanvas-backdrop {
-    background: #FFF !important;
+.taxTable .table th,
+.taxTable .table td {
+    vertical-align: middle;
 }
 
-.widget a {
-    text-decoration: none !important;
-    color: #777;
+/* User Profile Styles */
+.user-info-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.widget-title a {
-    text-decoration: none !important;
-    font-family: Poppins, sans-serif;
-    color: #343a40;
-    font-size: 18px;
+.password-toggle {
+    cursor: pointer;
+    color: #007bff;
 }
 
-.widget {
-    border-bottom: 1px solid #e7e7e7;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: rgb(231, 231, 231);
-    border: 1px solid #dee2e6 !important;
-    margin-top: 5px;
-    margin-right: 5px;
-    margin-left: 5px;
+/* Informational Pages (About, Terms, Privacy) */
+.info-page-content h1,
+.info-page-content h2 {
+    color: #333;
 }
 
-.widget-body li a {
-    font-size: 14px;
-}
-
-.nav-tabs.nav-item a {
-    text-decoration: none !important;
-    color: #343a40;
-}
-
-.nav-tabs.nav-tabs .nav-link {
-    color: #31343a;
-    border: none;
-}
-
-.nav-tabs .nav-item.show .nav-link,
-.nav-tabs .nav-link.active {
-    background-color: #fff;
-    border-color: #dee2e6 #dee2e6 #fff;
-    color: black !important;
-    border-bottom: 2px solid #000000 !important;
-}
-
-.nav-tabs.nav-link:hover {
-    border-bottom: 2px solid #000000 !important;
-}
-
-h1,
-.h1,
-h2,
-.h2,
-h3,
-.h3,
-h4,
-.h4,
-h5,
-.h5,
-h6,
-.h6 {
-    font-weight: 700;
-    line-height: 1.1;
-    font-family: Poppins, sans-serif;
-}
-
-body {
-    font-family: "Open Sans", sans-serif;
-}
-
-@media(max-width: 576px) {
-    .cameraBlock {
-        border: none !important;
-        border-bottom: 1px solid #dee2e6 !important;
-    }
-
-    .screenBlock {
-        border-bottom: 1px solid #dee2e6 !important;
-    }
-
-    .mobileTable tr td:first-child {
-        display: none;
-    }
-
-    .mobileTable tr th {
-        color: #dc3545 !important
-    }
-
-    .table {
-        font-size: .8rem;
-    }
-
-    .imgDiv {
-        height: 120px;
-    }
-
-    .detailDiv {
-        height: 120px;
-    }
-
-    .product-title {
-        font-size: 14px;
-        font-weight: normal;
-    }
-
-    .product-price {
-        font-size: 16px;
+/* Review Modal Widths */
+@media(min-width: 768px) {
+    .reviewModal {
+        width: 50% !important;
     }
 }
 
-@media(min-width: 577px) {
-    .imgDiv {
-        height: 130px;
-    }
-
-    .detailDiv {
-        height: 130px;
-    }
-
-    .product-title {
-        font-size: 18px;
-        font-weight: normal;
-    }
-
-    .product-price {
-        font-size: 20px;
+@media(max-width: 767px) {
+    .reviewModal {
+        width: 100% !important;
     }
 }
 
-.nav-tabs .nav-link {
-    font-size: .9rem;
-    padding-right: 7px;
-    padding-left: 7px;
+/* Package Index & Detail Styles */
+.network_logo {
+    max-width: 200px;
 }
 
-.mobile_image {
-    max-height: 160px;
-    width: auto;
-}
-
-.product-title>a {
+.list-group-item .list-item a {
     text-decoration: none;
 }
 
-.category>a {
-    text-decoration: none;
+.method table {
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-color: #212529;
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
+    --bs-table-active-color: #212529;
+    --bs-table-active-bg: rgba(0, 0, 0, 0.1);
+    --bs-table-hover-color: #212529;
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.075);
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    vertical-align: top;
+    border-color: #dee2e6;
 }
 
-.product-label {
-    animation: label-groups 2s infinite;
-    padding: 3px 6px;
-    background-color: #fe5858;
-    font-size: 11px;
-    color: white;
-    border-radius: 20px;
+/* Comparison & Search Styles */
+.compareBox {
+    min-height: 235px !important;
 }
 
-.label-groups {
-    position: absolute;
-    top: -0.3rem;
-    right: 1rem;
+.compareBox img {
+    height: 160px;
+    width: 120px !important;
+    max-height: 160px !important;
 }
 
-@keyframes label-groups {
-    0% {
-        background-color: #ed6161
-    }
-
-    /*25%     { background-color: #1056c0;}*/
-    50% {
-        background-color: #ed6161;
-    }
-
-    /*75%     { background-color: #254878;}*/
-    100% {
-        background-color: #7661ed;
-    }
+.searchImage {
+    height: 75px !important;
 }
 
-.product-default .group-new .product-label {
-    font-size: 8px;
-    animation: group-new 2s infinite;
+.twitter-typeahead {
+    width: 100% !important;
 }
 
-@keyframes group-new {
-    0% {
-        background-color: #8abf6f
-    }
-
-    /*25%     { background-color: #1056c0;}*/
-    /*50%     { background-color: #ed6161;}*/
-    /*75%     { background-color: #254878;}*/
-    100% {
-        background-color: #3e8f15;
-    }
+.tt-menu {
+    width: inherit !important;
 }
 
-.page-link {
-    color: #000000 !important;
-}
-
-/* End Styles from index.blade.php */
-
-/* Styles from products.blade.php */
-/* Note: Checking for duplicates... most seem identical. Appending unique ones or overrides */
 .filter-select {
     height: 4rem !important;
 }
 
-.icon-angle-right {
-    background: #928989ad;
+.icon-angle-right,
+.icon-angle-left {
+    background: #928989ad !important;
     margin-left: 10px;
+    padding-bottom: 3px !important;
+}
+
+.icon-angle-right {
     padding-left: 15px !important;
     padding-right: 12px !important;
-    padding-bottom: 3px !important;
 }
 
 .icon-angle-left {
-    background: #928989ad;
-    margin-left: 10px;
     padding-left: 12px !important;
     padding-right: 15px !important;
-    padding-bottom: 3px !important;
 }
 
-.select-filter:after {
-    margin-top: 8px !important;
+.mobileTable tr th {
+    color: #dc3545 !important;
 }
 
-#sort_filter:after {
-    margin-top: -1px !important;
+.mobileTable tr td {
+    word-wrap: break-word !important;
 }
 
-
-/* Styles from mobile-phones.blade.php (and likely other product categories) */
-.mobile_content a {
-    color: black;
+.table-sm {
+    table-layout: fixed;
 }
-
-.mobile_content h2 {
-    font-size: 18px !important;
-}
-
-.stars {
-    cursor: pointer;
-}
-
-.colorImage {
-    width: 80px;
-}
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .flex-md-row-custom {
-        flex-direction: row !important;
-    }
-}
-
-.spec-item:hover {
-    background-color: #e0f7fa;
-    transition: background-color 0.3s;
-}
-
-
-/* Additional Styles from index.blade.php (bottom block) */
-.card-body a strong {
-    text-transform: uppercase;
-    color: black;
-}
-
-.card-img {
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-
-.card-title {
-    margin-bottom: 0.3rem;
-}
-
-.cat {
-    display: inline-block;
-    margin-bottom: 1rem;
-}
-
-.fa-users {
-    margin-left: 1rem;
-}
-
-.card-footer {
-    font-size: 0.8rem;
-}
-
-.cat-list li a {
-    font-weight: normal !important;
-}
-
-.card:hover {
-    box-shadow: 0 25px 35px -5px rgb(0 0 0 / 10%) !important;
-}
-
-/* Informational Pages (Contact, About, Privacy, Terms) Styles */
-.form-floating label {
-    color: #888;
-}
-
-.form-control,
-.form-control:focus {
-    color: #495057;
-}
-
-.form-control::placeholder {
-    color: transparent;
-}
-
-.form-control:focus::placeholder {
-    color: #adb5bd;
-}
-
-.ck-editor__editable_inline {
-    min-height: 200px;
-}
-
-.fs-12 { font-size: 12px !important; }
-.fs-14 { font-size: 14px !important; }
-.fs-15 { font-size: 15px !important; }
-.fs-16 { font-size: 16px !important; }
-
-/* End Informational Pages Styles */

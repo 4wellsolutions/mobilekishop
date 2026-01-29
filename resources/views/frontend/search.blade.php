@@ -20,13 +20,39 @@
 @endif
 @stop
 @section("content")
+<main class="main container-lg">
+  <div class="container my-3">
+    <div class="row">
+      <h1 class="heading1 fs-4">{{$metas->h1}}</h1>
+    </div>
+    @include("includes.filters")
+    <div class="row my-2" id="productList" data-next-page="2">
+      @if(!$products->isEmpty())
+        @foreach($products as $product)
+          <div class="col-6 col-sm-4 col-md-4 col-lg-3">
+            <x-product-card :product="$product" :country="$country" />
+          </div>
+        @endforeach
+      @else
+        @include('includes.product-not-found')
+      @endif
+    </div>
+    <div id="dynamicContentEnd"></div>
+    <div id="loadingSpinner" class="text-center" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+</main>
+@stop
 
 @section("style") @stop
 
 @section("script")
 <script type="application/ld+json">
 {
-  "@@context": "https://schema.org/", 
+  "@context": "https://schema.org/", 
   "@type": "BreadcrumbList", 
   "itemListElement": [{
     "@type": "ListItem", 
@@ -41,70 +67,4 @@
   }]
 }
 </script>
-@stop
-<script type="application/ld+json">
-{
-  "@@context": "https://schema.org/", 
-  "@type": "BreadcrumbList", 
-  "itemListElement": [{
-    "@type": "ListItem", 
-    "position": 1, 
-    "name": "Home",
-    "item": "{{url('/')}}/"  
-  },{
-    "@type": "ListItem", 
-    "position": 2, 
-    "name": "{{$metas->name}}",
-    "item": "{{$metas->canonical}}"  
-  }]
-}
-</script>
-@stop
-
-@section("style")
-<style type="text/css">
-  .filter-select {
-    height: 4rem !important;
-  }
-
-  .icon-angle-right {
-    background: #928989ad;
-    margin-left: 10px;
-    padding-left: 15px !important;
-    padding-right: 12px !important;
-    padding-bottom: 3px !important;
-  }
-
-  .icon-angle-left {
-    background: #928989ad;
-    margin-left: 10px;
-    padding-left: 12px !important;
-    padding-right: 15px !important;
-    padding-bottom: 3px !important;
-  }
-
-  .select-filter:after {
-    margin-top: 8px !important;
-  }
-
-  #sort_filter:after {
-    margin-top: -1px !important;
-  }
-
-  .fs-12 {
-    font-size: 12px !important;
-  }
-
-  .fs-14 {
-    font-size: 14px !important;
-  }
-
-  .fs-15 {
-    font-size: 15px !important;
-  }
-
-  .fs-16 {
-    font-size: 16px !important;
-  }
-</style>
 @stop

@@ -27,25 +27,26 @@
         })(document);
     </script>
 
-    <!-- Plugins CSS File -->
+    <!-- Styles -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
-    <!-- Main CSS File -->
-    <link rel="stylesheet" href="{{URL::to('/')}}/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{URL::to('/')}}/css/style.min.css">
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous"> -->
-    <!-- <link rel="stylesheet" href="{{URL::to('/')}}/css/merged-css.min.css"> -->
-    <style type="text/css">
-        @media(max-width: 576px) {
-            .mks-logo {
-                height: 45px;
-                width: auto;
-            }
-        }
-    </style>
-
-    @php
-        $brands = App\Brand::limit(20)->get();
-    @endphp
+    <script>
+        window.MKS_STATE = {
+            baseUrl: '{{ url("/") }}',
+            currentUrl: '{!! url()->current() !!}',
+            csrfToken: '{{ csrf_token() }}',
+            countryCode: '{{ $country->country_code ?? "pk" }}',
+            routes: {
+                login: '{{ route("login.post") }}',
+                register: '{{ route("auth.register") }}',
+                getProductsByBrand: '{{ route("get.products.by.brand") }}',
+                installmentPlanPost: '{{ route("installment.plan.post") }}',
+                reviewPost: '{{ route("review.post") }}',
+                storeUserInfo: '{{ route("store.user.info") }}'
+            },
+            isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}
+        };
+    </script>
 </head>
 
 <body>
@@ -238,7 +239,7 @@
                                 <li><a href="{{route('ad.index')}}">Ads <span class="badge badge-danger">New</span></a>
                                 </li>
                                 <li><a href="{{route('package.index')}}">Packages <span
-                                            class="badge badge-danger">New</span></a></li>
+                                             class="badge badge-danger">New</span></a></li>
                                 <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
                                 <li><a
                                         href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
@@ -379,313 +380,13 @@
         </div><!-- End .mobile-menu-wrapper -->
     </div><!-- End .mobile-menu-container -->
 
-    <!-- Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header w-auto"
-                    style="border-bottom: none;position: absolute;right: -10px;top: -15px;z-index: 100;">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row row-sparse">
-                        <div class="col-10">
-                            <div class="validation-errors"></div>
-                        </div>
-                        <div class="col-md-6">
-
-                            <h4 class="title mb-2 text-primary text-uppercase" style="font-size: 2.5rem;">Login</h4>
-                            <form action="#" method="post" id="loginForm">
-                                @csrf
-                                <label for="login-email">Email address <span class="required">*</span></label>
-                                <input type="email" name="login_email" class="form-input form-wide mb-2"
-                                    id="login-email" required />
-
-                                <label for="login-password">Password <span class="required">*</span></label>
-                                <input type="password" name="login_password" class="form-input form-wide mb-2"
-                                    id="login-password" required />
-
-                                <div class="form-footer my-1">
-                                    <button type="submit" class="btn btn-primary btn-md">LOGIN</button>
-
-                                    <div class="custom-control custom-checkbox form-footer-right">
-                                        <input type="checkbox" name="remember" class="custom-control-input"
-                                            id="lost-password">
-                                        <label class="custom-control-label form-footer-right"
-                                            for="lost-password">Remember Me</label>
-                                    </div>
-
-                                </div><!-- End .form-footer -->
-                                <div class="row">
-                                    <div class="col-12 col-sm-6">
-                                        <a href="#" id="sign-with-google">
-                                            <img src="{{URL::to('/images/login-with-google.png')}}"
-                                                alt="login-with-google" class="img-fluid">
-                                        </a>
-                                    </div>
-                                    <div class="col-12 col-sm-6">
-                                        <a href="#" id="sign-with-facebook">
-                                            <img src="{{URL::to('/images/login-with-facebook.jpg')}}"
-                                                alt="login-with-facebook" class="img-fluid">
-                                        </a>
-                                    </div>
-                                </div>
-                                <a href="#" class="forget-password">Forgot your password?</a>
-                            </form>
-
-                        </div><!-- End .col-md-6 -->
-
-                        <div class="col-md-6">
-                            <h4 class="title mb-2 text-primary text-uppercase" style="font-size: 2.5rem;">Register</h4>
-
-                            <form action="{{route('register')}}" method="post">
-                                @csrf
-                                <label for="register-name">Full Name <span class="required">*</span></label>
-                                <input type="text" name="name" class="form-input form-wide mb-2" id="register-name"
-                                    required>
-
-                                <label for="register-phone">Phone Number<span class="required">*</span></label>
-                                <input type="text" name="phone_number" class="form-input form-wide mb-2"
-                                    id="register-phone" required>
-
-                                <label for="register-email">Email address <span class="required">*</span></label>
-                                <input type="email" name="email" class="form-input form-wide mb-2" id="register-email"
-                                    required>
-
-                                <label for="register-password">Password <span class="required">*</span></label>
-                                <input type="password" name="password" class="form-input form-wide mb-2"
-                                    id="register-password" required>
-
-
-                                <div class="form-footer">
-                                    <button type="submit" class="btn btn-primary btn-md">Register</button>
-                                </div><!-- End .form-footer -->
-                            </form>
-                        </div><!-- End .col-md-6 -->
-                    </div><!-- End .row -->
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         {{ csrf_field() }}
     </form>
     <a id="scroll-top" href="#top" title="Top" role="button"><i class="fas fa-chevron-up"></i></a>
 
-    <!-- Plugins JS File -->
-    <!-- <script src="{{URL::to('/')}}/js/jquery.min.js"></script> -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="{{URL::to('/')}}/js/bootstrap.bundle.min.js" defer></script>
-
-    <script src="{{URL::to('/')}}/js/plugins.min.js" defer></script>
-    <script src="{{URL::to('/')}}/js/jquery.appear.min.js" defer></script>
-    <!-- Main JS File -->
-    <script src="{{URL::to('/')}}/js/main.min.js"></script>
-    <script type="text/javascript">
-        $(".category_type").click(function () {
-            console.log($(this).data("id"));
-            $(".category_id").val($(this).data("id"));
-            $("#formCategory").submit();
-        });
-    </script>
-    <script type="text/javascript">
-        /*! echo-js v1.7.3 | (c) 2016 @toddmotto | https://github.com/toddmotto/echo */
-        !function (t, e) { "function" == typeof define && define.amd ? define(function () { return e(t) }) : "object" == typeof exports ? module.exports = e : t.echo = e(t) }(this, function (t) { "use strict"; var e, n, o, r, c, a = {}, u = function () { }, d = function (t) { return null === t.offsetParent }, l = function (t, e) { if (d(t)) return !1; var n = t.getBoundingClientRect(); return n.right >= e.l && n.bottom >= e.t && n.left <= e.r && n.top <= e.b }, i = function () { (r || !n) && (clearTimeout(n), n = setTimeout(function () { a.render(), n = null }, o)) }; return a.init = function (n) { n = n || {}; var d = n.offset || 0, l = n.offsetVertical || d, f = n.offsetHorizontal || d, s = function (t, e) { return parseInt(t || e, 10) }; e = { t: s(n.offsetTop, l), b: s(n.offsetBottom, l), l: s(n.offsetLeft, f), r: s(n.offsetRight, f) }, o = s(n.throttle, 250), r = n.debounce !== !1, c = !!n.unload, u = n.callback || u, a.render(), document.addEventListener ? (t.addEventListener("scroll", i, !1), t.addEventListener("load", i, !1)) : (t.attachEvent("onscroll", i), t.attachEvent("onload", i)) }, a.render = function (n) { for (var o, r, d = (n || document).querySelectorAll("[data-echo], [data-echo-background]"), i = d.length, f = { l: 0 - e.l, t: 0 - e.t, b: (t.innerHeight || document.documentElement.clientHeight) + e.b, r: (t.innerWidth || document.documentElement.clientWidth) + e.r }, s = 0; i > s; s++)r = d[s], l(r, f) ? (c && r.setAttribute("data-echo-placeholder", r.src), null !== r.getAttribute("data-echo-background") ? r.style.backgroundImage = "url(" + r.getAttribute("data-echo-background") + ")" : r.src !== (o = r.getAttribute("data-echo")) && (r.src = o), c || (r.removeAttribute("data-echo"), r.removeAttribute("data-echo-background")), u(r, "load")) : c && (o = r.getAttribute("data-echo-placeholder")) && (null !== r.getAttribute("data-echo-background") ? r.style.backgroundImage = "url(" + o + ")" : r.src = o, r.removeAttribute("data-echo-placeholder"), u(r, "unload")); i || a.detach() }, a.detach = function () { document.removeEventListener ? t.removeEventListener("scroll", i) : t.detachEvent("onscroll", i), clearTimeout(n) }, a });
-    </script>
-    <script type="text/javascript">
-        echo.init();
-    </script>
-    <script type="text/javascript">
-        var loginForm = $("#loginForm");
-        loginForm.submit(function (e) {
-            // console.log("login");
-            e.preventDefault();
-            var formData = loginForm.serialize();
-            // console.log(formData);
-            $.ajax({
-                url: '{{route("login.post")}}',
-                type: 'POST',
-                data: formData,
-                success: function (data) {
-                    // console.log(data.intended);
-                    if (data.auth) {
-                        // console.log(data.intended);
-                        location.reload();
-                    } else {
-                        $('.validation-errors').html("");
-                        // console.log(data.errors);
-                        $.each(data.errors, function (key, value) {
-                            $('.validation-errors').append('<div class="alert alert-danger py-3">' + value + '</div');
-                        });
-                    }
-                },
-                error: function (data) {
-                    console.log(data);
-                }
-            });
-        });
-
-    </script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/0.11.1/typeahead.bundle.min.js" defer></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js" defer></script> -->
-    </script>
-    <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org/",
-      "@type": "WebSite",
-      "name": "MobileKiShop",
-      "url": "{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/')}}",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/search')}}?query={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    <script type="text/javascript">
-        // var route = "{{ route('autocomplete.search') }}";
-        // var base_url = "{{URL::to('/')}}";
-        // //Set the Options for "Bloodhound" suggestion engine
-        // var engine = new Bloodhound({
-        //     remote: {
-        //         url: route+"?query=%QUERY%",
-        //         wildcard: '%QUERY%'
-        //     },
-        //     datumTokenizer:Bloodhound.tokenizers.obj.whitespace('query'),
-        //     queryTokenizer:Bloodhound.tokenizers.whitespace,
-        // });
-
-        // $("#searchInput").typeahead({
-        //     hint: false,
-        //     highlight: true,
-        //     minLength: 1
-        // }, {
-        //     source: engine.ttAdapter(),
-
-        //     limit: 5+1,
-
-        //     // This will be appended to "tt-dataset-" to form the class name of the suggestion menu.
-        //     name: 'mobileList',
-        //     displayKey: 'name', 
-        //     // the key from the array we want to display (name,id,email,etc...)
-        //     templates: {
-        //         empty: [
-        //             '<div class="list-group search-results-dropdown"><div class="list-group-item">Nothing found.</div></div>'
-        //         ],
-        //         header: [
-        //             '<div class="list-group search-results-dropdown">'
-        //         ],
-        //         suggestion: function (data) {
-        //             var base_url = "{{URL::to('/')}}";
-        //             return '<a href="'+base_url+'/'+data.brand.slug+'/'+data.slug+'"><div class="row bg-white border-bottom"><div class="col-4 col-lg-2"><img src="'+data.thumbnail+'" class="img-fluid searchImage my-1"></div><div class="col-8 col-lg-10 text-uppercase" style="font-weight:600;">'+data.name+'<p class="font-size-12 text-dark">Rs.'+ addCommas(data.price_in_pkr) +'</p></div></div></a>'
-        //         }
-        //     },
-
-        // });
-
-        // $('#searchInput').bind('typeahead:select', function(ev, suggestion) {
-        //     console.log('Selection: ' + $(this).attr("id"));
-        //     $("#input-"+$(this).attr("id")).val(suggestion.slug);
-        //     if($("#searchInput").val() != ""){
-        //         param1 = $("#searchInput").val();
-        //     }
-        // });
-        $("#sign-with-google").click(function () {
-            $(this).attr("href", "{{URL::to('/google/redirect')}}");
-        });
-        $("#sign-with-facebook").click(function () {
-            $(this).attr("href", "{{URL::to('/facebook/redirect')}}");
-        });
-        $(".fa-heart").click(function (e) {
-            e.preventDefault();
-            var mobile_id = $(this).attr("data-id");
-            var type = $(this).attr("data-type");
-            if ("{{Auth::check()}}" == "") {
-
-                $('#loginModal').modal('show');
-                return;
-            }
-            if (type == 0) {
-                type = 1;
-                $(this).attr("data-type", type);
-                $(this).removeClass("far").stop(true, true).addClass("fas").addClass("text-danger", 1000);
-            } else {
-                type = 0;
-                $(this).attr("data-type", type);
-                $(this).removeClass("text-danger").stop(true, true).addClass("far").removeClass("fas", 1000);
-            }
-            $.ajax({
-                url: "{{route('wishlist.post')}}",
-                method: "POST",
-                cache: false,
-                data: { "mobile_id": mobile_id, "_token": "{{Session::token()}}", "type": type },
-                success: function (response) {
-
-                }
-            });
-            return;
-
-        });
-        function addCommas(nStr) {
-            nStr += '';
-            x = nStr.split('.');
-            x1 = x[0];
-            x2 = x.length > 1 ? '.' + x[1] : '';
-            var rgx = /(\d+)(\d{3})/;
-            while (rgx.test(x1)) {
-                x1 = x1.replace(rgx, '$1' + ',' + '$2');
-            }
-            return x1 + x2;
-        }
-    </script>
+    @include('layouts.footer')
     @yield('script')
-
-    <!-- <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/css/animate.min.css"> -->
-    <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/vendor/fontawesome-free/css/all.min.css">
-    <!-- <link rel="stylesheet" href="{{URL::to('/')}}/css/merged-css.min.css"> -->
-
-    <style type="text/css">
-        .brandWidget {
-            overflow-y: scroll;
-            max-height: 300px;
-        }
-
-        .sidebar-toggle {
-            top: 35% !important;
-        }
-
-        .product-default:hover {
-            box-shadow: 0 25px 35px -5px rgb(0 0 0 / 10%) !important;
-        }
-
-        .product-default:hover figure {
-            box-shadow: none;
-        }
-
-        ul.cat-list li {
-            margin-bottom: 5px;
-        }
-
-        .twitter-typeahead {
-            width: 100% !important;
-        }
-
-        .searchImage {
-            height: 80px;
-        }
-
-        .tt-menu {
-            width: inherit !important;
-        }
-    </style>
-    @yield('style')
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css" integrity="sha512-gMjQeDaELJ0ryCI+FtItusU9MkAifCZcGq789FrzkiM49D8lbDhoaUaIX4ASU187wofMNlgBJ4ckbrXM9sE6Pg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 </body>
 
 </html>
