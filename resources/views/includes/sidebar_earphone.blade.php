@@ -14,80 +14,68 @@
     $prefix = $pk ? '' : '/' . $country->country_code;
 @endphp
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4">
-    <div class="widget-header p-2">
-        <h5 class="fw-bold mb-0">Categories</h5>
-    </div>
-    <div class="widget-body">
-        <ul class="list-unstyled ps-2 pt-1">
-            @foreach($mksCategories as $mksCat)
-                <li class="mb-1">
-                    <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
-                        class="{{ $category->slug == $mksCat['slug'] ? 'fw-bold text-dark' : 'text-muted' }} fs-14 text-decoration-none">
-                        {{ $mksCat['name'] }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    </div>
+{{-- Categories --}}
+<div class="sidebar-card">
+    <h5 class="sidebar-title">Categories</h5>
+    <ul class="sidebar-list">
+        @foreach($mksCategories as $mksCat)
+            <li>
+                <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
+                    class="{{ $category->slug == $mksCat['slug'] ? 'active' : '' }}">
+                    {{ $mksCat['name'] }}
+                </a>
+            </li>
+        @endforeach
+    </ul>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0">Brands</h5>
+{{-- Brands --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Brands</h5>
         <a data-bs-toggle="collapse" href="#brands-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="brands-collapse">
-        <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
-            <ul class="list-unstyled pt-1">
+        <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
+            <ul class="sidebar-list">
                 @foreach($category->brands as $brand)
-                    <li class="mb-1">
-                        <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
+                    <li>
+                        <a
+                            href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}">
                             {{ $brand->name }}
                         </a>
                     </li>
                 @endforeach
-                <li class="mt-1">
-                    <a href="{{ route('brands.by.category', $category->slug) }}"
-                        class="fw-bold text-dark fs-14 text-decoration-none hover-link">View All Brands</a>
+                <li class="mt-2">
+                    <a href="{{ route('brands.by.category', $category->slug) }}" class="fw-bold text-dark">View All
+                        Brands</a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
 
-<style>
-    .fs-14 {
-        font-size: 14px;
-    }
-
-    .scroll-container::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-
-    .scroll-container::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-
-    .scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-
-    .hover-link:hover {
-        color: #0d6efd !important;
-    }
-
-    .widget-sidebar {
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, .05);
-    }
-</style>
+{{-- Filters --}}
+@if(isset($filters) && $filters->isNotEmpty())
+    <div class="sidebar-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="sidebar-title mb-0">Filters</h5>
+            <a data-bs-toggle="collapse" href="#filters-collapse" role="button" aria-expanded="true" class="text-dark">
+                <i class="bi bi-caret-up-fill small"></i>
+            </a>
+        </div>
+        <div class="collapse show" id="filters-collapse">
+            <ul class="sidebar-list">
+                @foreach($filters as $filter)
+                    <li>
+                        <a href="{{$filter->url}}" class="{{ str_contains(request()->url(), $filter->url) ? 'active' : '' }}">
+                            {{$filter->title}}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif

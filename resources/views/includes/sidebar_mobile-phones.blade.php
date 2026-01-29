@@ -47,65 +47,60 @@
     $prefix = $pk ? '' : '/' . $country->country_code;
 @endphp
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2">
-        <h5 class="fw-bold mb-0">Categories</h5>
+{{-- Categories --}}
+<div class="sidebar-card">
+    <h5 class="sidebar-title">Categories</h5>
+    <ul class="sidebar-list">
+        @foreach($mksCategories as $mksCat)
+            <li>
+                <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
+                    class="{{ (isset($category) && $category && $category->slug == $mksCat['slug']) ? 'active' : '' }}">
+                    {{ $mksCat['name'] }}
+                </a>
+            </li>
+        @endforeach
+    </ul>
+</div>
+
+{{-- Network --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Network</h5>
+        <a data-bs-toggle="collapse" href="#network-collapse" role="button" aria-expanded="true" class="text-dark">
+            <i class="bi bi-caret-up-fill small"></i>
+        </a>
     </div>
-    <div class="widget-body">
-        <ul class="list-unstyled ps-2 pt-1">
-            @foreach($mksCategories as $mksCat)
-                <li class="mb-1">
-                    <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
-                        class="{{ (isset($category) && $category && $category->slug == $mksCat['slug']) ? 'fw-bold text-dark' : 'text-muted' }} fs-14 text-decoration-none hover-link">
-                        {{ $mksCat['name'] }}
-                    </a>
-                </li>
-            @endforeach
+    <div class="collapse show" id="network-collapse">
+        <ul class="sidebar-list">
+            <li><a href="{{ url($prefix . '/4g-mobile-phones') }}">4G</a></li>
+            <li><a href="{{ url($prefix . '/5g-mobile-phones') }}">5G</a></li>
         </ul>
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Network</h5>
-        <a data-bs-toggle="collapse" href="#network-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
-        </a>
-    </div>
-    <div class="collapse show" id="network-collapse">
-        <div class="widget-body px-2">
-            <ul class="list-unstyled pt-1">
-                <li class="mb-1"><a href="{{ url($prefix . '/4g-mobile-phones') }}"
-                        class="text-muted fs-14 text-decoration-none hover-link">4G</a></li>
-                <li class="mb-1"><a href="{{ url($prefix . '/5g-mobile-phones') }}"
-                        class="text-muted fs-14 text-decoration-none hover-link">5G</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Brands</h5>
+{{-- Brands --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Brands</h5>
         <a data-bs-toggle="collapse" href="#brands-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="brands-collapse">
-        <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
-            <ul class="list-unstyled pt-1">
+        <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
+            <ul class="sidebar-list">
                 @if(isset($category) && $category)
                     @foreach($category->brands as $brand)
-                        <li class="mb-1">
-                            <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
-                                class="text-muted fs-14 text-decoration-none hover-link">
+                        <li>
+                            <a
+                                href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}">
                                 {{ $brand->name }}
                             </a>
                         </li>
                     @endforeach
-                    <li class="mt-1">
-                        <a href="{{ route('brands.by.category', $category->slug) }}"
-                            class="fw-bold text-dark fs-14 text-decoration-none hover-link">View All Brands</a>
+                    <li class="mt-2">
+                        <a href="{{ route('brands.by.category', $category->slug) }}" class="fw-bold text-dark">View All
+                            Brands</a>
                     </li>
                 @endif
             </ul>
@@ -113,66 +108,63 @@
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Phone Type</h5>
+{{-- Phone Type --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Phone Type</h5>
         <a data-bs-toggle="collapse" href="#type-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="type-collapse">
-        <div class="widget-body px-2">
-            <ul class="list-unstyled pt-1">
-                @foreach($phoneTypes as $type)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/' . $type['slug'] . '-mobile-phones') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
-                            {{ $type['name'] }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+        <ul class="sidebar-list">
+            @foreach($phoneTypes as $type)
+                <li>
+                    <a href="{{ url($prefix . '/' . $type['slug'] . '-mobile-phones') }}">
+                        {{ $type['name'] }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Combination</h5>
+{{-- Combination --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Combination</h5>
         <a data-bs-toggle="collapse" href="#combination-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="combination-collapse">
-        <div class="widget-body px-2">
-            <ul class="list-unstyled pt-1">
-                @foreach($combinations as $comb)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-with-' . $comb['ram'] . 'gb-ram-' . $comb['rom'] . 'gb-storage') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
-                            {{ $comb['ram'] }}GB + {{ $comb['rom'] }}GB
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+        <ul class="sidebar-list">
+            @foreach($combinations as $comb)
+                <li>
+                    <a
+                        href="{{ url($prefix . '/mobile-phones-with-' . $comb['ram'] . 'gb-ram-' . $comb['rom'] . 'gb-storage') }}">
+                        {{ $comb['ram'] }}GB + {{ $comb['rom'] }}GB
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Processor</h5>
+{{-- Processor --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Processor</h5>
         <a data-bs-toggle="collapse" href="#processor-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="processor-collapse">
-        <div class="widget-body px-2 scroll-container" style="max-height: 200px; overflow-y: auto;">
-            <ul class="list-unstyled pt-1">
+        <div class="scroll-container" style="max-height: 200px; overflow-y: auto;">
+            <ul class="sidebar-list">
                 @foreach($processors as $proc)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/' . $proc['slug'] . '-mobile-phones') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
+                    <li>
+                        <a href="{{ url($prefix . '/' . $proc['slug'] . '-mobile-phones') }}">
                             {{ $proc['name'] }}
                         </a>
                     </li>
@@ -182,43 +174,42 @@
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">RAM</h5>
+{{-- RAM --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">RAM</h5>
         <a data-bs-toggle="collapse" href="#ram-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="ram-collapse">
-        <div class="widget-body px-2">
-            <ul class="list-unstyled pt-1">
-                @foreach($ramLimits as $ramLimit)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-' . $ramLimit . 'gb-ram') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
-                            {{$ramLimit}} GB
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+        <ul class="sidebar-list">
+            @foreach($ramLimits as $ramLimit)
+                <li>
+                    <a href="{{ url($prefix . '/mobile-phones-' . $ramLimit . 'gb-ram') }}">
+                        {{$ramLimit}} GB
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Storage</h5>
+{{-- Storage --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Storage</h5>
         <a data-bs-toggle="collapse" href="#rom-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="rom-collapse">
-        <div class="widget-body px-2 scroll-container" style="max-height: 200px; overflow-y: auto;">
-            <ul class="list-unstyled pt-1">
+        <div class="scroll-container" style="max-height: 200px; overflow-y: auto;">
+            <ul class="sidebar-list">
                 @foreach($romLimits as $romLimit)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-' . ($romLimit >= 1024 ? ($romLimit / 1024) . 'tb' : $romLimit . 'gb-storage')) }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
+                    <li>
+                        <a
+                            href="{{ url($prefix . '/mobile-phones-' . ($romLimit >= 1024 ? ($romLimit / 1024) . 'tb' : $romLimit . 'gb-storage')) }}">
                             {{$romLimit >= 1024 ? ($romLimit / 1024) . ' TB' : $romLimit . ' GB'}}
                         </a>
                     </li>
@@ -228,51 +219,48 @@
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Screen Size</h5>
+{{-- Screen Size --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Screen Size</h5>
         <a data-bs-toggle="collapse" href="#screen-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="screen-collapse">
-        <div class="widget-body px-2">
-            <ul class="list-unstyled pt-1">
-                @foreach($screenSizes as $size)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-screen-' . $size . '-inch') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
-                            {{ $size }} Inch
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+        <ul class="sidebar-list">
+            @foreach($screenSizes as $size)
+                <li>
+                    <a href="{{ url($prefix . '/mobile-phones-screen-' . $size . '-inch') }}">
+                        {{ $size }} Inch
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
-<div class="widget-sidebar p-2 m-2 shadow-sm rounded-4 border-subtle">
-    <div class="widget-header p-2 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-uppercase">Camera</h5>
+{{-- Camera --}}
+<div class="sidebar-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="sidebar-title mb-0">Camera</h5>
         <a data-bs-toggle="collapse" href="#camera-collapse" role="button" aria-expanded="true" class="text-dark">
-            <i class="bi bi-caret-up-fill"></i>
+            <i class="bi bi-caret-up-fill small"></i>
         </a>
     </div>
     <div class="collapse show" id="camera-collapse">
-        <div class="widget-body px-2 scroll-container" style="max-height: 250px; overflow-y: auto;">
-            <ul class="list-unstyled pt-1">
+        <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
+            <ul class="sidebar-list">
                 @foreach($cameras as $cam)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-' . $cam . '-camera') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
+                    <li>
+                        <a href="{{ url($prefix . '/mobile-phones-' . $cam . '-camera') }}">
                             {{ ucfirst($cam) }} Camera
                         </a>
                     </li>
                 @endforeach
                 @foreach($cameraMp as $mp)
-                    <li class="mb-1">
-                        <a href="{{ url($prefix . '/mobile-phones-' . $mp . '-camera') }}"
-                            class="text-muted fs-14 text-decoration-none hover-link">
+                    <li>
+                        <a href="{{ url($prefix . '/mobile-phones-' . $mp . '-camera') }}">
                             {{ $mp }} MP Camera
                         </a>
                     </li>
@@ -282,42 +270,25 @@
     </div>
 </div>
 
-<style>
-    .fs-14 {
-        font-size: 14px;
-    }
-
-    .border-subtle {
-        border: 1px solid rgba(0, 0, 0, .05) !important;
-    }
-
-    .scroll-container::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-
-    .scroll-container::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-
-    .scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-
-    .hover-link:hover {
-        color: #0d6efd !important;
-    }
-
-    .widget-sidebar {
-        background: #fff;
-    }
-
-    .widget-header i.bi {
-        font-size: 0.8rem;
-    }
-</style>
+{{-- Dynamic Filters --}}
+@if(isset($filters) && $filters->isNotEmpty())
+    <div class="sidebar-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="sidebar-title mb-0">Filters</h5>
+            <a data-bs-toggle="collapse" href="#filters-collapse" role="button" aria-expanded="true" class="text-dark">
+                <i class="bi bi-caret-up-fill small"></i>
+            </a>
+        </div>
+        <div class="collapse show" id="filters-collapse">
+            <ul class="sidebar-list">
+                @foreach($filters as $filter)
+                    <li>
+                        <a href="{{$filter->url}}" class="{{ str_contains(request()->url(), $filter->url) ? 'active' : '' }}">
+                            {{$filter->title}}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
