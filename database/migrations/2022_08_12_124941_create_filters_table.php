@@ -15,14 +15,9 @@ class CreateFiltersTable extends Migration
     {
         Schema::create('filters', function (Blueprint $table) {
             $table->id();
-            $table->string("brand_id")->nullable();
-            $table->string("price")->nullable();
-            $table->string("ram")->nullable();
-            $table->string("storage")->nullable();
-            $table->string("screen_size")->nullable();
-            $table->string("camera")->nullable();
-            $table->integer("user_id")->nullable();
-            $table->string("parameter")->nullable();
+            $table->string('page_url');
+            $table->string('title');
+            $table->string('url');
             $table->timestamps();
         });
     }

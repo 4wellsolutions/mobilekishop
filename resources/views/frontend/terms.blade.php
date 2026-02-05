@@ -1,5 +1,5 @@
 @php
-    $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
+  $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
 @extends($layout)
@@ -13,62 +13,75 @@
 @endsection
 
 @section("content")
-<main class="main container-lg">
+  <main class="main container-lg">
     <div class="container my-5 shadow-sm p-4 bg-white rounded-3">
-        <h1 class="mb-4 fw-bold">{{ $metas->h1 }}</h1>
-        <div class="content fs-16 text-muted lh-lg">
-            <p>Welcome to MobileKiShop (MKS). By accessing our website, you agree to be bound by these Terms and Conditions. Please read them carefully.</p>
+      <h1 class="mb-4 fw-bold">{{ $metas->h1 }}</h1>
+      <div class="content fs-16 text-muted lh-lg">
+        <p>Welcome to MobileKiShop (MKS). By accessing our website, you agree to be bound by these Terms and Conditions.
+          Please read them carefully.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">1. Agreement to Terms</h3>
-            <p>By using our Website, you agree to be bound by these Terms and Conditions. If you do not agree with all of these Terms and Conditions, then you are expressly prohibited from using the site and you must discontinue use immediately.</p>
+        <h3 class="mt-4 text-dark fw-bold">1. Agreement to Terms</h3>
+        <p>By using our Website, you agree to be bound by these Terms and Conditions. If you do not agree with all of
+          these Terms and Conditions, then you are expressly prohibited from using the site and you must discontinue use
+          immediately.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">2. Intellectual Property Rights</h3>
-            <p>Unless otherwise indicated, the Site is our proprietary property and all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the Site and the trademarks, service marks, and logos contained therein are owned or controlled by us or licensed to us.</p>
+        <h3 class="mt-4 text-dark fw-bold">2. Intellectual Property Rights</h3>
+        <p>Unless otherwise indicated, the Site is our proprietary property and all source code, databases, functionality,
+          software, website designs, audio, video, text, photographs, and graphics on the Site and the trademarks, service
+          marks, and logos contained therein are owned or controlled by us or licensed to us.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">3. User Representations</h3>
-            <p>By using the Site, you represent and warrant that:</p>
-            <ul>
-                <li>All registration information you submit will be true, accurate, current, and complete.</li>
-                <li>You will maintain the accuracy of such information and promptly update such registration information as necessary.</li>
-                <li>You have the legal capacity and you agree to comply with these Terms and Conditions.</li>
-                <li>You will not use the Site for any illegal or unauthorized purpose.</li>
-            </ul>
+        <h3 class="mt-4 text-dark fw-bold">3. User Representations</h3>
+        <p>By using the Site, you represent and warrant that:</p>
+        <ul>
+          <li>All registration information you submit will be true, accurate, current, and complete.</li>
+          <li>You will maintain the accuracy of such information and promptly update such registration information as
+            necessary.</li>
+          <li>You have the legal capacity and you agree to comply with these Terms and Conditions.</li>
+          <li>You will not use the Site for any illegal or unauthorized purpose.</li>
+        </ul>
 
-            <h3 class="mt-4 text-dark fw-bold">4. Prohibited Activities</h3>
-            <p>You may not access or use the Site for any purpose other than that for which we make the Site available. The Site may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us.</p>
+        <h3 class="mt-4 text-dark fw-bold">4. Prohibited Activities</h3>
+        <p>You may not access or use the Site for any purpose other than that for which we make the Site available. The
+          Site may not be used in connection with any commercial endeavors except those that are specifically endorsed or
+          approved by us.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">5. Modifications and Interruptions</h3>
-            <p>We reserve the right to change, modify, or remove the contents of the Site at any time or for any reason at our sole discretion without notice. However, we have no obligation to update any information on our Site.</p>
+        <h3 class="mt-4 text-dark fw-bold">5. Modifications and Interruptions</h3>
+        <p>We reserve the right to change, modify, or remove the contents of the Site at any time or for any reason at our
+          sole discretion without notice. However, we have no obligation to update any information on our Site.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">6. Accuracy of Information</h3>
-            <p>MobileKiShop strives to provide accurate information regarding mobile prices, specifications, and features. However, we do not guarantee the absolute accuracy of the data. Prices and specifications are subject to change without prior notice.</p>
+        <h3 class="mt-4 text-dark fw-bold">6. Accuracy of Information</h3>
+        <p>MobileKiShop strives to provide accurate information regarding mobile prices, specifications, and features.
+          However, we do not guarantee the absolute accuracy of the data. Prices and specifications are subject to change
+          without prior notice.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">7. Governing Law</h3>
-            <p>These Terms and Conditions and your use of the Site are governed by and construed in accordance with the laws of the Islamic Republic of Pakistan.</p>
+        <h3 class="mt-4 text-dark fw-bold">7. Governing Law</h3>
+        <p>These Terms and Conditions and your use of the Site are governed by and construed in accordance with the laws
+          of the Islamic Republic of Pakistan.</p>
 
-            <h3 class="mt-4 text-dark fw-bold">8. Contact Us</h3>
-            <p>In order to resolve a complaint regarding the Site or to receive further information regarding use of the Site, please contact us at our provided contact details.</p>
-        </div>
+        <h3 class="mt-4 text-dark fw-bold">8. Contact Us</h3>
+        <p>In order to resolve a complaint regarding the Site or to receive further information regarding use of the Site,
+          please contact us at our provided contact details.</p>
+      </div>
     </div>
-</main>
+  </main>
 @endsection
 
 @section("script")
-<script type="application/ld+json">
-{
-  "@@context": "https://schema.org/", 
-  "@@type": "BreadcrumbList", 
-  "itemListElement": [{
-    "@@type": "ListItem", 
-    "position": 1, 
-    "name": "Home",
-    "item": "{{url('/')}}/"  
-  },{
-    "@@type": "ListItem", 
-    "position": 2, 
-    "name": "{{$metas->name}}",
-    "item": "{{$metas->canonical}}"  
-  }]
-}
-</script>
+  <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org/", 
+      "@@type": "BreadcrumbList", 
+      "itemListElement": [{
+        "@@type": "ListItem", 
+        "position": 1, 
+        "name": "Home",
+        "item": "{{url('/')}}/"  
+      },{
+        "@@type": "ListItem", 
+        "position": 2, 
+        "name": "{{$metas->name}}",
+        "item": "{{$metas->canonical}}"  
+      }]
+    }
+    </script>
 @endsection
