@@ -1,5 +1,5 @@
 @php
-    $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
+    $layout = ($country->country_code == 'pk') ? 'layouts.techspec' : 'layouts.techspec';
 @endphp
 
 @extends($layout)
@@ -12,189 +12,377 @@
 
 @section("canonical", ($country->country_code == 'pk') ? route('product.show', [$product->slug]) : route('country.product.show', [$country->country_code, $product->slug]))
 
-@section("content")
 
-@php
-    $nowDate = Carbon\Carbon::now();
-    $price_in_pkr = $product->getFirstVariantPriceForCountry($product->id, $country->id);
+@section('content')
+    @php
+        $nowDate = Carbon\Carbon::now();
+        $price_in_pkr = $product->getFirstVariantPriceForCountry($product->id, $country->id);
 
-    $attributes = $product->attributes()->get()->keyBy(function ($item) {
-        return strtolower(str_replace([' ', '(', ')'], ['_', '', ''], $item->label));
-    });
+        // Helper to get attribute value safely
+        $getAttribute = function ($key) use ($product) {
+            $attr = $product->attributes->first(function ($item) use ($key) {
+                $slug = strtolower(str_replace([' ', '(', ')'], ['_', '', ''], $item->label));
+                return $slug === $key;
+            });
+            return $attr ? $attr->pivot->value : null;
+        };
 
-    // Summary variables
-    $camera_test = $attributes->get('pixels')->pivot->value ?? '';
-    $battery_new = $attributes->get('battery_new')->pivot->value ?? $attributes->get('battery')->pivot->value ?? '';
-    $ram = $attributes->get('ram_in_gb')->pivot->value ?? '';
-    $rom = $attributes->get('rom_in_gb')->pivot->value ?? '';
+        // Prepare attributes for easier access
+        $screen_size = $getAttribute('size') ?? $getAttribute('screen_size');
+        $resolution = $getAttribute('resolution') ?? $getAttribute('screen_resolution');
+        $chipset = $getAttribute('chipset');
+        $main_camera = $getAttribute('main');
+        $battery = $getAttribute('battery') ?? $getAttribute('battery_new') ?? $getAttribute('capacity');
+        $ram = $getAttribute('ram_in_gb');
+        $rom = $getAttribute('rom_in_gb');
+        $display_type = $getAttribute('technology');
+        $os = $getAttribute('os');
+        $video = $getAttribute('video'); // Assuming there might be a video attribute, otherwise placeholder
+        $charging = $getAttribute('extra') ?? $getAttribute('charging'); // Heuristic
 
-    // Specification variables (used in product-specification.blade.php)
-    $os = $attributes->get('os')->pivot->value ?? null;
-    $ui = $attributes->get('ui')->pivot->value ?? null;
-    $dimensions = $attributes->get('dimensions')->pivot->value ?? null;
-    $weight = $attributes->get('weight')->pivot->value ?? null;
-    $sim = $attributes->get('sim')->pivot->value ?? null;
-    $colors = $attributes->get('colors')->pivot->value ?? null;
-    $buildd = $attributes->get('build')->pivot->value ?? null;
-    $technology = $attributes->get('technology')->pivot->value ?? null;
-    $g2_band = $attributes->get('2g_band')->pivot->value ?? null;
-    $g3_band = $attributes->get('3g_band')->pivot->value ?? null;
-    $g4_band = $attributes->get('4g_band')->pivot->value ?? null;
-    $g5_band = $attributes->get('5g_band')->pivot->value ?? null;
-    $cpu = $attributes->get('cpu')->pivot->value ?? null;
-    $chipset = $attributes->get('chipset')->pivot->value ?? null;
-    $gpu = $attributes->get('gpu')->pivot->value ?? null;
-    $display = $attributes->get('display')->pivot->value ?? null;
-    $size = $attributes->get('size')->pivot->value ?? null;
-    $resolution = $attributes->get('resolution')->pivot->value ?? $attributes->get('screen_resolution')->pivot->value ?? null;
-    $protection = $attributes->get('protection')->pivot->value ?? null;
-    $extra_features = $attributes->get('extra_features')->pivot->value ?? null;
-    $built_in = $attributes->get('built_in')->pivot->value ?? null;
-    $card = $attributes->get('card')->pivot->value ?? null;
-    $main = $attributes->get('main')->pivot->value ?? null;
-    $features = $attributes->get('features')->pivot->value ?? null;
-    $front = $attributes->get('front')->pivot->value ?? null;
-    $wlan = $attributes->get('wlan')->pivot->value ?? null;
-    $bluetooth = $attributes->get('bluetooth')->pivot->value ?? null;
-    $gps = $attributes->get('gps')->pivot->value ?? null;
-    $radio = $attributes->get('radio')->pivot->value ?? null;
-    $usb = $attributes->get('usb')->pivot->value ?? null;
-    $nfc = $attributes->get('nfc')->pivot->value ?? null;
-    $infrared = $attributes->get('infrared')->pivot->value ?? null;
-    $data = $attributes->get('data')->pivot->value ?? null;
-    $sensors = $attributes->get('sensors')->pivot->value ?? null;
-    $audio = $attributes->get('audio')->pivot->value ?? null;
-    $browser = $attributes->get('browser')->pivot->value ?? null;
-    $messaging = $attributes->get('messaging')->pivot->value ?? null;
-    $games = $attributes->get('games')->pivot->value ?? null;
-    $torch = $attributes->get('torch')->pivot->value ?? null;
-    $extra = $attributes->get('extra')->pivot->value ?? null;
-    $models = $attributes->get('models')->pivot->value ?? null;
-    $sar = $attributes->get('sar')->pivot->value ?? null;
-    $sar_eu = $attributes->get('sar_eu')->pivot->value ?? null;
-    $battery_old = $attributes->get('battery_old')->pivot->value ?? null;
-    $loudspeaker = $attributes->get('loudspeaker')->pivot->value ?? null;
-    $geekbench = $attributes->get('geekbench')->pivot->value ?? null;
-    $antutu = $attributes->get('antutu')->pivot->value ?? null;
+    @endphp
 
-    $release_date = \Carbon\Carbon::parse($product->release_date)->format("M-Y");
+    <div class="flex flex-wrap items-center gap-2 mb-8 text-sm text-text-muted">
+        <a href="{{ url('/') }}" class="hover:text-primary transition-colors">Home</a>
+        <span>/</span>
+        <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'category.show', ($country->country_code == 'pk' ? $product->category->slug : ['country_code' => $country->country_code, 'category' => $product->category->slug])) }}"
+            class="hover:text-primary transition-colors">{{ $product->category->category_name }}</a>
+        <span>/</span>
+        <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'brand.show', ($country->country_code == 'pk' ? ['brand' => $product->brand->slug, 'categorySlug' => $product->category->slug] : ['country_code' => $country->country_code, 'brand' => $product->brand->slug, 'categorySlug' => $product->category->slug])) }}"
+            class="hover:text-primary transition-colors">{{ $product->brand->name }}</a>
+        <span>/</span>
+        <span class="text-text-main font-semibold">{{ $product->name }}</span>
+    </div>
 
-@endphp
-
-
-<main class="main container-lg">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="my-1" style="font-size: 12px;">
-            <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item">
-                    <a href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-                        class="text-decoration-none text-secondary">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
-                        class="text-decoration-none text-secondary">
-                        {{ $product->category->category_name }}
-                    </a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
-                        class="text-decoration-none text-secondary">
-                        {{ $product->brand->name }}
-                    </a>
-                </li>
-                <li class="breadcrumb-item text-secondary active" aria-current="page">{{ Str::title($product->name) }}
-                </li>
-            </ol>
-        </div>
-    </nav>
-
-    <div class="row">
-        <div class="col-12 col-md-3 pe-1">
-            @include("includes.sidebar_" . $product->category->slug, ['category' => $product->category])
-        </div>
-        <div class="col-12 col-md-9">
-            @include("includes.info-bar")
-
-            <div class="row">
-                <div class="col-12 mb-2">
-                    <h1 class="fs-3 bg-light p-2">{{ Str::title($product->name) }}</h1>
-                    <p class="bg-light p-2 mb-0 rounded-bottom">The {{ $product->name }} released on {{ $release_date }}
-                        at price {{ $country->currency }} {{ $price_in_pkr }} in {{ $country->country_name }} with
-                        {{ $camera_test ?? '' }} , {{ $battery_new ?? '' }} battery, {{ $rom ?? '' }} storage, and
-                        {{ $ram ?? '' }} RAM.
-                    </p>
-                </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <!-- Left Column: Images -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            <div
+                class="bg-white rounded-2xl p-8 flex items-center justify-center aspect-[4/3] relative overflow-hidden group border border-border-light shadow-soft">
+                <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}"
+                    class="object-contain h-full w-auto drop-shadow-xl transition-transform duration-500 group-hover:scale-105 z-10">
             </div>
-            <div class="row mb-2">
-                <div class="col-5 col-md-4 text-center my-auto">
-                    <a href="#images"><img src="{{ URL::to('/images/thumbnail.png') }}"
-                            data-echo="{{ $product->thumbnail }}" class="img-fluid mobile_image rounded mb-2"
-                            alt="{{ $product->slug }}"></a>
-                    <div class="d-flex justify-content-center d-none">
-                        <img id="shareIcon" src="{{ URL::to('images/icons/share.png') }}" class="img-fluid mx-2"
-                            width="30" height="30" title="share">
-                        <img id="heartIcon" src="{{ URL::to('images/icons/heart.png') }}" class="img-fluid mx-2"
-                            width="30" height="30" title="heart">
+
+            @if($product->images->isNotEmpty())
+                <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                    <div
+                        class="w-20 h-20 rounded-lg bg-white border-2 border-primary p-2 flex-shrink-0 cursor-pointer shadow-sm">
+                        <img src="{{ $product->thumbnail }}" alt="Main Image" class="w-full h-full object-contain">
                     </div>
+                    @foreach($product->images->take(4) as $image)
+                        <div
+                            class="w-20 h-20 rounded-lg bg-white border border-border-light hover:border-text-muted p-2 flex-shrink-0 cursor-pointer transition-colors shadow-sm">
+                            <img src="{{ $image->path ?? $image->url }}" alt="Gallery Image" class="w-full h-full object-contain">
+                        </div>
+                    @endforeach
+                    @if($product->images->count() > 4)
+                        <div
+                            class="w-20 h-20 rounded-lg bg-white border border-border-light hover:border-text-secondary p-2 flex-shrink-0 cursor-pointer transition-colors flex items-center justify-center shadow-sm">
+                            <span class="text-xs text-text-muted font-bold">+{{ $product->images->count() - 4 }}</span>
+                        </div>
+                    @endif
                 </div>
-                <div class="col-7 col-md-8 d-sm-none">
-                    @include("includes.product-summary")
+            @endif
+        </div>
+
+        <!-- Right Column: Key Info & Highlights -->
+        <div class="lg:col-span-7 flex flex-col justify-between">
+            <div>
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-bold text-text-main mb-3 tracking-tight">{{ $product->name }}
+                        </h1>
+                        <div class="flex items-center gap-4 text-sm text-text-muted">
+                            <span class="flex items-center gap-1"><span
+                                    class="material-symbols-outlined text-[16px]">calendar_today</span> Released
+                                {{ \Carbon\Carbon::parse($product->release_date)->format('Y, M d') }}</span>
+                        </div>
+                    </div>
+                    <!-- Rating Placeholder -->
+                    <div class="flex flex-col items-end gap-2">
+                        <div
+                            class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-border-light shadow-sm">
+                            <span class="text-3xl font-bold text-primary">N/A</span>
+                            <div class="flex flex-col leading-none">
+                                <span
+                                    class="text-[10px] text-text-muted uppercase font-bold tracking-wider">TechSpecs</span>
+                                <span class="text-xs font-bold text-text-main">Score</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-12 col-md-8 pt-2">
-                    <div class="mb-2 mb-md-4 row">
-                        @if(!$product->images->isEmpty())
-                            <div class="col-6 col-md-auto mb-2">
-                                <a class="btn btn-primary btn-custom w-100" href="#images">Images</a>
-                            </div>
-                        @endif
-                        <div class="col-6 col-md-auto mb-2">
-                            <a class="btn btn-primary btn-custom w-100" href="#specification">Specifications</a>
-                        </div>
-                        @if($country->country_code == 'pk')
-                            <div class="col-6 col-md-auto mb-2">
-                                <a class="btn btn-primary btn-custom w-100" href="#installmentsDaraz">Installments</a>
-                            </div>
-                        @endif
-                        <div class="col-6 col-md-auto mb-2">
-                            <a class="btn btn-primary btn-custom w-100" href="#reviews">Reviews</a>
-                        </div>
-                        <div class="col-6 col-md-auto mb-2">
-                            <a class="btn btn-primary btn-custom w-100" id="nav-compare-tab"
-                                data-href="{{URL::to('/compare/') . '/' . $product->slug}}">Compare</a>
+                <!-- Key Specs Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div
+                        class="bg-white border border-border-light rounded-xl p-5 flex flex-col gap-3 hover:border-primary/50 hover:shadow-md transition-all group shadow-sm">
+                        <span
+                            class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">smartphone</span>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium uppercase tracking-wide">Display</p>
+                            <p class="text-text-main font-bold text-lg leading-tight">{{ $screen_size ?? 'N/A' }}</p>
+                            <p class="text-xs text-text-muted mt-0.5 line-clamp-1" title="{{ $display_type }}">
+                                {{ $display_type ?? '-' }}</p>
                         </div>
                     </div>
-                    <div class="d-none d-sm-block">
-                        @include("includes.product-summary")
+                    <div
+                        class="bg-white border border-border-light rounded-xl p-5 flex flex-col gap-3 hover:border-primary/50 hover:shadow-md transition-all group shadow-sm">
+                        <span
+                            class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">memory</span>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium uppercase tracking-wide">Chipset</p>
+                            <p class="text-text-main font-bold text-lg leading-tight line-clamp-2" title="{{ $chipset }}">
+                                {{ $chipset ?? 'N/A' }}</p>
+                            <p class="text-xs text-text-muted mt-0.5 line-clamp-1" title="{{ $ram }}">
+                                {{ $ram ? $ram . ' RAM' : '-' }}</p>
+                        </div>
                     </div>
-                    @include("frontend.partials.amazon_button")
+                    <div
+                        class="bg-white border border-border-light rounded-xl p-5 flex flex-col gap-3 hover:border-primary/50 hover:shadow-md transition-all group shadow-sm">
+                        <span
+                            class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">photo_camera</span>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium uppercase tracking-wide">Camera</p>
+                            <p class="text-text-main font-bold text-lg leading-tight line-clamp-1"
+                                title="{{ $main_camera }}">{{ $main_camera ?? 'N/A' }}</p>
+                            <p class="text-xs text-text-muted mt-0.5">Video Support</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white border border-border-light rounded-xl p-5 flex flex-col gap-3 hover:border-primary/50 hover:shadow-md transition-all group shadow-sm">
+                        <span
+                            class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">battery_charging_full</span>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium uppercase tracking-wide">Battery</p>
+                            <p class="text-text-main font-bold text-lg leading-tight">{{ $battery ?? 'N/A' }}</p>
+                            <p class="text-xs text-text-muted mt-0.5">Li-Ion</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            @include("includes.product-specification")
+            <!-- Mobile Price Section -->
+            <div
+                class="bg-white border border-border-light rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-soft">
+                <div class="flex flex-col">
+                    <span class="text-text-muted text-sm font-medium">Starting Price</span>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-text-main">{{ $country->currency }}
+                            {{ $price_in_pkr ? number_format($price_in_pkr) : 'N/A' }}</span>
+                    </div>
+                </div>
+                <div class="flex w-full md:w-auto gap-3">
+                    <button
+                        class="flex-1 md:flex-none h-12 px-6 bg-primary hover:bg-primary-hover text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-md shadow-blue-500/20">
+                        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+                        Check Prices
+                    </button>
+                    <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'compare.show', ($country->country_code == 'pk' ? $product->slug : ['country_code' => $country->country_code, 'slug' => $product->slug])) }}" class="flex-1 md::flex-none h-12 px-6 bg-white border border-gray-300 hover:border-primary hover:text-primary text-text-main rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-sm decoration-0">
+                    <span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+                    Compare
+                 </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            @include("includes.product-images")
+    <!-- Navigation Links -->
+    <div
+        class="sticky top-[65px] z-40 bg-white/95 backdrop-blur-sm border-b border-border-light mb-8 -mx-4 px-4 lg:-mx-8 lg:px-8 shadow-sm">
+        <div class="flex gap-8 overflow-x-auto no-scrollbar justify-center">
+            <a href="#specs"
+                class="py-4 text-primary border-b-2 border-primary font-bold text-sm tracking-wide whitespace-nowrap">FULL
+                SPECS</a>
+            <a href="#reviews"
+                class="py-4 text-text-muted hover:text-primary border-b-2 border-transparent hover:border-gray-200 font-medium text-sm tracking-wide transition-colors whitespace-nowrap">USER
+                OPINIONS</a>
+        </div>
+    </div>
 
-            @include("includes.product-reviews")
-            <div class="row my-3 my-md-4">
-                <div class="col-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 flex flex-col gap-6" id="specs">
+            <!-- Full Specs Table (Iterating over attributes grouped by category if possible, currently using flat list logic mapping to groups) -->
+
+            <!-- Network -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">wifi</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Network & Connectivity</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['2g_band' => '2G Bands', '3g_band' => '3G Bands', '4g_band' => '4G Bands', '5g_band' => '5G Bands', 'sim' => 'SIM', 'wlan' => 'WLAN', 'bluetooth' => 'Bluetooth', 'gps' => 'GPS', 'nfc' => 'NFC', 'radio' => 'Radio', 'usb' => 'USB'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">smartphone</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Body</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['dimensions' => 'Dimensions', 'weight' => 'Weight', 'build' => 'Build', 'colors' => 'Colors'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Display -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">screenshot_monitor</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Display</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['technology' => 'Technology', 'size' => 'Size', 'resolution' => 'Resolution', 'protection' => 'Protection', 'extra_features' => 'Extra Features'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Platform -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">developer_board</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Platform</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['os' => 'OS', 'chipset' => 'Chipset', 'cpu' => 'CPU', 'gpu' => 'GPU'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Memory -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">memory</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Memory</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['built_in' => 'Built-in', 'card' => 'Card Slot'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Camera -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">camera</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Camera</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['main' => 'Main Camera', 'features' => 'Features', 'front' => 'Selfie Camera'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Battery -->
+            <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
+                <div class="bg-gray-50 border-b border-border-light px-6 py-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">battery_full</span>
+                    <h3 class="text-lg font-bold text-text-main uppercase tracking-wide">Battery</h3>
+                </div>
+                <div class="p-0">
+                    @foreach(['battery' => 'Type/Capacity', 'charging' => 'Charging'] as $key => $label)
+                        @if($val = $getAttribute($key))
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
+                                <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
+                                    {{ $label }}</div>
+                                <div class="px-6 py-3 text-sm text-text-main break-words">{{ $val }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+        </div>
+
+        <div class="lg:col-span-4 flex flex-col gap-8">
+            <!-- Review Section (Placeholder for now as dynamic reviews structure might differ) -->
+            <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="reviews">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-text-main">Description</h3>
+                </div>
+                <div class="prose prose-sm max-w-none text-text-muted">
                     {!! $product->body !!}
                 </div>
             </div>
-            @include("includes.product-compare")
 
-            @if($country->country_code == 'pk')
-                @include("includes.product-daraz-installment", ["country" => $country, "name" => Str::title($product->name), "price" => $price_in_pkr])
-            @endif
+            <!-- User Ratings (Static placeholder layout) -->
+            <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
+                <h3 class="text-lg font-bold text-text-main mb-4">User Ratings</h3>
+                <!-- Add real rating logic here if available -->
+                <button
+                    class="w-full py-3 bg-primary hover:bg-primary-hover text-white rounded-lg font-bold transition-colors shadow-md shadow-blue-500/20">
+                    Write a Review
+                </button>
+            </div>
 
-            @include("includes.product-related")
+            <!-- Compare With Widget -->
+            <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
+                <h3 class="text-lg font-bold text-text-main mb-4">Related Devices</h3>
+                <div class="space-y-4">
+                    @foreach($products as $related)
+                        <a href="{{ route('product.show', $related->slug) }}"
+                            class="flex items-center gap-3 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 transition-colors decoration-0">
+                            <img src="{{ $related->thumbnail }}" alt="{{ $related->name }}"
+                                class="w-12 h-16 object-contain bg-white border border-gray-100 rounded-md p-1 shadow-sm">
+                            <div>
+                                <h4 class="text-sm font-bold text-text-main group-hover:text-primary transition-colors">
+                                    {{ $related->name }}</h4>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
-</main>
-@stop
-
-
-@section("style") @stop
-
-@section("script")
-@stop
+@endsection
