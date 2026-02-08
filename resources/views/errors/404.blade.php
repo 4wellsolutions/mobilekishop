@@ -3,8 +3,8 @@
     $pathSegments = explode('/', trim(request()->path(), '/'));
     $firstSegment = $pathSegments[0] ?? null;
 
-    // Get allowed countries
-    $allowedCountries = DB::table('countries')->pluck('country_code')->toArray();
+    // Get allowed countries (cached)
+    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => DB::table('countries')->pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
 
     // Determine country code from path or default to 'pk'
     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
@@ -13,10 +13,9 @@
     session(['country_code' => $countryCode]);
 
     $country = DB::table("countries")->where("country_code", $countryCode)->first();
-    $layout = ($country && $country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
 @endphp
 
-@extends($layout)
+@extends('layouts.frontend')
 
 @section('title', '404 - Page not Found. MKS')
 

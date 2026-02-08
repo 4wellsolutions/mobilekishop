@@ -1,8 +1,4 @@
-@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.techspec' : 'layouts.techspec';
-@endphp
-
-@extends($layout)
+@extends('layouts.techspec')
 
 @section('title', $metas->title)
 @section('description', $metas->description)
@@ -70,20 +66,20 @@
 
 @section("script")
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org/", 
-            "@type": "BreadcrumbList", 
-            "itemListElement": [{
-                "@type": "ListItem", 
-                "position": 1, 
-                "name": "Home",
-                "item": "{{url('/')}}/"  
-            },{
-                "@type": "ListItem", 
-                "position": 2, 
-                "name": "{{$metas->name}}",
-                "item": "{{$metas->canonical}}"  
-            }]
-        }
-        </script>
+            {
+                "@@context": "https://schema.org/", 
+                "@type": "BreadcrumbList", 
+                "itemListElement": [{
+                    "@type": "ListItem", 
+                    "position": 1, 
+                    "name": "Home",
+                    "item": "{{url('/')}}/"  
+                },{
+                    "@type": "ListItem", 
+                    "position": 2, 
+                    "name": "{{$metas->name}}",
+                    "item": "{{$metas->canonical}}"  
+                }]
+            }
+            </script>
 @endsection

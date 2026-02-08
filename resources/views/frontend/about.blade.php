@@ -1,8 +1,4 @@
-@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
-@endphp
-
-@extends($layout)
+@extends('layouts.frontend')
 
 @section('title', $metas->title)
 @section('description', $metas->description)

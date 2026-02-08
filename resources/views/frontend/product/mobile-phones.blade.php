@@ -1,8 +1,4 @@
-@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.techspec' : 'layouts.techspec';
-@endphp
-
-@extends($layout)
+﻿@extends('layouts.techspec')
 
 @section('title', Str::title($product->name) . ": Price, Specs & Deals in {$country->country_name} | MobileKiShop")
 
@@ -370,7 +366,7 @@
                         <h3 class="text-xl font-bold text-gray-900 tracking-tight">TechSpecs Rating</h3>
                     </div>
                     
-                    <!-- Score Circle — Centered -->
+                    <!-- Score Circle ΓÇö Centered -->
                     <div class="flex justify-center mb-8">
                         <div class="relative w-40 h-40">
                             <svg class="w-full h-full transform -rotate-90">
@@ -391,7 +387,7 @@
                         </div>
                     </div>
 
-                    <!-- Specs Breakdown — Full Width -->
+                    <!-- Specs Breakdown ΓÇö Full Width -->
                     <div class="flex flex-col gap-5">
                         @php
                             $specsRatings = [

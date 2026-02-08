@@ -13,8 +13,15 @@ class ProductDetailService
      */
     public function getProductDetails(Product $product, Country $country): array
     {
-        // Load variants for this country
+        // Eager load all related data to prevent N+1 queries
         $product->load([
+            'brand',
+            'category',
+            'attributes',
+            'reviews' => function ($query) {
+                $query->where('is_active', 1)->latest();
+            },
+            'images',
             'variants' => function ($query) use ($country) {
                 $query->where('country_id', $country->id)
                     ->withPivot('price');

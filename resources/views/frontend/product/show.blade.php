@@ -1,8 +1,4 @@
-@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.techspec' : 'layouts.techspec';
-@endphp
-
-@extends($layout)
+@extends('layouts.techspec')
 
 @section('title', Str::title($product->name) . ": Price, Specs & Deals in {$country->country_name} | MobileKiShop")
 
@@ -703,4 +699,21 @@
         </div>
 
     </div>
+@endsection
+
+@section('structured_data')
+    @include('includes.product-schema', ['product' => $product, 'price' => $price_in_pkr, 'country' => $country])
+    @php
+        $isPk = ($country->country_code ?? 'pk') == 'pk';
+        $prefix = $isPk ? '' : 'country.';
+        $params = $isPk ? [] : ['country_code' => $country->country_code];
+        $categoryUrl = $product->category ? route($prefix . 'category.show', array_merge($params, ['category' => $product->category->slug])) : url('/');
+        $brandUrl = $product->brand ? route($prefix . 'brand.show', array_merge($params, ['brand' => $product->brand->slug, 'categorySlug' => $product->category ? $product->category->slug : 'mobile-phones'])) : url('/');
+    @endphp
+    @include('includes.breadcrumb-schema', ['breadcrumbs' => [
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => $product->category ? $product->category->name : 'Products', 'url' => $categoryUrl],
+        ['name' => $product->brand ? $product->brand->name : '', 'url' => $brandUrl],
+        ['name' => $product->name, 'url' => url()->current()]
+    ]])
 @endsection

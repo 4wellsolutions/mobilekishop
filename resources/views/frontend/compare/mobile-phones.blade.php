@@ -1,8 +1,4 @@
-@php
-    $layout = ($country->country_code == 'pk') ? 'layouts.techspec' : 'layouts.techspec';
-@endphp
-
-@extends($layout)
+@extends('layouts.techspec')
 
 @section('title', $metas->title)
 @section('description', $metas->description)

@@ -45,8 +45,9 @@ class ProductController extends Controller
         // Generate meta data
         $metas = $this->metaService->generateProductMeta($product, $country);
 
-        // Get the view based on category
-        $view = $product->category->slug;
+        // Use the dedicated view for mobile-phones (has experts rating, gallery, reviews etc.)
+        // Fall back to the generic show view for other categories
+        $view = $product->category && $product->category->slug === 'mobile-phones' ? 'mobile-phones' : 'show';
 
         return view("frontend.product.{$view}", [
             'product' => $productData['product'],

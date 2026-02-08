@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Jenssegers\Agent\Agent;
 use Illuminate\Support\Facades\Validator;
@@ -42,25 +43,27 @@ class HomeController extends Controller
             "h1" => "Mobile Phones Specifications, Price in {$country->country_name}"
         ];
 
-        $categories = Category::where('is_active', 1)
-            ->get()
-            ->map(function ($category) use ($country) {
-                $category->latest_products = $category->products()
-                    ->whereHas('variants', function ($query) use ($country) {
-                        $query->where('country_id', $country->id);
-                    })
-                    ->with([
-                        'variants' => function ($query) use ($country) {
-                            $query->where('product_variants.country_id', $country->id);
-                        },
-                        'brand',
-                        'category'
-                    ])
-                    ->latest()
-                    ->take(4)
-                    ->get();
-                return $category;
-            });
+        $categories = Cache::remember("homepage_categories_{$country->id}", 1800, function () use ($country) {
+            return Category::where('is_active', 1)
+                ->get()
+                ->map(function ($category) use ($country) {
+                    $category->latest_products = $category->products()
+                        ->whereHas('variants', function ($query) use ($country) {
+                            $query->where('country_id', $country->id);
+                        })
+                        ->with([
+                            'variants' => function ($query) use ($country) {
+                                $query->where('product_variants.country_id', $country->id);
+                            },
+                            'brand',
+                            'category'
+                        ])
+                        ->latest()
+                        ->take(4)
+                        ->get();
+                    return $category;
+                });
+        });
 
         return view('frontend.index', compact('categories', 'country', 'metas'));
     }

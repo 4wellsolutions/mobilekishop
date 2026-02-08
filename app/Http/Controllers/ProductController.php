@@ -63,6 +63,13 @@ class ProductController extends Controller
             return abort(404);
         }
         $product->load([
+            'brand',
+            'category',
+            'attributes',
+            'reviews' => function ($query) {
+                $query->where('is_active', 1)->latest();
+            },
+            'images',
             'variants' => function ($query) use ($country) {
                 $query->where('country_id', $country->id)
                     ->withPivot('price');
@@ -81,7 +88,6 @@ class ProductController extends Controller
             ->inRandomOrder()
             ->limit(4)
             ->get();
-        $view = $product->category->slug;
         $category = $product->category;
         $compares = Compare::where('product1', $product->slug)
             ->orWhere('product2', $product->slug)
@@ -91,7 +97,9 @@ class ProductController extends Controller
             ->get();
         $amount = null;
 
-        return view("frontend.product.$view", compact('product', 'products', 'agent', 'category', 'compares', 'amount', 'country'));
+        // Use the dedicated view for mobile-phones, generic show for others
+        $view = $product->category && $product->category->slug === 'mobile-phones' ? 'mobile-phones' : 'show';
+        return view("frontend.product.{$view}", compact('product', 'products', 'agent', 'category', 'compares', 'amount', 'country'));
     }
     public function getProducts1($countryId, $lowerAmount = null, $upperAmount = null)
     {

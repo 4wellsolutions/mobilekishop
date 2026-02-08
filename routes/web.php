@@ -14,17 +14,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PTACalculatorController;
-use App\Http\Controllers\MobileController;
-use App\Http\Controllers\TabletController;
-use App\Http\Controllers\WatchController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\CountryController;
-use App\Http\Controllers\ChargerController;
-use App\Http\Controllers\CountryChargerController;
-use App\Http\Controllers\CableController;
-use App\Http\Controllers\CountryCableController;
 
 
 
@@ -37,12 +29,7 @@ Route::get('/sitemap-{type}.xml', [SitemapController::class, 'serveSitemap'])
     ->name('sitemap.type');
 
 Route::get('/extract-prices/{slug}', [PriceController::class, 'extractPrices']);
-// URL redirection logic
-$url = \Request::fullUrl();
-$urlNew = DB::table('redirections')->where("from_url", $url)->first();
-if ($urlNew) {
-    return redirect($urlNew->to_url, 301)->send();
-}
+// URL redirections are now handled by the HandleRedirections middleware with caching
 
 // Redirect product images with .jpg extension
 Route::get('products/{product}', function ($product) {
@@ -121,23 +108,6 @@ require base_path('routes/web_v2.php');
 Route::middleware(['default.country'])->group(function () {
     Route::get('/sitemap/generate', [SitemapController::class, 'generate'])->name('sitemap.generate');
     Auth::routes();
-    // Common routes (Now handled by web_v2.php)
-    /*
-    Route::get('/comparison', [HomeController::class, 'comparison'])->name('comparison');
-    Route::get('/search', [HomeController::class, 'search'])->name('search');
-    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
-    Route::get('/terms-and-conditions', [HomeController::class, 'termsConditions'])->name('terms.conditions');
-    Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about');
-    Route::get('/category/{slug}', [HomeController::class, 'categoryShow'])->name('category.show');
-    Route::get('/brand/{slug}/{category_slug}', [HomeController::class, 'brandShow'])->name('brand.show');
-    Route::get('/brands/{category_slug}', [HomeController::class, 'showBrandsByCategory'])->name('brands.by.category');
-    Route::get('/compare/{slug}', [HomeController::class, 'compare'])->name('compare');
-    Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
-    Route::get('/{brand}/{slug}', [ProductController::class, 'showOld'])->name('product.show.old');
-    Route::get('/html-sitemap', [SitemapController::class, 'htmlSitemap'])->name('html.sitemap');
-    Route::get('/', [HomeController::class, 'index'])->name('index');
-    */
 
     // Packages routes
     Route::get('/packages', [PackageController::class, 'index'])->name('package.index');

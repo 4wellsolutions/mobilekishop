@@ -1,8 +1,4 @@
-ï»¿@php
-  $layout = ($country->country_code == 'pk') ? 'layouts.frontend' : 'layouts.frontend_country';
-@endphp
-
-@extends($layout)
+@extends('layouts.frontend')
 
 @section('title', $metas->title)
 @section('description', $metas->description)
@@ -74,7 +70,7 @@
 
         <h3 class="mt-4 text-dark fw-bold">8. Updates to This Policy</h3>
         <p>We may update this privacy policy from time to time. The updated version will be indicated by an updated
-          â€œRevisedâ€ date and the updated version will be effective as soon as it is accessible.</p>
+          “Revised” date and the updated version will be effective as soon as it is accessible.</p>
       </div>
     </div>
   </main>

@@ -17,6 +17,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{URL::to('/images/favicon32.png')}}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{URL::to('/images/favicon.png')}}">
     {!! generate_hreflang_tags() !!}
+
+    {{-- Open Graph Meta Tags --}}
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('title', 'MobileKiShop')">
+    <meta property="og:description"
+        content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.png'))">
+    <meta property="og:site_name" content="MobileKiShop">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'MobileKiShop')">
+    <meta name="twitter:description"
+        content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.png'))">
     <meta name="contconcord" content="niOB7jcOCtDY4m6kkX4YFoYMQQIbvarT">
 
     <script>
@@ -39,6 +55,39 @@
         };
     </script>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    {{-- JSON-LD Organization Schema --}}
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "MobileKiShop",
+        "url": "{{ url('/') }}",
+        "logo": "{{ asset('images/logo.png') }}",
+        "sameAs": [
+            "https://www.facebook.com/mobilekishop",
+            "https://twitter.com/mobilekishop"
+        ]
+    }
+    </script>
+
+    {{-- WebSite Schema for Sitelinks Search Box --}}
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "MobileKiShop",
+        "url": "{{ url('/') }}",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ url('/search') }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    {{-- Page-specific structured data --}}
+    @yield('structured_data')
 </head>
 
 <body>
@@ -103,7 +152,7 @@
                     // Extract country from current URL path
                     $pathSegments = explode('/', trim(request()->path(), '/'));
                     $firstSegment = $pathSegments[0] ?? null;
-                    $allowedCountries = \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray();
+                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                 @endphp
@@ -155,7 +204,7 @@
                             @endif
                         </li>
                         @php
-                            $countries = App\Country::where("is_menu", 1)->get();
+                            $countries = \Illuminate\Support\Facades\Cache::remember('menu_countries', 3600, fn() => App\Country::where("is_menu", 1)->get());
                             $currentCountry = $country ?? App('App\Http\Controllers\CountryController')->getCountry();
                             $currentCountryCode = $currentCountry->country_code ?? 'pk';
                             $currentCountryIcon = $currentCountry->icon ?? 'flag-icon-pk';
@@ -205,7 +254,7 @@
                                     // Extract country from current URL path, not session
                                     $pathSegments = explode('/', trim(request()->path(), '/'));
                                     $firstSegment = $pathSegments[0] ?? null;
-                                    $allowedCountries = \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray();
+                                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
                                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                                     $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
