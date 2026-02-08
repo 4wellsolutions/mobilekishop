@@ -128,10 +128,10 @@
                     </div>
                     <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
                      <div class="flex items-center rounded-lg bg-slate-50 p-1 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-                        <button class="rounded p-1 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white">
+                        <button id="btnGrid" onclick="switchView('grid')" class="rounded p-1 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white">
                             <span class="material-symbols-outlined text-[20px]">grid_view</span>
                         </button>
-                        <button class="rounded p-1 text-slate-400 hover:text-primary dark:text-slate-500">
+                        <button id="btnList" onclick="switchView('list')" class="rounded p-1 text-slate-400 hover:text-primary dark:text-slate-500">
                             <span class="material-symbols-outlined text-[20px]">view_list</span>
                         </button>
                     </div>
@@ -296,5 +296,95 @@
             top: 64px;
             z-index: 40;
         }
+
+        /* List View Styles */
+        #productList.list-view {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        #productList.list-view > div {
+            display: grid !important;
+            grid-template-columns: 140px 1fr !important;
+            grid-template-rows: auto auto auto !important;
+            padding: 1rem 1.25rem !important;
+            gap: 0 1.25rem;
+            align-items: start;
+        }
+        /* Image area — spans all rows on the left */
+        #productList.list-view > div > a:first-of-type {
+            grid-column: 1;
+            grid-row: 1 / -1;
+            height: 130px !important;
+            width: 140px;
+            margin-bottom: 0 !important;
+            border-radius: 0.75rem;
+            align-self: center;
+        }
+        #productList.list-view > div > a:first-of-type img {
+            height: 110px !important;
+        }
+        /* Badges & wishlist */
+        #productList.list-view > div > .absolute {
+            position: absolute;
+        }
+        /* Title + rating */
+        #productList.list-view > div > div:nth-child(3) {
+            grid-column: 2;
+            grid-row: 1;
+            margin-bottom: 0.25rem !important;
+        }
+        /* Key specs — horizontal row */
+        #productList.list-view > div > div:nth-child(4) {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex !important;
+            gap: 1.25rem;
+            border-top: none !important;
+            border-bottom: none !important;
+            padding: 0.5rem 0 !important;
+            margin-bottom: 0.25rem !important;
+        }
+        /* Force show hidden specs in list view */
+        #productList.list-view > div > div:nth-child(4) > div {
+            display: flex !important;
+        }
+        /* Footer — price + compare on same row */
+        #productList.list-view > div > div:nth-child(5) {
+            grid-column: 2;
+            grid-row: 3;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between;
+            margin-top: 0 !important;
+        }
     </style>
+@endsection
+
+@section('script')
+    <script>
+        function switchView(mode) {
+            const grid = document.getElementById('productList');
+            const btnGrid = document.getElementById('btnGrid');
+            const btnList = document.getElementById('btnList');
+            const activeClass = 'rounded p-1 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white';
+            const inactiveClass = 'rounded p-1 text-slate-400 hover:text-primary dark:text-slate-500';
+
+            if (mode === 'list') {
+                grid.classList.add('list-view');
+                btnList.className = activeClass;
+                btnGrid.className = inactiveClass;
+            } else {
+                grid.classList.remove('list-view');
+                btnGrid.className = activeClass;
+                btnList.className = inactiveClass;
+            }
+            localStorage.setItem('viewMode', mode);
+        }
+
+        // Restore saved preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const saved = localStorage.getItem('viewMode');
+            if (saved === 'list') switchView('list');
+        });
+    </script>
 @endsection

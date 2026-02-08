@@ -49,7 +49,7 @@
 
 <div class="space-y-6">
      <!-- Categories -->
-     <div class="rounded-xl border border-transparent pb-2 pt-2">
+     <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
          <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">Categories</h4>
          <ul class="space-y-2">
             @foreach([
@@ -73,7 +73,7 @@
 
     <!-- Network (Mobile Phones Only) -->
     @if($showAdvanced)
-    <div class="rounded-xl border border-transparent pb-2 pt-2">
+    <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
          <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">Network</h4>
          <ul class="space-y-2">
              <li><a href="{{ route($countryPrefix . 'filter.type', array_merge($routeParams, ['type' => '4g'])) }}" class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary">4G</a></li>
@@ -83,7 +83,7 @@
     @endif
 
     <!-- Brand -->
-    <div class="rounded-xl border border-transparent pb-2 pt-2">
+    <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
         <details class="group" open="">
             <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                 <span>Brand</span>
@@ -122,7 +122,7 @@
 
     @if($showAdvanced)
         <!-- Phone Types -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Phone Types</span>
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Combination -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Combination</span>
@@ -156,7 +156,7 @@
         </div>
 
         <!-- Processor -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Processor</span>
@@ -173,7 +173,7 @@
         </div>
 
         <!-- RAM -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>RAM</span>
@@ -190,7 +190,7 @@
         </div>
 
         <!-- Storage -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Storage</span>
@@ -207,7 +207,7 @@
         </div>
 
         <!-- Screen Size -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Screen Size</span>
@@ -224,7 +224,7 @@
         </div>
 
         <!-- Camera -->
-         <div class="rounded-xl border border-transparent pb-2 pt-2">
+         <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <details class="group">
                 <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
                     <span>Camera</span>
