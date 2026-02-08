@@ -74,8 +74,6 @@ $webRoutes = function () {
     Route::get('product/{product}', [ProductController::class, 'show'])->name('product.show');
     Route::get('products-show/{id}', [ProductController::class, 'getRedirect'])->name('product.redirect');
     Route::get('product/autocomplete', [ProductController::class, 'autocomplete'])->name('product.autocomplete');
-    Route::get('mobile/embed/{product}', [ProductController::class, 'showEmbed'])->name('product.embed');
-    Route::get('mobile/embeds/{product}', [ProductController::class, 'showEmbedWithButton'])->name('product.embed.button');
 
 
 

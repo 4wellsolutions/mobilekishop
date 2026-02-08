@@ -219,22 +219,8 @@ class MobileController extends Controller
         $products = $products->simplepaginate(32);
         return view("frontend.filter", compact('products', 'brand', 'metas', 'category', 'country'));
     }
-    public function showMobileEmbed($slug)
-    {
-        $product = Product::whereSlug($slug)->first();
-        if (!$product) {
-            return abort(404);
-        }
-        return view("frontend.embed.mobile", compact('product'));
-    }
-    public function showMobileEmbedWithButton($slug)
-    {
-        $product = Product::whereSlug($slug)->first();
-        if (!$product) {
-            return abort(404);
-        }
-        return view("frontend.embed.mobile_with_button", compact('product'));
-    }
+
+
 
 
     public function upComingMobiles()
@@ -929,30 +915,6 @@ class MobileController extends Controller
         $products = $products->simplepaginate(32);
         return view("frontend.filter", compact('products', 'metas', 'category', 'country'));
     }
-    public function compareMobileEmbed($slug, $slug1 = null)
-    {
 
-        if (strpos($slug, "vs")) {
-            $slug1 = explode('-vs-', $slug)[0];
-            $slug2 = explode('-vs-', $slug)[1];
-            if (isset(explode('-vs-', $slug)[2])) {
-                $slug3 = explode('-vs-', $slug)[2];
-            }
-        } else {
-            $slug1 = $slug;
-        }
-        // dd($slug);
-        $mobile = null;
-        $mobile1 = null;
-        $mobile2 = null;
-        $mobile = Mobile::whereSlug($slug1)->first();
-        if (isset($slug2)) {
-            $mobile1 = Mobile::whereSlug($slug2)->first();
-        }
-        if (isset($slug3)) {
-            $mobile2 = Mobile::whereSlug($slug3)->first();
-        }
 
-        return view("frontend.compare_embed", compact('mobile', 'mobile1', 'mobile2'));
-    }
 }

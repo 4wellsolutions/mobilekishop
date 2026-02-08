@@ -60,25 +60,8 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Show embedded product view
-     */
-    public function showEmbed(Request $request)
-    {
-        $slug = $request->route('product') ?: $request->route('slug');
-        $product = Product::where("slug", $slug)->firstOrFail();
-        return view("frontend.embed.mobile", compact('product'));
-    }
 
-    /**
-     * Show embedded product view with CTA button
-     */
-    public function showEmbedWithButton(Request $request)
-    {
-        $slug = $request->route('product') ?: $request->route('slug');
-        $product = Product::where("slug", $slug)->firstOrFail();
-        return view("frontend.embed.mobile-with-button", compact('product'));
-    }
+
 
     /**
      * Redirect ID-based product requests to slug-based URLs

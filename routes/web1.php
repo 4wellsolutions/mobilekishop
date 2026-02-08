@@ -11,8 +11,8 @@ use App\Http\Controllers\RobotsController;
 Route::get('/sitemap.xml', [SitemapController::class, 'serveSitemap'])->name('sitemap.index');
 // Routes for serving additional sitemaps (brands, categories, filters, products)
 Route::get('/sitemap-{type}.xml', [SitemapController::class, 'serveSitemap'])
-     ->where('type', 'brands|categories|filters|products|products-\d+')
-     ->name('sitemap.type');
+    ->where('type', 'brands|categories|filters|products|products-\d+')
+    ->name('sitemap.type');
 
 Route::get('/extract-prices/{slug}', [PriceController::class, 'extractPrices']);
 // URL redirection logic
@@ -32,10 +32,10 @@ Route::get('product/product', function () {
     $url = request()->getRequestUri(); // e.g., /product/product?product=samsung-galaxy-a12
 
     // Use str_replace to remove "product/product?" part from the URL
-    $productName = str_replace('/product/product?', '', $url); 
+    $productName = str_replace('/product/product?', '', $url);
 
     if (isset($productName)) {
-        return redirect()->to('product/' . $productName)->setStatusCode(301); 
+        return redirect()->to('product/' . $productName)->setStatusCode(301);
         // Redirect to the correct URL
     }
 });
@@ -59,32 +59,32 @@ Route::post('/unsubscribe', "SubscribeController@update")->name("unsubscribe.pos
 // Misc routes
 Route::get('/autocomplete-search', "ProductController@autocompleteSearch")->name("autocomplete.search");
 // user routes
-Route::group(['prefix' => "/user", "middleware" => "auth"], function(){
-    Route::get('/index',[
+Route::group(['prefix' => "/user", "middleware" => "auth"], function () {
+    Route::get('/index', [
         "uses" => "UserController@index",
         "as" => "user.index"
     ]);
-    Route::post('/update/{id}',[
+    Route::post('/update/{id}', [
         "uses" => "UserController@userUpdate",
         "as" => "user.update"
     ]);
-    Route::get('/review',[
+    Route::get('/review', [
         "uses" => "UserController@review",
         "as" => "user.review"
     ]);
-    Route::get('/review/delete/{id}',[
+    Route::get('/review/delete/{id}', [
         "uses" => "UserController@reviewDelete",
         "as" => "user.review.delete"
     ]);
-    Route::post('/review/update',[
+    Route::post('/review/update', [
         "uses" => "UserController@reviewUpdate",
         "as" => "user.review.update"
     ]);
-    Route::get('/wishlist',[
+    Route::get('/wishlist', [
         "uses" => "UserController@wishlist",
         "as" => "user.wishlist"
     ]);
-    Route::get('/wishlist/delete/{id}',[
+    Route::get('/wishlist/delete/{id}', [
         "uses" => "UserController@wishlistDelete",
         "as" => "user.wishlist.delete"
     ]);
@@ -94,7 +94,7 @@ Route::get('/{social}/redirect', "Auth\LoginController@socialRedirect")->name("s
 Route::get('/{social}/callback', "Auth\LoginController@socialCallback")->name("social.callback");
 
 // user routes
-Route::get('/password/reset', function(){
+Route::get('/password/reset', function () {
     return view("auth.login");
 });
 if (App::environment('local')) {
@@ -108,14 +108,14 @@ Route::domain($baseUrl)->group(function () {
         Auth::routes();
         // common routes for main and subdomain
         Route::get('/comparison', "HomeController@comparison")->name("comparison");
-        
+
         Route::get('/search', "HomeController@search")->name("search");
         // Static pages
         Route::get('/privacy-policy', "HomeController@privacyPolicy")->name("privacy.policy");
         Route::get('/terms-and-conditions', "HomeController@termsConditions")->name("terms.conditions");
         Route::get('/contact', "HomeController@contact")->name("contact");
         Route::get('/about-us', "HomeController@aboutUs")->name("about");
-        Route::get('/sponsor', function() {
+        Route::get('/sponsor', function () {
             return view("frontend.new.sponsor");
         });
         Route::get('/category/{slug}', "HomeController@categoryShow")->name("category.show");
@@ -125,7 +125,7 @@ Route::domain($baseUrl)->group(function () {
         // Packages routes
         Route::get('/packages', "PackageController@index")->name("package.network.index");
         Route::get('/packages/{network}', "PackageController@showNetwork")->name("package.network.index");
-        
+
         Route::get('/packages/jazz/{type}', "PackageController@showNetworkPackages")->name("package.network.type");
         Route::get('/packages/telenor/{type}', "PackageController@showNetworkPackages")->name("package.network.type");
         Route::get('/packages/ufone/{type}', "PackageController@showNetworkPackages")->name("package.network.type");
@@ -133,15 +133,15 @@ Route::domain($baseUrl)->group(function () {
 
         Route::get('/packages/{network}/{slug}', "PackageController@show")->name("package.show");
         Route::get('/packages/{network}/{type}', "PackageController@showNetwork")->where('type', '^(jazz|telenor|ufone|zong)$')->name("package.network.type");
-        
+
         Route::get('/packages/{network}-{type}-{validity}-{package}-packages', "PackageController@showNetworkValidityPackages")->name("package.network.network.type.validity");
         Route::get('/product/{slug}', "ProductController@show")->name("product.show");
         Route::get('/{brand}/{slug}', "ProductController@showOld")->name("product.show.old");
-        
+
         Route::get('/html-sitemap', "SitemapController@htmlSitemap")->name("html.sitemap");
         Route::get('/', "HomeController@index")->name("index");
-        
-        
+
+
         Route::get('/mobile-phones-with-{ram}gb-ram-{rom}gb-storage', "MobileController@combinationRamRom");
         Route::get('/{brand}-mobile-phones-under-{price}', "MobileController@productUnderMobileAmount")->name("product.brand.mobile.phones.amount");
 
@@ -159,7 +159,7 @@ Route::domain($baseUrl)->group(function () {
         Route::get('/get-products-by-brand', "FinanceController@getProductsByBrand")->name("get.products.by.brand");
         Route::get('/get-pta-tax', "PTACalculatorController@getPTATax")->name("get.pta");
 
-        
+
         // Package index
         Route::get('/packages', "PackageController@index")->name("package.index");
 
@@ -206,8 +206,7 @@ Route::domain($baseUrl)->group(function () {
         Route::get('/phone-covers/{brand}/{slug}', "HomeController@FilterPhoneCoverByBrandProducts")->name("phone.covers.by.brand");
         // Specific brand routes
         Route::get('/tecno-mobile-phones-more-20000', "MobileController@tecnoMobileMore20000")->name("mobile.tecno.more.20000");
-        
-        Route::get('/compare/embed/{slug}', "MobileController@compareMobileEmbed")->name("mobile.compare.embed");
+
 
         // Watch routes
         Route::get('/{brand}-smart-watches-under-{price}', "WatchController@underAmountByBrand")->name("product.brand.smart.watches.amount");
@@ -219,19 +218,17 @@ Route::domain($baseUrl)->group(function () {
         Route::get('/sitemaps-filters', "SitemapController@filters")->name("sitemap.filters");
         Route::get('/sitemaps-compare', "SitemapController@compare")->name("sitemap.compare");
         Route::get('/sitemaps-packages', "SitemapController@packages")->name("sitemap.packages");
-        // Embed routes
-        Route::get('/mobile/embed/{slug}', "MobileController@showMobileEmbed")->name("mobile.show.embed");
-        Route::get('/mobile/embeds/{slug}', "MobileController@showMobileEmbedWithButton")->name("mobile.show.embed.with.button");
+
         Route::get('robots.txt', [RobotsController::class, 'index']);
     });
     //admin routes
-    Route::group(['prefix' => '/dashboard','middleware' => ['auth','admin']], function () {
+    Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin']], function () {
 
-        Route::get('/',[
+        Route::get('/', [
             'uses' => "Dashboard\DashboardController@index",
             "as" => "dashboard.index"
         ]);
-        
+
         // product routes
         Route::get('/product/index', 'Dashboard\ProductController@index')->name('dashboard.product.index');
         Route::get('/product/create', 'Dashboard\ProductController@create')->name('dashboard.product.create');
@@ -290,19 +287,19 @@ Route::domain($baseUrl)->group(function () {
         Route::get('/tax/destroy/{id}', "Dashboard\TaxController@destroy")->name("dashboard.tax.destroy");
         // PTA tax routes
 
-        Route::get('/brand/index',[
+        Route::get('/brand/index', [
             'uses' => "Dashboard\BrandController@index",
             "as" => "dashboard.brand.index"
         ]);
-        Route::get('/package/index',[
+        Route::get('/package/index', [
             'uses' => "Dashboard\PackageController@index",
             "as" => "dashboard.package.index"
         ]);
-        Route::get('/package/create',[
+        Route::get('/package/create', [
             'uses' => "Dashboard\PackageController@create",
             "as" => "dashboard.package.create"
         ]);
-        Route::post('/package/store',[
+        Route::post('/package/store', [
             'uses' => "Dashboard\PackageController@store",
             "as" => "dashboard.package.store"
         ]);
@@ -310,110 +307,110 @@ Route::domain($baseUrl)->group(function () {
             "uses" => 'Dashboard\PackageController@update',
             "as" => "dashboard.package.update"
         ]);
-        Route::get('/package/edit/{id}',[
+        Route::get('/package/edit/{id}', [
             'uses' => "Dashboard\PackageController@edit",
             "as" => "dashboard.package.edit"
         ]);
-        Route::get('/brand/create',[
+        Route::get('/brand/create', [
             'uses' => "Dashboard\BrandController@create",
             "as" => "dashboard.brand.create"
         ]);
-        Route::post('/brand/store',[
+        Route::post('/brand/store', [
             'uses' => "Dashboard\BrandController@store",
             "as" => "dashboard.brand.store"
         ]);
-        Route::get('/brand/edit/{id}',[
+        Route::get('/brand/edit/{id}', [
             'uses' => "Dashboard\BrandController@edit",
             "as" => "dashboard.brand.edit"
         ]);
-        Route::post('/brand/update/{id}',[
+        Route::post('/brand/update/{id}', [
             'uses' => "Dashboard\BrandController@update",
             "as" => "dashboard.brand.update"
         ]);
-        Route::get('/compare/create',[
+        Route::get('/compare/create', [
             'uses' => "Dashboard\CompareController@create",
             "as" => "dashboard.compare.create"
         ]);
-        Route::post('/compare/store',[
+        Route::post('/compare/store', [
             'uses' => "Dashboard\CompareController@store",
             "as" => "dashboard.compare.store"
         ]);
-        Route::get('/compare/edit/{id}',[
+        Route::get('/compare/edit/{id}', [
             'uses' => "Dashboard\CompareController@edit",
             "as" => "dashboard.compare.edit"
         ]);
-        Route::post('/compare/update/{id}',[
+        Route::post('/compare/update/{id}', [
             'uses' => "Dashboard\CompareController@update",
             "as" => "dashboard.compare.update"
         ]);
-        Route::get('/compare/image',[
+        Route::get('/compare/image', [
             'uses' => "Dashboard\CompareController@mergeImages",
             "as" => "dashboard.compare.merge"
         ]);
-        Route::get('/compare/index',[
+        Route::get('/compare/index', [
             'uses' => "Dashboard\CompareController@index",
             "as" => "dashboard.compare.index"
         ]);
-        Route::get('/compare/autocomplete-search',[
+        Route::get('/compare/autocomplete-search', [
             'uses' => "Dashboard\CompareController@autocompleteSearch",
             "as" => "dashboard.compare.autocomplete"
         ]);
-        Route::get('/review/index',[
+        Route::get('/review/index', [
             'uses' => "Dashboard\ReviewController@index",
             "as" => "dashboard.review.index"
         ]);
-        Route::get('/review/edit/{id}',[
+        Route::get('/review/edit/{id}', [
             'uses' => "Dashboard\ReviewController@edit",
             "as" => "dashboard.review.edit"
         ]);
-        Route::post('/review/update/{id}',[
+        Route::post('/review/update/{id}', [
             'uses' => "Dashboard\ReviewController@update",
             "as" => "dashboard.review.update"
         ]);
-        
-        Route::get('/filter/index',[
+
+        Route::get('/filter/index', [
             'uses' => "Dashboard\FilterController@index",
             "as" => "dashboard.filter.index"
         ]);
-        Route::get('/filter/create',[
+        Route::get('/filter/create', [
             'uses' => "Dashboard\FilterController@create",
             "as" => "dashboard.filter.create"
         ]);
-        Route::post('/filter/store',[
+        Route::post('/filter/store', [
             'uses' => "Dashboard\FilterController@store",
             "as" => "dashboard.filter.store"
         ]);
-        Route::get('/filter/edit/{filter}',[
+        Route::get('/filter/edit/{filter}', [
             'uses' => "Dashboard\FilterController@edit",
             "as" => "dashboard.filter.edit"
         ]);
-        Route::put('/filter/update/{filter}',[
+        Route::put('/filter/update/{filter}', [
             'uses' => "Dashboard\FilterController@update",
             "as" => "dashboard.filter.update"
         ]);
-        Route::get("/redirection/index",[
-            "uses"  => "Dashboard\RedirectionController@index",
-            "as"    => "dashboard.redirection.index"
+        Route::get("/redirection/index", [
+            "uses" => "Dashboard\RedirectionController@index",
+            "as" => "dashboard.redirection.index"
         ]);
-        Route::get("/redirection/create",[
-            "uses"  => "Dashboard\RedirectionController@create",
-            "as"    => "dashboard.redirection.create"
+        Route::get("/redirection/create", [
+            "uses" => "Dashboard\RedirectionController@create",
+            "as" => "dashboard.redirection.create"
         ]);
-        Route::get("/redirection/edit/{id}",[
-            "uses"  => "Dashboard\RedirectionController@edit",
-            "as"    => "dashboard.redirection.edit"
+        Route::get("/redirection/edit/{id}", [
+            "uses" => "Dashboard\RedirectionController@edit",
+            "as" => "dashboard.redirection.edit"
         ]);
-        Route::post("/redirection/store",[
-            "uses"  => "Dashboard\RedirectionController@store",
-            "as"    => "dashboard.redirection.store"
+        Route::post("/redirection/store", [
+            "uses" => "Dashboard\RedirectionController@store",
+            "as" => "dashboard.redirection.store"
         ]);
-        Route::post("/redirection/update/{redirection}",[
-            "uses"  => "Dashboard\RedirectionController@update",
-            "as"    => "dashboard.redirection.update"
+        Route::post("/redirection/update/{redirection}", [
+            "uses" => "Dashboard\RedirectionController@update",
+            "as" => "dashboard.redirection.update"
         ]);
-        Route::get("/redirection/delete/{redirection}",[
-            "uses"  => "Dashboard\RedirectionController@destroy",
-            "as"    => "dashboard.redirection.destroy"
+        Route::get("/redirection/delete/{redirection}", [
+            "uses" => "Dashboard\RedirectionController@destroy",
+            "as" => "dashboard.redirection.destroy"
         ]);
         Route::get('/page/index', 'Dashboard\PageController@index')->name('dashboard.page.index');
         Route::get('/page/edit/{id}', 'Dashboard\PageController@edit')->name('dashboard.page.edit');
@@ -467,7 +464,7 @@ Route::get('/brand/{slug}', function ($slug) {
 Route::domain('{country_code}.mobilekishop.net')->group(function () {
     Route::middleware(['default.country'])->group(function () {
         Route::get('/sitemap/generate', [SitemapController::class, 'generate'])->name('sitemap.generate');
-        Route::post('/logout',"Auth\LoginController@logout")->name("country.logout");
+        Route::post('/logout', "Auth\LoginController@logout")->name("country.logout");
         // common routes for main and subdomain
         Route::get('/comparison', "HomeController@comparison")->name("country.comparison");
         Route::get('/compare/{slug}', "CountryController@compare")->name("country.compare");
@@ -477,8 +474,8 @@ Route::domain('{country_code}.mobilekishop.net')->group(function () {
         Route::get('/terms-and-conditions', "HomeController@termsConditions")->name("country.terms.conditions");
         Route::get('/contact', "HomeController@contact")->name("country.contact");
         Route::get('/about-us', "HomeController@aboutUs")->name("country.about");
-        
-        Route::get('/sponsor', function() {
+
+        Route::get('/sponsor', function () {
             return view("frontend.new.sponsor");
         });
         Route::get('/power-banks/power-banks-with-{mah}-mah', "CountryController@FilterPowerBankAttributeProduct")->name("country.powerbank.by.mah");
@@ -494,9 +491,9 @@ Route::domain('{country_code}.mobilekishop.net')->group(function () {
         Route::get('/mobile-phones-{ram}gb-ram', "CountryController@underRam")->name("country.mobile.phones.ram")->where('ram', '^(2|3|4|6|8|12|16|20|24)$');
 
         Route::get('/mobile-phones-{rom}gb-storage', "CountryController@underRom")->name("country.mobile.phones.rom");
-        
+
         Route::get('/mobile-phones-screen-{size}-inch', "CountryController@mobilePhonesScreen")->name("country.mobile.phones.screen");
-        
+
         Route::get('/folding-mobile-phones', "MobileController@mobilePhonesFolding")->name("country.mobile.phones.folding");
         Route::get('/up-coming-mobile-phones', "MobileController@upComingMobiles")->name("country.up.coming.mobiles");
         Route::get('/flip-mobile-phones', "MobileController@mobilePhonesFlip")->name("country.mobile.phones.flip");
@@ -513,16 +510,16 @@ Route::domain('{country_code}.mobilekishop.net')->group(function () {
         Route::get('/kirin-mobile-phones', "MobileController@underProcessor")->name("country.mobile.phones.processor");
         Route::get('/google-tensor-mobile-phones', "MobileController@underProcessor")->name("country.mobile.phones.processor");
         Route::get('/mobile-phones-{number}-camera', "CountryController@mobilePhonesNumberCamera")->name("country.mobile.phones.number.camera")->where('number', '^(dual|triple|quad)$');
-        
+
         Route::get('/mobile-phones-{camera}mp-camera', "CountryController@mobilePhonesUnderCamera")->where('camera', '^(12|16|24|48|64|108|200)$')->name("country.mobile.phones.under.camera");
-        
+
         Route::get('/mobile-phones-under-{price}', "CountryController@underPrice")->name("country.mobile.under.amount");
         Route::get('/{brand}-mobile-phones-under-{price}', "CountryController@productUnderMobileAmount")->name("country.mobile.under.amount");
-        
+
         Route::get('/brand/{slug}/{category_slug}', "CountryController@brandShow")->name("country.brand.show");
         Route::get('/brands/{category_slug}', "CountryController@showBrandsByCategory")->name("country.brands.by.category");
         Route::get('/category/{slug}', "CountryController@categoryShow")->name("country.category.show");
-        
+
         Route::get('/tablets-under-{price}', "CountryController@tabletsUnderPrice")->name("country.tablet.under.amount");
         Route::get('/4g-tablets', "TabletController@tablets4g")->name("country.tablet.4g");
         Route::get('/5g-tablets', "TabletController@tablets5g")->name("country.tablet.5g");
@@ -539,5 +536,5 @@ Route::domain('{country_code}.mobilekishop.net')->group(function () {
     });
 });
 
-Route::post('/auth/login',"Auth\LoginController@postLogin")->name("login.post");
-Route::post('/auth/register',"Auth\LoginController@register")->name('auth.register');
+Route::post('/auth/login', "Auth\LoginController@postLogin")->name("login.post");
+Route::post('/auth/register', "Auth\LoginController@register")->name('auth.register');
