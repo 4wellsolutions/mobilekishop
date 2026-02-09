@@ -19,7 +19,19 @@
     @endphp
     <meta name="description" content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+
+    {{-- Preconnect to external domains for faster loading --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    {{-- Flag icons - deferred (not needed for first paint) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"
+        media="print" onload="this.media='all'" />
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+    </noscript>
 
     {{-- Hreflang tags for multi-country SEO --}}
     @php
@@ -52,11 +64,23 @@
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.png'))">
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
+    {{-- Google Fonts - deferred loading --}}
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+    {{-- Material Symbols - deferred loading --}}
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+            rel="stylesheet" />
+    </noscript>
     <script id="tailwind-config">
         tailwind.config = {
             theme: {
@@ -80,6 +104,15 @@
         }
     </script>
     <style>
+        /* Font swap fallback - show text immediately with system font */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
@@ -87,6 +120,14 @@
         .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* Material symbols fallback sizing while loading */
+        .material-symbols-outlined {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            display: inline-block;
         }
     </style>
     @yield('style')
@@ -125,12 +166,18 @@
     @yield('structured_data')
 
     {{-- Custom head code (Analytics, AdSense, etc.) --}}
-    {!! \App\Models\SiteSetting::get('head_code') !!}
+    @php try {
+            echo \App\Models\SiteSetting::get('head_code');
+        } catch (\Throwable $e) {
+    } @endphp
 </head>
 
 <body
     class="bg-page-bg text-text-main font-display min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white">
-    {!! \App\Models\SiteSetting::get('body_start_code') !!}
+    @php try {
+            echo \App\Models\SiteSetting::get('body_start_code');
+        } catch (\Throwable $e) {
+    } @endphp
 
     <header class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-border-light">
         <div class="px-4 md:px-6 lg:px-8 max-w-[1400px] mx-auto h-16 flex items-center justify-between gap-4">
@@ -164,32 +211,32 @@
                             Categories
                             <span
                                 class="material-symbols-outlined text-[16px] transition-transform group-hover:rotate-180">expand_more</span>
-                        </button>
-                        <div
-                            class="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div
-                                class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[200px]">
-                                @php
-                                    $navCategories = \App\Models\Category::orderBy('category_name')->get();
-                                    $catIcons = [
-                                        'mobile-phones' => 'smartphone',
-                                        'tablets' => 'tablet',
-                                        'smart-watch' => 'watch',
-                                        'earphone' => 'headphones',
-                                        'phone-covers' => 'phone_iphone',
-                                        'power-banks' => 'battery_charging_full',
-                                        'chargers' => 'electrical_services',
-                                        'cables' => 'cable',
-                                    ];
-                                @endphp
-                                @foreach($navCategories as $navCat)
-                                    <a href="{{ route($countryPrefix . 'category.show', array_merge($routeParams, ['category' => $navCat->slug])) }}"
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
-                                        <span
-                                            class="material-symbols-outlined text-[18px]">{{ $catIcons[$navCat->slug] ?? 'category' }}</span>
-                                        {{ $navCat->category_name }}
-                                    </a>
-                                @endforeach
+                    </button>
+                    <div
+                    class="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div
+                        class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[200px]">
+                        @php
+                            $navCategories = \App\Models\Category::orderBy('category_name')->get();
+                            $catIcons = [
+                                'mobile-phones' => 'smartphone',
+                                'tablets' => 'tablet',
+                                'smart-watch' => 'watch',
+                                'earphone' => 'headphones',
+                                'phone-covers' => 'phone_iphone',
+                                'power-banks' => 'battery_charging_full',
+                                'chargers' => 'electrical_services',
+                                'cables' => 'cable',
+                            ];
+                        @endphp
+                            @foreach($navCategories as $navCat)
+                                <a href="{{ route($countryPrefix . 'category.show', array_merge($routeParams, ['category' => $navCat->slug])) }}"
+                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
+                                    <span
+                                        class="material-symbols-outlined text-[18px]">{{ $catIcons[$navCat->slug] ?? 'category' }}</span>
+                                    {{ $navCat->category_name }}
+                                </a>
+                            @endforeach
                                 <div class="border-t border-slate-100 my-1"></div>
                                 <a href="{{ $upcomingRoute }}"
                                     class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
@@ -204,8 +251,8 @@
                         href="{{ $comparisonRoute }}">Compare</a>
                     <!-- Blog -->
                     <a class="text-sm font-medium text-text-muted hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
-                        href="{{ url('/blogs') }}">Blog</a>
-                </nav>
+                    href="{{ url('/blogs') }}">Blog</a>
+            </nav>
                 <div class="h-6 w-px bg-border-light hidden md:block"></div>
 
                 {{-- Country Dropdown --}}
@@ -220,36 +267,36 @@
                         <span class="fi fi-{{ $currentCountryCode }} rounded-sm" style="font-size: 18px;"></span>
                         <span class="uppercase text-xs font-bold">{{ $currentCountryCode }}</span>
                         <span class="material-symbols-outlined text-[14px] transition-transform">expand_more</span>
-                    </button>
-                    <div
-                        class="absolute top-full right-0 pt-1 opacity-0 invisible group-[.open]:opacity-100 group-[.open]:visible transition-all duration-200 z-50">
-                        <div
-                            class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 w-56 max-h-80 overflow-y-auto">
-                            @foreach($menuCountries as $mc)
-                                @php
-                                    $isActive = $mc->country_code === $currentCountryCode;
-                                    $countryUrl = $mc->country_code === 'pk'
-                                        ? url($basePath)
-                                        : url($mc->country_code . '/' . $basePath);
-                                @endphp
-                                <a href="{{ $countryUrl }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isActive ? 'text-primary bg-primary/5 font-semibold' : 'text-text-muted hover:text-primary hover:bg-slate-50' }}">
+                </button>
+            <div
+                class="absolute top-full right-0 pt-1 opacity-0 invisible group-[.open]:opacity-100 group-[.open]:visible transition-all duration-200 z-50">
+            <div
+                class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 w-56 max-h-80 overflow-y-auto">
+                        @foreach($menuCountries as $mc)
+                            @php
+                                $isActive = $mc->country_code === $currentCountryCode;
+                                $countryUrl = $mc->country_code === 'pk'
+                                    ? url($basePath)
+                                    : url($mc->country_code . '/' . $basePath);
+                            @endphp
+                            <a href="{{ $countryUrl }}"
+                                class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isActive ? 'text-primary bg-primary/5 font-semibold' : 'text-text-muted hover:text-primary hover:bg-slate-50' }}">
                                     <span class="fi fi-{{ $mc->country_code }} rounded-sm" style="font-size: 16px;"></span>
                                     <span class="truncate">{{ $mc->country_name }}</span>
                                     @if($isActive)
                                         <span class="material-symbols-outlined text-[16px] ml-auto text-primary">check</span>
                                     @endif
-                                </a>
-                            @endforeach
-                        </div>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
-                @auth
-                    <a href="{{ route('user.index') }}"
-                        class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
-                        <span class="material-symbols-outlined text-[24px]">account_circle</span>
+                </div>
+            @auth
+                <a href="{{ route('user.index') }}"
+                    class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
+                    <span class="material-symbols-outlined text-[24px]">account_circle</span>
                     </a>
-                @else
+            @else
                     <a href="{{ route('login') }}"
                         class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
                         <span class="material-symbols-outlined text-[24px]">login</span>
@@ -379,7 +426,10 @@
             }
         });
     </script>
-    {!! \App\Models\SiteSetting::get('body_end_code') !!}
+    @php try {
+            echo \App\Models\SiteSetting::get('body_end_code');
+        } catch (\Throwable $e) {
+    } @endphp
 </body>
 
 </html>
