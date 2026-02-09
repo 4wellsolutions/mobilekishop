@@ -93,7 +93,7 @@
                                             <label class="font-weight-bold">Brand</label>
                                             <select class="select-filter form-control rounded py-1" name="brand_id">
                                                 <option value="">Select Brand</option>
-                                                @if($brands = App\Brand::limit(20)->get())
+                                                @if($brands = App\Models\Brand::limit(20)->get())
                                                     @foreach($brands as $brnd)
                                                         <option value="{{$brnd->id}}" {{(Request::get('brand_id') == $brnd->id) ? "selected" : ''}}>{{$brnd->name}}</option>
                                                     @endforeach

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Product;
-use App\Category;
+use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
 
 class FilterService

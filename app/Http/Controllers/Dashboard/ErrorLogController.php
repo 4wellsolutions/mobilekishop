@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\ErrorLog;
+use App\Models\ErrorLog;
 use Illuminate\Http\Request;
 
 class ErrorLogController extends Controller

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>@yield('title', 'TechSpec - Modern Device Specifications')</title>
+    <title>@yield('title', 'MobileKiShop - Mobile Phone Prices & Specifications')</title>
     @php
         $isPk = ($country->country_code ?? 'pk') == 'pk';
         $countryPrefix = $isPk ? '' : 'country.';
@@ -22,7 +22,7 @@
 
     {{-- Hreflang tags for multi-country SEO --}}
     @php
-        $allCountries = \App\Country::select('country_code', 'locale')->get();
+        $allCountries = \App\Models\Country::select('country_code', 'locale')->get();
         $currentPath = request()->path();
         // Strip country prefix from path if present
         $basePath = preg_replace('/^[a-z]{2}\//', '', $currentPath);
@@ -35,7 +35,7 @@
 
     {{-- Open Graph Meta Tags --}}
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('title', 'TechSpec - Modern Device Specifications')">
+    <meta property="og:title" content="@yield('title', 'MobileKiShop - Mobile Phone Prices & Specifications')">
     <meta property="og:description"
         content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -45,7 +45,7 @@
 
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'TechSpec - Modern Device Specifications')">
+    <meta name="twitter:title" content="@yield('title', 'MobileKiShop - Mobile Phone Prices & Specifications')">
     <meta name="twitter:description"
         content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.png'))">
@@ -134,7 +134,7 @@
                     <div class="size-8 text-primary">
                         <span class="material-symbols-outlined text-4xl">devices</span>
                     </div>
-                    <h2 class="text-text-main text-xl font-bold tracking-tight hidden sm:block">TechSpec</h2>
+                    <h2 class="text-text-main text-xl font-bold tracking-tight hidden sm:block">MobileKiShop</h2>
                 </a>
             </div>
             <div class="flex-1 max-w-xl mx-4">

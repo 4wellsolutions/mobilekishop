@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\SitemapService;
 use Illuminate\Support\Facades\File;
-use App\Country;
+use App\Models\Country;
 use URL;
 use Session;
 

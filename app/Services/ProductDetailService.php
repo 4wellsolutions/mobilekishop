@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Product;
-use App\Country;
-use App\Compare;
+use App\Models\Product;
+use App\Models\Country;
+use App\Models\Compare;
 
 class ProductDetailService
 {

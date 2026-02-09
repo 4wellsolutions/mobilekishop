@@ -8,7 +8,7 @@ use App\Services\FilterService;
 use App\Services\MetaService;
 use App\Services\ProductService;
 use App\Services\PriceFilterService;
-use App\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class FilterController extends Controller
@@ -87,7 +87,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $brand = \App\Brand::whereSlug($brandSlug)->first();
+        $brand = \App\Models\Brand::whereSlug($brandSlug)->first();
         $metas = $this->metaService->generateBrandPriceFilterMeta($brand, $amount, $country);
         $products = $products->simplePaginate(32);
         $category = Category::find(1);
@@ -371,7 +371,7 @@ class FilterController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $brand = $brandSlug !== 'all' ? \App\Brand::whereSlug($brandSlug)->first() : null;
+        $brand = $brandSlug !== 'all' ? \App\Models\Brand::whereSlug($brandSlug)->first() : null;
         $metas = $this->metaService->generateCurvedFilterMeta($brand, $country);
 
         $products = $products->simplePaginate(32);

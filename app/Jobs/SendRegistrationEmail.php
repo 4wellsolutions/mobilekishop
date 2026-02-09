@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationEmail;
-use App\User;
+use App\Models\User;
 
 class SendRegistrationEmail implements ShouldQueue
 {

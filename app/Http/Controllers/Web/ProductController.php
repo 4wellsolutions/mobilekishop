@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Services\ProductDetailService;
 use App\Services\MetaService;
-use App\Product;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Agent;
 

@@ -57,7 +57,7 @@
                     <label for="">Name</label>
                     <input type="text" name="name" value="{{old('name')}}" class="form-control">
                 </div>
-                @if($colors = App\Color::all())
+                @if($colors = App\Models\Color::all())
                 <div class="col-12 col-md-6">
                     <div class="form-group">
                         <label for="colors">Select Colors</label>
@@ -100,7 +100,7 @@
                     <input type="date" name="release_date" value="{{old('release_date')}}" class="form-control">
                 </div>
                 @php
-                    $category = App\Category::find(Request::get('category_id'));
+                    $category = App\Models\Category::find(Request::get('category_id'));
 
                 @endphp
                 @if($attributes = $category->attributes()

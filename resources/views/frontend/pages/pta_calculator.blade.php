@@ -12,7 +12,7 @@
                         <div class="col-12 col-md-5 my-2">
                             <select class="form-control" name="brand_id" id="brand_id">
                                 <option value="">Select Brand</option>
-                                @if($brands = App\Brand::all())
+                                @if($brands = App\Models\Brand::all())
                                     @foreach($brands as $brand)
                                         <option value="{{$brand->id}}">{{$brand->name}}</option>
                                     @endforeach

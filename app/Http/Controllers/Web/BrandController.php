@@ -7,8 +7,8 @@ use App\Services\CountryService;
 use App\Services\ProductService;
 use App\Services\BrandService;
 use App\Services\MetaService;
-use App\Category;
-use App\Brand;
+use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
@@ -38,7 +38,7 @@ class BrandController extends Controller
         if ($brandParam instanceof Brand) {
             $brand = $brandParam;
         } else {
-            $brand = \App\Brand::whereSlug($brandParam)->first();
+            $brand = \App\Models\Brand::whereSlug($brandParam)->first();
         }
 
         if (!$brand) {
@@ -48,7 +48,7 @@ class BrandController extends Controller
         // Get category if provided
         $category = null;
         if ($categorySlug) {
-            $category = \App\Category::whereSlug($categorySlug)->first();
+            $category = \App\Models\Category::whereSlug($categorySlug)->first();
             if (!$category) {
                 abort(404);
             }

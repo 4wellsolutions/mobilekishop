@@ -20,7 +20,7 @@
                     // Check if the URL contains a country code
                     $url = $compare->link;
                     $countryCode = request()->segment(1);
-                    $countries = App\Country::pluck('country_code')->toArray();
+                    $countries = App\Models\Country::pluck('country_code')->toArray();
                     if (in_array($countryCode, $countries)) {
                         $url = url("/$countryCode" . parse_url($compare->link, PHP_URL_PATH));
                     } else {

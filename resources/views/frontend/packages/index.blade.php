@@ -122,7 +122,7 @@
                         </div>
                     </div>
                 </form>
-                @if($networks = App\Package::distinct('filter_network')->pluck('filter_network'))
+                @if($networks = App\Models\Package::distinct('filter_network')->pluck('filter_network'))
                     <div class="row mt-3">
                         @foreach($networks as $network)
                             <div class="col-6 col-md-3  text-center p-3">

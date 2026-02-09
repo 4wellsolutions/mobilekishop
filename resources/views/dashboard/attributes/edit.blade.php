@@ -44,7 +44,7 @@
                 <label>Category</label>
                 <select class="form-control" name="category_id" id="category_id">
                   <option>Select Category</option>
-                  @if($categories = App\Category::all())
+                  @if($categories = App\Models\Category::all())
                   @foreach($categories as $category)
                   <option value="{{$category->id}}" {{$attribute->category_id == $category->id ? 'selected' : ''}}>{{$category->category_name}}</option>
                   @endforeach

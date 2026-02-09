@@ -30,7 +30,7 @@
         <form action="{{ route('dashboard.products.price.store', $product->id) }}" method="post">
         @csrf
         <h1>{{$product->name}}</h1>
-        @if($countries = App\Country::all())
+        @if($countries = App\Models\Country::all())
         @foreach($countries as $country)
             @php
                 $price = $product->prices()->where('country_id', $country->id)->first();

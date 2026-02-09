@@ -33,7 +33,7 @@
                     <label for="">Brand</label>
                     <select class="form-control" name="brand_id" id="brand_id" required>
                         <option value="">Select Brand</option>
-                        @if($brands = App\Brand::all())
+                        @if($brands = App\Models\Brand::all())
                         @foreach($brands as $brand)
                         <option value="{{$brand->id}}">{{$brand->name}}</option>
                         @endforeach

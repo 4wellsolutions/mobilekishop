@@ -1,4 +1,4 @@
-﻿@extends('layouts.techspec')
+@extends('layouts.techspec')
 
 @section('title', Str::title($product->name) . ": Price, Specs & Deals in {$country->country_name} | MobileKiShop")
 
@@ -363,7 +363,7 @@
                         <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/20">
                             <span class="material-symbols-outlined text-[20px]">verified</span>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 tracking-tight">TechSpecs Rating</h3>
+                        <h3 class="text-xl font-bold text-gray-900 tracking-tight">Expert Rating</h3>
                     </div>
                     
                     <!-- Score Circle ΓÇö Centered -->
@@ -562,7 +562,7 @@
                     @php
                         $url = $compare->link;
                         $countryCode = request()->segment(1);
-                        $countries = App\Country::pluck('country_code')->toArray();
+                        $countries = App\Models\Country::pluck('country_code')->toArray();
                         if (in_array($countryCode, $countries)) {
                             $url = url("/$countryCode" . parse_url($compare->link, PHP_URL_PATH));
                         } else {

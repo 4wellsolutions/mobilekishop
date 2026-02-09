@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
-use App\Brand;
-use App\Category;
+use App\Models\Brand;
+use App\Models\Category;
 use URL;
 use Str;
 

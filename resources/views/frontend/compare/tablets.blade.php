@@ -90,7 +90,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3">
-                @include("includes.sidebar." . $product->category->slug)
+                @include("includes.sidebar-unified", ['category' => $product->category])
             </div>
 
             <div class="col-md-9">
@@ -132,7 +132,8 @@
                                     class="text-danger text-uppercase font-weight-bold v-align-middle border-bottom-eee">
                                     Price</td>
                                 <th>Price In {{$country->currency}}</th>
-                                <td colspan="3">{{ $country->currency . ' ' . number_format($product->price_in_pkr) }}</td>
+                                <td colspan="3">{{ $country->currency . ' ' . number_format($product->price_in_pkr) }}
+                                </td>
                                 <td colspan="3">
                                     {{ isset($product1) ? $country->currency . ' ' . number_format($product1->price_in_pkr) : '' }}
                                 </td>

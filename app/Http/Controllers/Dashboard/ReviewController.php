@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
-use App\Review;
+use App\Models\Review;
 use Auth;
 
 class ReviewController extends Controller

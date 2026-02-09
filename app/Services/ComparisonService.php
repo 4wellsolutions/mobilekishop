@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Product;
-use App\Compare;
-use App\Country;
+use App\Models\Product;
+use App\Models\Compare;
+use App\Models\Country;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 

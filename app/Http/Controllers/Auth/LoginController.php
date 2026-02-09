@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendRegistrationEmail;
 use Auth;
 use URL;
-use App\User;
+use App\Models\User;
 use Validator;
 use Response;
 

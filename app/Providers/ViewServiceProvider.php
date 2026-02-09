@@ -5,11 +5,11 @@ namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Cache;
-use App\Category;
-use App\Brand;
-use App\Filter;
-use App\CategoryPriceRange;
-use App\Country;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\Filter;
+use App\Models\CategoryPriceRange;
+use App\Models\Country;
 use Request;
 
 class ViewServiceProvider extends ServiceProvider

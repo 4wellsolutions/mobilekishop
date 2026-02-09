@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Attribute;
+use App\Models\Attribute;
 
 class AttributeController extends Controller
 {

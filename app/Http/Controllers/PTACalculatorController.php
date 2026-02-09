@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Product;
-use App\Tax;
+use App\Models\Product;
+use App\Models\Tax;
 use Response;
 use DB;
 class PTACalculatorController extends Controller

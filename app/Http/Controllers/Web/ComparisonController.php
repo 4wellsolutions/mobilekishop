@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Services\ComparisonService;
 use App\Services\MetaService;
-use App\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 /**

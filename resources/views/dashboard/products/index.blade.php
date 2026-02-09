@@ -60,7 +60,7 @@
                 <label>Category (Optional)</label>
                 <select class="form-control" name="category_id" id="category_id">
                   <option value="">Select Category</option>
-                  @if($categories = App\Category::all())
+                  @if($categories = App\Models\Category::all())
                     @foreach($categories as $category)
                       <option value="{{$category->id}}" {{ \Request::get("category_id") == $category->id ? 'selected' : '' }}>{{$category->category_name}}</option>
                     @endforeach
@@ -113,7 +113,7 @@
         
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Total Products: {{App\Product::count()}}, Mobiles Found: , Today: ({{isset($today) ? $today : 0}})</h5>
+            <h5 class="card-title">Total Products: {{App\Models\Product::count()}}, Mobiles Found: , Today: ({{isset($today) ? $today : 0}})</h5>
             <div class="table-responsive">
               <table id="zero_config" class="table table-striped table-bordered">
                 <thead>

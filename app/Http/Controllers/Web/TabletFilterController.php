@@ -7,7 +7,7 @@ use App\Services\CountryService;
 use App\Services\FilterService;
 use App\Services\MetaService;
 use App\Services\ProductService;
-use App\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class TabletFilterController extends Controller

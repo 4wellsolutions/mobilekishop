@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Package;
+use App\Models\Package;
 use Str;
 
 class PackageController extends Controller

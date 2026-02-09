@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewsletterEmail;
-use App\User;
+use App\Models\User;
 
 class SendNewsletterEmail implements ShouldQueue
 {

@@ -6,11 +6,11 @@ use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\SitemapIndex;
 use Spatie\Sitemap\Tags\Url;
 use Illuminate\Support\Facades\Http;
-use App\Product;
-use App\Category;
-use App\Brand;
-use App\Filter;
-use App\Country;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\Filter;
+use App\Models\Country;
 use Session;
 use Illuminate\Support\Facades\File;
 

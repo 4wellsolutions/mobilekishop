@@ -115,7 +115,7 @@
             @endforeach
 
             <div class="row">
-                @if($page = App\Page::whereSlug(\Request::fullUrl())->first())
+                @if($page = App\Models\Page::whereSlug(\Request::fullUrl())->first())
                     <div class="prose max-w-none">
                         {!! $page->body !!}
                     </div>
@@ -178,7 +178,7 @@
                     class="size-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
                     <span class="material-symbols-outlined">mail</span>
                 </div>
-                <h4 class="font-bold text-lg mb-2">TechSpec Weekly</h4>
+                <h4 class="font-bold text-lg mb-2">MobileKiShop Weekly</h4>
                 <p class="text-sm text-blue-100 mb-4">Get the latest reviews and spec leaks delivered to your inbox.</p>
                 <button
                     class="w-full bg-white text-primary font-bold py-2 rounded-lg text-sm hover:bg-blue-50 transition-colors shadow-sm">

@@ -121,7 +121,7 @@
               $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
               $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
             @endphp
-            @if($categories = App\Category::has('products')->where("is_active", 1)->get())
+            @if($categories = App\Models\Category::has('products')->where("is_active", 1)->get())
               @foreach($categories as $categori)
                 <li>
                   <a href="{{url($urlPrefix . '/category/' . $categori->slug)}}"

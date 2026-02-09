@@ -169,7 +169,7 @@
             <div class="col-12 text-center">
                 <h1 class="fs-2 my-3">Sitemap Mobilekishop</h1>
             </div>
-            @if($categories = App\Category::has('products')->get())
+            @if($categories = App\Models\Category::has('products')->get())
             @foreach($categories as $category)
             <div class="col-12 col-md-12 py-2">                
                 <div class="col-12">
@@ -180,7 +180,7 @@
                     @php
                     $categoryId = $category->id;
                     $countryId = $country->id;
-                    $brands = \App\Brand::whereHas('products', function ($query) use ($categoryId, $countryId) {
+                    $brands = \App\Models\Brand::whereHas('products', function ($query) use ($categoryId, $countryId) {
                         $query->where('category_id', $categoryId)
                               ->whereHas('variants', function ($query) use ($countryId) {
                                   $query->where('country_id', $countryId)
@@ -197,7 +197,7 @@
                     </div>
                         <div class="row">
                             @php
-                            $products = \App\Product::whereHas('variants', function($query) use ($countryId) {
+                            $products = \App\Models\Product::whereHas('variants', function($query) use ($countryId) {
                                 $query->where('country_id', $countryId)->where('price', '>', 0);
                             })->where("brand_id",$brand->id)->where("category_id",$category->id)->get();
                             @endphp
@@ -216,7 +216,7 @@
             @endforeach
             @endif
             <div class="row">
-                @if($compares = App\Compare::all())
+                @if($compares = App\Models\Compare::all())
                 <h2 class="fs-4 text-center"><a class="text-decoration-none text-dark" href="{{url('comparison')}}">Compares</a></h2>
                 @foreach($compares as $compare)
                 <div class="col-12 col-sm-6 col-md-3">

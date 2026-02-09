@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
 use App\Jobs\SendAdPostEmail;
-use App\User;
+use App\Models\User;
 use App\Ad;
 use Auth;
 use Str;

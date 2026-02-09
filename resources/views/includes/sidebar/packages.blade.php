@@ -5,7 +5,7 @@
     <div class="widget-body">
         <ul class="list-unstyled ps-2 pt-1">
             @php
-                $networks = App\Package::distinct('filter_network')->pluck('filter_network');
+                $networks = App\Models\Package::distinct('filter_network')->pluck('filter_network');
             @endphp
             @if($networks->isNotEmpty())
                 @foreach($networks as $net)

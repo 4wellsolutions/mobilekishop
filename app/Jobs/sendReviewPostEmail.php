@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReviewPost;
-use App\Review;
+use App\Models\Review;
 
 class sendReviewPostEmail implements ShouldQueue
 {

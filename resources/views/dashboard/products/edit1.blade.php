@@ -44,7 +44,7 @@
                     <label for="name">Name</label>
                     <input type="text" name="name" value="{{ $product->name }}" class="form-control">
                 </div>
-                @if($colors = App\Color::all())
+                @if($colors = App\Models\Color::all())
                 <div class="col-12 col-md-6">
                     <div class="form-group">
                         <label for="colors">Select Colors</label>

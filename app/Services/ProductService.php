@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Product;
-use App\Category;
-use App\Brand;
-use App\Country;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Builder;
 
 class ProductService

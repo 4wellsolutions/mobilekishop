@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Agent;
-use App\Product;
-use App\Compare;
-use App\Brand;
+use App\Models\Product;
+use App\Models\Compare;
+use App\Models\Brand;
 use Response;
-use App\Click;
+use App\Models\Click;
 use DB;
 class ProductController extends Controller
 {

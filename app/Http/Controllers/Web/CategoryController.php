@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CountryService;
 use App\Services\ProductService;
 use App\Services\MetaService;
-use App\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 /**

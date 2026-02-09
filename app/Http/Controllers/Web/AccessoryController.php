@@ -7,7 +7,7 @@ use App\Services\CountryService;
 use App\Services\FilterService;
 use App\Services\MetaService;
 use App\Services\ProductService;
-use App\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -162,7 +162,7 @@ class AccessoryController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $brand = \App\Brand::whereSlug($brandSlug)->first();
+        $brand = \App\Models\Brand::whereSlug($brandSlug)->first();
         if (!$brand) {
             abort(404);
         }

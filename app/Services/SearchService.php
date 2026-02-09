@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Product;
-use App\Country;
+use App\Models\Product;
+use App\Models\Country;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Agent\Agent;
 

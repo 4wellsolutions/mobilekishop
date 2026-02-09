@@ -43,11 +43,7 @@
     <div class="">
         <div class="row">
             <div class="col-12 col-md-4 col-lg-3 pe-1">
-                @if($category)
-                    @include("includes.sidebar_" . $category->slug, ['category' => $category])
-                @else
-                    @include("includes.sidebar_mobile-phones")
-                @endif
+                @include("includes.sidebar-unified", ['category' => $category])
             </div>
             <div class="col-12 col-md-8 col-lg-9 pe-1">
 

@@ -23,7 +23,7 @@
     <div class="container-lg my-3">
         <div class="row">
             <div class="col-12 col-md-4 col-lg-3">
-                @include("includes.sidebar_" . $category->slug, ['category' => $category])
+                @include("includes.sidebar-unified", ['category' => $category])
             </div>
 
             <div class="col-12 col-md-8 col-lg-9">

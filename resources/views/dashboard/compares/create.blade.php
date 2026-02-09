@@ -29,9 +29,9 @@
           @include("includes.info-bar")
           @if(\Request::has('product1'))
           @php            
-            if(App\Compare::whereProduct1(\Request::get('product1'))->whereProduct2(\Request::get('product2'))->whereProduct3(null)->first()){
+            if(App\Models\Compare::whereProduct1(\Request::get('product1'))->whereProduct2(\Request::get('product2'))->whereProduct3(null)->first()){
                 echo "<div class='alert alert-danger'>Compare Already exist!</div>";
-            }elseif(App\Compare::whereProduct1(\Request::get('product1'))->whereProduct2(\Request::get('product2'))->whereProduct3(\Request::get('product3'))->first()){
+            }elseif(App\Models\Compare::whereProduct1(\Request::get('product1'))->whereProduct2(\Request::get('product2'))->whereProduct3(\Request::get('product3'))->first()){
                 echo "<div class='alert alert-danger'>Compare Already exist!</div>";
             }
           @endphp

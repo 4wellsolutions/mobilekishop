@@ -29,16 +29,16 @@ use App\Http\Controllers\Web\{
 
 // Route Model Bindings - Automatic model injection by slug
 Route::bind('category', function ($value) {
-    if ($value instanceof \App\Category)
+    if ($value instanceof \App\Models\Category)
         return $value;
-    return \App\Category::whereSlug($value)->firstOrFail();
+    return \App\Models\Category::whereSlug($value)->firstOrFail();
 });
 
 Route::bind('brand', function ($value) {
-    if ($value instanceof \App\Brand)
+    if ($value instanceof \App\Models\Brand)
         return $value;
     \Log::info("Attempting to bind brand with slug: " . $value);
-    $brand = \App\Brand::whereSlug($value)->first();
+    $brand = \App\Models\Brand::whereSlug($value)->first();
     if (!$brand) {
         \Log::error("Brand binding failed for slug: " . $value);
         return $value; // Return the slug itself so the controller can handle it or fall through
@@ -47,9 +47,9 @@ Route::bind('brand', function ($value) {
 });
 
 Route::bind('product', function ($value) {
-    if ($value instanceof \App\Product)
+    if ($value instanceof \App\Models\Product)
         return $value;
-    return \App\Product::whereSlug($value)->firstOrFail();
+    return \App\Models\Product::whereSlug($value)->firstOrFail();
 });
 
 // Shared Routing Logic Closure

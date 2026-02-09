@@ -152,7 +152,7 @@
                     // Extract country from current URL path
                     $pathSegments = explode('/', trim(request()->path(), '/'));
                     $firstSegment = $pathSegments[0] ?? null;
-                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
+                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Models\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                 @endphp
@@ -204,7 +204,7 @@
                             @endif
                         </li>
                         @php
-                            $countries = \Illuminate\Support\Facades\Cache::remember('menu_countries', 3600, fn() => App\Country::where("is_menu", 1)->get());
+                            $countries = \Illuminate\Support\Facades\Cache::remember('menu_countries', 3600, fn() => App\Models\Country::where("is_menu", 1)->get());
                             $currentCountry = $country ?? App('App\Http\Controllers\CountryController')->getCountry();
                             $currentCountryCode = $currentCountry->country_code ?? 'pk';
                             $currentCountryIcon = $currentCountry->icon ?? 'flag-icon-pk';
@@ -254,7 +254,7 @@
                                     // Extract country from current URL path, not session
                                     $pathSegments = explode('/', trim(request()->path(), '/'));
                                     $firstSegment = $pathSegments[0] ?? null;
-                                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
+                                    $allowedCountries = \Illuminate\Support\Facades\Cache::remember('allowed_country_codes', 3600, fn() => \App\Models\Country::pluck('country_code')->map(fn($c) => strtolower($c))->toArray());
                                     $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
                                     $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
                                     $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;

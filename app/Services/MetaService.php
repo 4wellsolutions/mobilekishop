@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Country;
-use App\Brand;
-use App\Category;
-use App\Product;
+use App\Models\Country;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 
 class MetaService
 {

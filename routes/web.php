@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\SitemapController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\ProductController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PTACalculatorController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\JobController;
-use App\Http\Controllers\TestController;
+
 
 
 
@@ -149,7 +149,7 @@ require base_path('routes/dashboard.php');
 // App scraper routes
 Route::get('/app-scraper', [AppController::class, 'index']);
 Route::post('/app-scraper', [AppController::class, 'postData'])->name('app.scraper.post');
-Route::post('/contact', [HomeController::class, 'contactPost'])->name('contact.post')->middleware('throttle:1,60');
+Route::post('/contact', [HomeController::class, 'contactPost'])->name('contact.post')->middleware(['default.country', 'throttle:1,60']);
 
 // Background job routes
 Route::get('/jobs/marked-deleted', [JobController::class, 'markAsDeleted'])->name('job.mark.deleted');
@@ -177,15 +177,14 @@ Route::get('/clear-cache', function () {
 
 // Review and wishlist post routes
 Route::post('/review', [HomeController::class, 'reviewPost'])->name('review.post');
-Route::post('/wishlist', [HomeController::class, 'wishlistPost'])->name('wishlist.post');
+Route::post('/wishlist', [HomeController::class, 'wishlistPost'])->name('wishlist.post')->middleware('auth');
 
 // Password reset route
 Route::get('/password/reset', function () {
     return view('auth.login');
 });
 
-// Test route
-Route::get('/test', [TestController::class, 'index']);
+
 
 // Brand redirect route
 Route::get('/brand/{slug}', function ($slug) {

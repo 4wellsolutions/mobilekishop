@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Country;
-use App\Product;
-use App\Category;
-use App\Brand;
+use App\Models\Country;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
 
 if (!function_exists('generate_hreflang_tags')) {
     function generate_hreflang_tags()

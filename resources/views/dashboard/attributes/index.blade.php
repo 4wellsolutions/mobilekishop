@@ -38,7 +38,7 @@
                         <input type="text" id="search" name="search" class="form-control" value="{{\Request::get("search")}}" placeholder="Search...">
                         <select class="form-select" name="category_id" id="category_id">
                             <option value="">Select Category</option>
-                            @if($categories = App\Category::all())
+                            @if($categories = App\Models\Category::all())
                                 @foreach($categories as $category)
                                     <option value="{{$category->id}}" {{ \Request::get("category_id") == $category->id ? 'selected' : '' }}>
                                         {{$category->category_name}}

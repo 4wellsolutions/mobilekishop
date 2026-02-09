@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Brand;
-use App\Category;
-use App\Country;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Builder;
 
 class BrandService
