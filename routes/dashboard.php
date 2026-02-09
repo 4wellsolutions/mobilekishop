@@ -14,7 +14,7 @@ use App\Http\Controllers\Dashboard\RedirectionController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\ColorController;
 use App\Http\Controllers\Dashboard\AttributeController;
-use App\Http\Controllers\Dashboard\RobotsController;
+use App\Http\Controllers\Dashboard\SiteSettingController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
 
 Route::prefix('dashboard')
@@ -182,9 +182,9 @@ Route::prefix('dashboard')
 		Route::get('pages/{page}/edit', [PageController::class, 'edit'])->name('pages.edit');
 		Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
 		Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
-		Route::get('robots/index', [RobotsController::class, 'index'])->name('robots.index');
-		Route::get('robots/{countryCode}/edit', [RobotsController::class, 'edit'])->name('robots.edit');
-		Route::post('robots/{countryCode}/update', [RobotsController::class, 'update'])->name('robots.update');
+		// Settings
+		Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
+		Route::post('settings', [SiteSettingController::class, 'update'])->name('settings.update');
 
 		Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
 		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');

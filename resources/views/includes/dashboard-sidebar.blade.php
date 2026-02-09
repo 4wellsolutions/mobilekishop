@@ -309,17 +309,10 @@
           </ul>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
-            <i class="mdi mdi-robot"></i><span class="hide-menu">Robots</span>
+          <a class="sidebar-link waves-effect waves-dark" href="{{ route('dashboard.settings.index') }}"
+            aria-expanded="false">
+            <i class="mdi mdi-settings"></i><span class="hide-menu">Settings</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level">
-            <li class="sidebar-item">
-              <a href="{{ route('dashboard.robots.index') }}" class="sidebar-link">
-                <i class="mdi mdi-view-list"></i><span class="hide-menu">Index</span>
-              </a>
-            </li>
-            <!-- Add other sub-menu items if needed -->
-          </ul>
         </li>
 
 

@@ -123,10 +123,14 @@
 
     {{-- Page-specific structured data (Product, BreadcrumbList, etc.) --}}
     @yield('structured_data')
+
+    {{-- Custom head code (Analytics, AdSense, etc.) --}}
+    {!! \App\Models\SiteSetting::get('head_code') !!}
 </head>
 
 <body
     class="bg-page-bg text-text-main font-display min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white">
+    {!! \App\Models\SiteSetting::get('body_start_code') !!}
 
     <header class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-border-light">
         <div class="px-4 md:px-6 lg:px-8 max-w-[1400px] mx-auto h-16 flex items-center justify-between gap-4">
@@ -375,6 +379,7 @@
             }
         });
     </script>
+    {!! \App\Models\SiteSetting::get('body_end_code') !!}
 </body>
 
 </html>
