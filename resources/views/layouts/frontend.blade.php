@@ -230,9 +230,12 @@
                         @foreach($menuCountries as $mc)
                             @php
                                 $isActive = $mc->country_code === $currentCountryCode;
+                                // Auth pages (login, register, etc.) are global — link to country homepage instead
+                                $isAuthPage = in_array(ltrim($basePath, '/'), ['login', 'register', 'password/reset', '']);
+                                $switchPath = ($isAuthPage && $basePath !== '') ? '' : $basePath;
                                 $countryUrl = $mc->country_code === 'pk'
-                                    ? url($basePath)
-                                    : url($mc->country_code . '/' . $basePath);
+                                    ? url($switchPath)
+                                    : url($mc->country_code . '/' . $switchPath);
                             @endphp
                             <a href="{{ $countryUrl }}"
                                 class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isActive ? 'text-primary bg-primary/5 font-semibold' : 'text-text-muted hover:text-primary hover:bg-slate-50' }}">

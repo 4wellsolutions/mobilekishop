@@ -36,13 +36,15 @@ class LoginController extends Controller
      * @var string
      */
     // protected $redirectTo = RouteServiceProvider::HOME;
-    public function redirectTo() {
-      $type = Auth::user()->type_id;
-      if($type == "1" || $type == "2" || $type == "3"){
-        return route('dashboard.index');
-      }
+    public function redirectTo()
+    {
+        $type = Auth::user()->type_id;
+        if ($type == "1" || $type == "2" || $type == "3") {
+            return route('dashboard.index');
+        }
 
-      return route('user.index');
+        // Redirect back to the page they came from (supports country routes)
+        return session('login.intended_url', route('user.index'));
     }
 
     /**
@@ -54,8 +56,22 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * Show the login form — store the referrer so we can redirect back after login.
+     */
+    public function showLoginForm()
+    {
+        // Store the previous page URL (only if it's from our own site)
+        $referer = request()->headers->get('referer');
+        if ($referer && str_contains($referer, request()->getHost()) && !str_contains($referer, '/login')) {
+            session(['login.intended_url' => $referer]);
+        }
+
+        return view('auth.login');
+    }
     public function postLogin(Request $request)
-    {           
+    {
         // dd($request->all());
         $auth = false;
         $credentials = [
@@ -63,44 +79,48 @@ class LoginController extends Controller
             "password" => $request->login_password,
         ];
 
-        
+
         if (Auth::attempt($credentials, $request->has('remember'))) {
             $auth = true; // Success
             $type = Auth::user()->type_id;
-            if($type == "1" || $type == "2" || $type == "3"){
-              return response()->json([
+            if ($type == "1" || $type == "2" || $type == "3") {
+                return response()->json([
                     'auth' => $auth,
                     'intended' => URL::route('dashboard.index')
                 ]);
-            }else{
-              return response()->json([
-                'auth' => $auth,
-                'intended' => URL::route('user.index')
-              ]);
+            } else {
+                // Redirect back to the page they came from (supports country routes)
+                $intended = session()->pull('login.intended_url', URL::route('user.index'));
+                return response()->json([
+                    'auth' => $auth,
+                    'intended' => $intended
+                ]);
             }
         }
-        
+
         // dd($auth);
         return response()->json([
             'auth' => $auth,
             'errors' => ["Wrong login details"]
-          ]);
-        
+        ]);
+
     }
-    public function socialRedirect($social, Request $request){
+    public function socialRedirect($social, Request $request)
+    {
         // Store the initial URL in session to redirect back to it after authentication
         session(['redirect_url' => $request->headers->get('referer')]);
-        
+
         return Socialite::driver($social)->redirect();
     }
-    public function socialCallback($social){
+    public function socialCallback($social)
+    {
 
         try {
             $socialUser = Socialite::driver($social)->user();
         } catch (\Exception $e) {
             return redirect('/login')->withErrors(['msg' => 'Unable to login using ' . $social . '. Please try again.']);
         }
-        
+
         // Find or create the user based on Google information
         $user = User::where('google_id', $socialUser->id)->orWhere("email", $socialUser->email)->first();
         if ($user) {
@@ -127,7 +147,8 @@ class LoginController extends Controller
 
         return redirect($redirectUrl);
     }
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users'],
@@ -136,7 +157,7 @@ class LoginController extends Controller
             'newsletter' => ['nullable'],
         ]);
         if ($validator->fails()) {
-            return Response::make(['success' => false, "errors" =>  $validator->errors()]);
+            return Response::make(['success' => false, "errors" => $validator->errors()]);
         }
         $user = User::create([
             'name' => $request->name,
@@ -151,9 +172,9 @@ class LoginController extends Controller
         SendRegistrationEmail::dispatch($user);
         // send registration email
         if (Auth::attempt($credentials)) {
-            return Response::make(['success' => true, "message" =>  "Register Successfully."]);
+            return Response::make(['success' => true, "message" => "Register Successfully."]);
         }
-        
-        
+
+
     }
 }
