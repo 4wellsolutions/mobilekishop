@@ -25,7 +25,9 @@ class SubdomainToPathRedirect
             $subdomain = str_replace('.' . $domain, '', $host);
 
             // Build new URL: mobilekishop.net/{subdomain}/{original_path}
-            $newUrl = $request->getScheme() . '://' . $domain . '/' . $subdomain . $request->getRequestUri();
+            $path = ltrim($request->getRequestUri(), '/');
+            $newUrl = $request->getScheme() . '://' . $domain . '/' . $subdomain . ($path ? '/' . $path : '');
+            $newUrl = rtrim($newUrl, '/');
 
             return redirect($newUrl, 301);
         }
