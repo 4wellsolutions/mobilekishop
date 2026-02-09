@@ -22,7 +22,8 @@
             </div>
             <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">{{ $metas->h1 }}</h1>
             <p class="text-slate-500 dark:text-slate-400 max-w-2xl">
-                {!! $metas->body ?? 'Browse ' . Str::title($brand->name) . ' devices.' !!}</p>
+                {!! $metas->body ?? 'Browse ' . Str::title($brand->name) . ' devices.' !!}
+            </p>
         </div>
     </div>
 
@@ -134,7 +135,7 @@
             <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3" id="productList">
                 @if(!$products->isEmpty())
                     @foreach($products as $product)
-                        <x-product-card :product="$product" :country="$country" />
+                        <x-product-card :product="$product" :country="$country" :lazy="$loop->index >= 4" />
                     @endforeach
                 @else
                     <div class="col-span-full text-center py-20">
@@ -299,31 +300,31 @@
     </script>
 
     <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org/",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
             {
-              "@type": "ListItem",
-              "position": 1,
-               "name": "Home",
-               "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-             },
-            @if($category)
+              "@@context": "https://schema.org/",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
                 {
                   "@type": "ListItem",
-                  "position": 2,
-                   "name": "{{ Str::title($category->category_name) }}",
-                   "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                  "position": 1,
+                   "name": "Home",
+                   "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
                  },
-            @endif
-            {
-              "@type": "ListItem",
-              "position": {{ (isset($category) && $category) ? 3 : 2 }},
-              "name": "{{ Str::title($brand->name ?? 'Brand') }}",
-              "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
+                @if($category)
+                    {
+                      "@type": "ListItem",
+                      "position": 2,
+                       "name": "{{ Str::title($category->category_name) }}",
+                       "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                     },
+                @endif
+                {
+                  "@type": "ListItem",
+                  "position": {{ (isset($category) && $category) ? 3 : 2 }},
+                  "name": "{{ Str::title($brand->name ?? 'Brand') }}",
+                  "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
+                }
+              ]
             }
-          ]
-        }
-        </script>
+            </script>
 @endsection

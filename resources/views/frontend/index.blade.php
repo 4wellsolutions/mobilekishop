@@ -61,7 +61,7 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             @foreach ($category->latest_products as $product)
-                                <x-product-card :product="$product" :country="$country" variant="featured" />
+                                <x-product-card :product="$product" :country="$country" variant="featured" :lazy="$loop->index >= 2" />
                             @endforeach
                         </div>
                     </div>

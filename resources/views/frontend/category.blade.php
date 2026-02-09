@@ -20,7 +20,8 @@
             </div>
             <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">{{ $metas->h1 }}</h1>
             <p class="text-slate-500 dark:text-slate-400 max-w-2xl">
-                {!! $metas->body ?? 'Browse the latest devices from top brands.' !!}</p>
+                {!! $metas->body ?? 'Browse the latest devices from top brands.' !!}
+            </p>
         </div>
         <!-- Quick Category Tags (Static for now, could be dynamic) -->
         <div class="flex gap-2 flex-wrap justify-start md:justify-end">
@@ -165,7 +166,7 @@
             <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3" id="productList">
                 @if(!$products->isEmpty())
                     @foreach($products as $product)
-                        <x-product-card :product="$product" :country="$country" />
+                        <x-product-card :product="$product" :country="$country" :lazy="$loop->index >= 4" />
                     @endforeach
                 @else
                     <div class="col-span-full text-center py-20">

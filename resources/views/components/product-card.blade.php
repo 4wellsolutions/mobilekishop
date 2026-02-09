@@ -9,7 +9,8 @@
         <a href="{{ $productUrl }}"
             class="relative block w-full aspect-video bg-gradient-to-tr from-slate-50 to-white overflow-hidden">
             <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
-                class="absolute inset-0 w-full h-full object-contain p-4" loading="lazy" />
+                class="absolute inset-0 w-full h-full object-contain p-4" width="400" height="225" @if(!($lazy ?? true))
+                loading="eager" fetchpriority="high" @else loading="lazy" @endif />
             @if($isNew)
                 <div
                     class="absolute top-3 left-3 bg-primary/90 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide shadow-sm z-10">
@@ -97,7 +98,8 @@
             class="relative mb-3 sm:mb-6 flex h-36 sm:h-64 items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-900/50">
             <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
                 class="h-32 sm:h-56 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                loading="lazy" />
+                width="200" height="224" @if(!($lazy ?? true)) loading="eager" fetchpriority="high" @else loading="lazy"
+                @endif />
         </a>
 
         {{-- Content --}}

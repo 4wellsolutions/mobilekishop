@@ -63,7 +63,8 @@
         content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.png'))">
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- Compiled Tailwind CSS (replaces CDN) --}}
+    @vite('resources/css/app.css')
     {{-- Google Fonts - deferred loading --}}
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" />
@@ -81,55 +82,6 @@
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
             rel="stylesheet" />
     </noscript>
-    <script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#135bec",
-                        "primary-hover": "#0f4bc2",
-                        "page-bg": "#f8fafc",
-                        "surface-card": "#ffffff",
-                        "surface-hover": "#f1f5f9",
-                        "text-main": "#0f172a",
-                        "text-muted": "#64748b",
-                        "border-light": "#e2e8f0"
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "Noto Sans", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
-    <style>
-        /* Font swap fallback - show text immediately with system font */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        .font-display {
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Material symbols fallback sizing while loading */
-        .material-symbols-outlined {
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
-            display: inline-block;
-        }
-    </style>
     @yield('style')
 
     {{-- JSON-LD Organization Schema --}}
