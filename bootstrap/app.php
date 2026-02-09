@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->use([
             \App\Http\Middleware\TrustProxies::class,
-            // \App\Http\Middleware\SubdomainToPathRedirect::class,
+            \App\Http\Middleware\SubdomainToPathRedirect::class,
             \Illuminate\Http\Middleware\HandleCors::class,
             \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
             \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
