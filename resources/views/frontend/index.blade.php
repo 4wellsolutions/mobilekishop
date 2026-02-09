@@ -4,6 +4,11 @@
 @section('description', $metas->description)
 @section('canonical', \URL::full())
 
+@section('style')
+    {{-- Preload hero image for fast LCP --}}
+    <link rel="preload" as="image" href="{{ asset('images/hero-iphone16-pro-max.jpg') }}" fetchpriority="high" />
+@endsection
+
 @php
     $comparisonRoute = ($country->country_code == 'pk') ? route('comparison') : route('country.comparison', ['country_code' => $country->country_code]);
 @endphp
@@ -14,7 +19,7 @@
         </div>
         <div class="w-full h-[480px] bg-center bg-cover bg-no-repeat transition-transform duration-700 group-hover:scale-105"
             data-alt="Close up of a premium titanium smartphone in dark lighting"
-            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCcMzxbmQbh563cotBN1pK9fZLd2903kYM532P0HLO1yyLJ32jIQRBLeCSr01W_EMQ5kvfEDbtCbN9u9Xt2pc404coMRoDcrbmL1BEC_JypI-G-HL3YClYBGomzAQndKjg9jtMlSkqZGJ2_Vxn1KEQ3JtM8hNi1SSLqfpYjA72PqZQBTYBrafRRx4D-Cm25M2tTXebqeguIX-jRaCp5xtvBdu2ceUPhCqnjV1oG2JOaGDZMTEVErNh6m4FByQ40gNt5OFbgfnKFsczM');">
+            style="background-image: url('{{ asset('images/hero-iphone16-pro-max.jpg') }}');">
         </div>
         <div class="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-12 lg:px-16 max-w-3xl">
             <div

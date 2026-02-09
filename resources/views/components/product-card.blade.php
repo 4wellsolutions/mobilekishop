@@ -7,7 +7,7 @@
     <div
         class="bg-surface-card rounded-xl overflow-hidden border border-border-light group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex flex-col">
         <a href="{{ $productUrl }}"
-            class="relative block w-full aspect-video bg-gradient-to-tr from-slate-50 to-white overflow-hidden">
+            class="product-img-featured relative block w-full bg-gradient-to-tr from-slate-50 to-white overflow-hidden">
             <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
                 class="absolute inset-0 w-full h-full object-contain p-4" width="400" height="225" @if(!($lazy ?? true))
                 loading="eager" fetchpriority="high" @else loading="lazy" @endif />
@@ -95,7 +95,7 @@
 
         {{-- Image --}}
         <a href="{{ $productUrl }}"
-            class="relative mb-3 sm:mb-6 flex h-36 sm:h-64 items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-900/50">
+            class="product-img-grid relative mb-3 sm:mb-6 flex items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-900/50">
             <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
                 class="h-32 sm:h-56 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 width="200" height="224" @if(!($lazy ?? true)) loading="eager" fetchpriority="high" @else loading="lazy"

@@ -23,7 +23,6 @@
     {{-- Preconnect to external domains for faster loading --}}
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
     {{-- Flag icons - deferred (not needed for first paint) --}}
@@ -35,7 +34,9 @@
 
     {{-- Hreflang tags for multi-country SEO --}}
     @php
-        $allCountries = \App\Models\Country::select('country_code', 'locale')->get();
+        $allCountries = \Illuminate\Support\Facades\Cache::remember('hreflang_countries', 3600, function () {
+            return \App\Models\Country::select('country_code', 'locale')->get();
+        });
         $currentPath = request()->path();
         // Strip country prefix from path if present (handles both "us/something" and bare "us")
         $basePath = preg_replace('/^[a-z]{2}(\/|$)/', '', $currentPath);
@@ -65,15 +66,15 @@
 
     {{-- Compiled Tailwind CSS (replaces CDN) --}}
     @vite('resources/css/app.css')
-    {{-- Google Fonts - deferred loading --}}
+    {{-- Google Fonts - deferred loading with font-display:swap --}}
     <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'" />
-    {{-- Material Symbols - deferred loading --}}
+    {{-- Material Symbols - deferred loading with font-display:swap --}}
     <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'" />
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
@@ -169,7 +170,9 @@
                     <div
                         class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[200px]">
                         @php
-                            $navCategories = \App\Models\Category::orderBy('category_name')->get();
+                            $navCategories = \Illuminate\Support\Facades\Cache::remember('nav_categories', 3600, function () {
+                                return \App\Models\Category::orderBy('category_name')->get();
+                            });
                             $catIcons = [
                                 'mobile-phones' => 'smartphone',
                                 'tablets' => 'tablet',
