@@ -106,7 +106,6 @@ $webRoutes = function () {
 
     // POST Actions
     Route::post('review', [HomeController::class, 'reviewPost'])->name('review.post');
-    Route::post('wishlist', [HomeController::class, 'wishlistPost'])->name('wishlist.post');
     Route::post('contact', [HomeController::class, 'contactPost'])->name('contact.post');
 
     // =========================================================================
@@ -260,7 +259,7 @@ $webRoutes = function () {
     Route::get('{brand}/{product}', [ProductController::class, 'show'])
         ->name('product.show.legacy')
         ->where([
-            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator)).*'
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard)).*'
         ]);
 };
 

@@ -10,7 +10,7 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Review;
 use App\Models\Contact;
-use App\Models\Wishlist;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -121,31 +121,6 @@ class HomeController extends Controller
         return view("frontend.contact", compact('metas', 'country'));
     }
 
-    public function wishlistPost(Request $request)
-    {
-        $this->validate($request, [
-            "product_id" => "required",
-            "type" => "required",
-        ]);
-
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        /** @var \App\Models\Wishlist $wishlist */
-        if ($wishlist = Wishlist::where(["product_id" => $request->product_id, "user_id" => Auth::user()->id])->first()) {
-            $wishlist->type = $request->type;
-            $wishlist->save();
-        } else {
-            $wishlist = new Wishlist();
-            $wishlist->product_id = $request->product_id;
-            $wishlist->type = $request->type;
-            $wishlist->user_id = Auth::user()->id;
-            $wishlist->save();
-        }
-        $this->saveLog("save Wishlist", $request->all());
-        return response()->json(['success' => true]);
-    }
 
     public function reviewPost(Request $request)
     {

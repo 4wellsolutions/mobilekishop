@@ -84,11 +84,7 @@ Route::prefix('user')->middleware('auth')->group(function () {
     // POST /user/review/update
     Route::post('/review/update', [UserController::class, 'reviewUpdate'])->name('user.review.update');
 
-    // GET /user/wishlist
-    Route::get('/wishlist', [UserController::class, 'wishlist'])->name('user.wishlist');
 
-    // GET /user/wishlist/delete/{id}
-    Route::get('/wishlist/delete/{id}', [UserController::class, 'wishlistDelete'])->name('user.wishlist.delete');
 });
 
 
@@ -175,9 +171,8 @@ Route::get('/clear-cache', function () {
     return 'All caches cleared successfully!';
 });
 
-// Review and wishlist post routes
+// Review post route
 Route::post('/review', [HomeController::class, 'reviewPost'])->name('review.post');
-Route::post('/wishlist', [HomeController::class, 'wishlistPost'])->name('wishlist.post')->middleware('auth');
 
 // Password reset route
 Route::get('/password/reset', function () {

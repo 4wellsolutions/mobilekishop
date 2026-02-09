@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         using: function () {
             file_put_contents(__DIR__ . '/../storage/logs/route_debug.txt', "Loading routes at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 
+            // Dashboard routes first — must load before catch-all web routes
+            Route::middleware('web')
+                ->group(base_path('routes/dashboard.php'));
+
             Route::middleware('web')
                 ->group(base_path('routes/web_v2.php'));
 

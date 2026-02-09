@@ -626,6 +626,71 @@
                     </button>
                 </div>
 
+                {{-- Expert Rating Card --}}
+                @if($product->expertRating)
+                @php $er = $product->expertRating; @endphp
+                <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card" id="expert-rating">
+                    <div class="bg-gradient-to-r from-primary to-indigo-600 px-6 py-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-white text-2xl">stars</span>
+                            <h3 class="text-lg font-bold text-white">Expert Rating</h3>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-3xl font-black text-white leading-none">{{ $er->overall }}</span>
+                            <span class="text-xs text-white/80 font-medium">/ 10</span>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        @php
+                            $criteria = [
+                                ['key' => 'design', 'label' => 'Design & Build', 'icon' => 'palette'],
+                                ['key' => 'display', 'label' => 'Display', 'icon' => 'smartphone'],
+                                ['key' => 'performance', 'label' => 'Performance', 'icon' => 'memory'],
+                                ['key' => 'camera', 'label' => 'Camera', 'icon' => 'photo_camera'],
+                                ['key' => 'battery', 'label' => 'Battery', 'icon' => 'battery_full'],
+                                ['key' => 'value_for_money', 'label' => 'Value for Money', 'icon' => 'sell'],
+                            ];
+                        @endphp
+
+                        @foreach($criteria as $c)
+                            @php
+                                $score = $er->{$c['key']};
+                                $pct = $score * 10;
+                                $color = $score >= 8 ? 'bg-emerald-500' : ($score >= 6 ? 'bg-blue-500' : ($score >= 4 ? 'bg-yellow-500' : 'bg-red-500'));
+                            @endphp
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2 text-sm text-text-muted">
+                                        <span class="material-symbols-outlined text-[16px]">{{ $c['icon'] }}</span>
+                                        {{ $c['label'] }}
+                                    </div>
+                                    <span class="text-sm font-bold text-text-main">{{ $score }}</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="{{ $color }} h-2 rounded-full transition-all duration-500" style="width: {{ $pct }}%"></div>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        {{-- Verdict --}}
+                        @if($er->verdict)
+                            <div class="mt-4 pt-4 border-t border-border-light">
+                                <p class="text-sm font-bold text-text-main mb-1">Verdict</p>
+                                <p class="text-sm text-text-muted leading-relaxed">{{ $er->verdict }}</p>
+                            </div>
+                        @endif
+
+                        {{-- Rated By --}}
+                        @if($er->rated_by)
+                            <div class="flex items-center gap-2 text-xs text-text-muted mt-2">
+                                <span class="material-symbols-outlined text-[14px]">person</span>
+                                Rated by {{ $er->rated_by }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
                 <!-- Description -->
                 <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
                     <div class="flex items-center justify-between mb-4">

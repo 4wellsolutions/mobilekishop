@@ -2,32 +2,44 @@
   <!-- Sidebar scroll-->
   <div class="scroll-sidebar">
     <!-- Sidebar navigation-->
-    <nav class="sidebar-nav" >
+    <nav class="sidebar-nav">
       <ul id="sidebarnav" class="pt-4" style="padding-bottom: 50px;">
         <li class="sidebar-item">
-          <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{route('dashboard.index')}}" aria-expanded="false">
+          <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{route('dashboard.index')}}"
+            aria-expanded="false">
             <i class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span>
           </a>
         </li>
         <!-- Main Products Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.products.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.products.*') || \Request::routeIs('dashboard.expert-ratings.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="fas fa-mobile-alt"></i><span class="hide-menu">Products</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.products.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.products.*') || \Request::routeIs('dashboard.expert-ratings.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{route('dashboard.products.index')}}" class="sidebar-link {{ \Request::routeIs('dashboard.products.index') ? 'active' : '' }}">
+              <a href="{{route('dashboard.products.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.products.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">Index</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.products.create')}}" class="sidebar-link {{ \Request::routeIs('dashboard.products.create') ? 'active' : '' }}">
+              <a href="{{route('dashboard.products.create')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.products.create') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Create</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.products.scrap')}}" class="sidebar-link {{ \Request::routeIs('dashboard.products.scrap') ? 'active' : '' }}">
+              <a href="{{route('dashboard.products.scrap')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.products.scrap') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Scrap</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="{{route('dashboard.expert-ratings.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.expert-ratings.*') ? 'active' : '' }}">
+                <i class="mdi mdi-star-circle"></i><span class="hide-menu">Expert Ratings</span>
               </a>
             </li>
           </ul>
@@ -35,17 +47,21 @@
 
         <!-- Categories Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.categories.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.categories.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="mdi mdi-folder"></i><span class="hide-menu">Categories</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.categories.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.categories.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{route('dashboard.categories.index')}}" class="sidebar-link {{ \Request::routeIs('dashboard.categories.index') ? 'active' : '' }}">
+              <a href="{{route('dashboard.categories.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.categories.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">All Categories</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.categories.create')}}" class="sidebar-link {{ \Request::routeIs('dashboard.categories.create') ? 'active' : '' }}">
+              <a href="{{route('dashboard.categories.create')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.categories.create') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Create Category</span>
               </a>
             </li>
@@ -54,17 +70,21 @@
 
         <!-- Attributes Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.attributes.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.attributes.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="mdi mdi-settings"></i><span class="hide-menu">Attributes</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.attributes.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.attributes.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{route('dashboard.attributes.index')}}" class="sidebar-link {{ \Request::routeIs('dashboard.attributes.index') ? 'active' : '' }}">
+              <a href="{{route('dashboard.attributes.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.attributes.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">All Attributes</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.attributes.create')}}" class="sidebar-link {{ \Request::routeIs('dashboard.attributes.create') ? 'active' : '' }}">
+              <a href="{{route('dashboard.attributes.create')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.attributes.create') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Create Attribute</span>
               </a>
             </li>
@@ -145,17 +165,21 @@
 
         <!-- Pages Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.pages.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.pages.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="mdi mdi-file-document"></i><span class="hide-menu">Pages</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.pages.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.pages.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{route('dashboard.pages.index')}}" class="sidebar-link {{ \Request::routeIs('dashboard.pages.index') ? 'active' : '' }}">
+              <a href="{{route('dashboard.pages.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.pages.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">All Pages</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.pages.create')}}" class="sidebar-link {{ \Request::routeIs('dashboard.pages.create') ? 'active' : '' }}">
+              <a href="{{route('dashboard.pages.create')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.pages.create') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Create Page</span>
               </a>
             </li>
@@ -201,17 +225,21 @@
 
         <!-- New Redirections Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.redirections.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.redirections.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="mdi mdi-link"></i><span class="hide-menu">Redirections</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.redirections.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.redirections.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{route('dashboard.redirections.index')}}" class="sidebar-link {{ \Request::routeIs('dashboard.redirections.index') ? 'active' : '' }}">
+              <a href="{{route('dashboard.redirections.index')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.redirections.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">All Redirections</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{route('dashboard.redirections.create')}}" class="sidebar-link {{ \Request::routeIs('dashboard.redirections.create') ? 'active' : '' }}">
+              <a href="{{route('dashboard.redirections.create')}}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.redirections.create') ? 'active' : '' }}">
                 <i class="mdi mdi-plus-circle"></i><span class="hide-menu">Create Redirection</span>
               </a>
             </li>
@@ -219,12 +247,15 @@
         </li>
         <!-- Error Logs Menu -->
         <li class="sidebar-item">
-          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.error_logs.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false">
+          <a class="sidebar-link has-arrow waves-effect waves-dark {{ \Request::routeIs('dashboard.error_logs.*') ? 'active' : '' }}"
+            href="javascript:void(0)" aria-expanded="false">
             <i class="mdi mdi-alert-circle"></i><span class="hide-menu">Error Logs</span>
           </a>
-          <ul aria-expanded="false" class="collapse first-level {{ \Request::routeIs('dashboard.error_logs.*') ? 'in' : '' }}">
+          <ul aria-expanded="false"
+            class="collapse first-level {{ \Request::routeIs('dashboard.error_logs.*') ? 'in' : '' }}">
             <li class="sidebar-item">
-              <a href="{{ route('dashboard.error_logs.index') }}" class="sidebar-link {{ \Request::routeIs('dashboard.error_logs.index') ? 'active' : '' }}">
+              <a href="{{ route('dashboard.error_logs.index') }}"
+                class="sidebar-link {{ \Request::routeIs('dashboard.error_logs.index') ? 'active' : '' }}">
                 <i class="mdi mdi-view-list"></i><span class="hide-menu">Index</span>
               </a>
             </li>
@@ -278,17 +309,17 @@
           </ul>
         </li>
         <li class="sidebar-item">
-            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
-                <i class="mdi mdi-robot"></i><span class="hide-menu">Robots</span>
-            </a>
-            <ul aria-expanded="false" class="collapse first-level">
-                <li class="sidebar-item">
-                    <a href="{{ route('dashboard.robots.index') }}" class="sidebar-link">
-                        <i class="mdi mdi-view-list"></i><span class="hide-menu">Index</span>
-                    </a>
-                </li>
-                <!-- Add other sub-menu items if needed -->
-            </ul>
+          <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+            <i class="mdi mdi-robot"></i><span class="hide-menu">Robots</span>
+          </a>
+          <ul aria-expanded="false" class="collapse first-level">
+            <li class="sidebar-item">
+              <a href="{{ route('dashboard.robots.index') }}" class="sidebar-link">
+                <i class="mdi mdi-view-list"></i><span class="hide-menu">Index</span>
+              </a>
+            </li>
+            <!-- Add other sub-menu items if needed -->
+          </ul>
         </li>
 
 

@@ -143,7 +143,6 @@
                             <a href="{{URL::to('/login')}}" class="header-icon" data-toggle="modal"
                                 data-target="#loginModal"><i class="icon-user-2"></i></a>
                         @else
-                            <a href="{{route('user.wishlist')}}" class="header-icon"><i class="icon-wishlist-2"></i></a>
                             <div class="dropdown cart-dropdown">
                                 <a href="#" class="dropdown-toggle dropdown-arrow" role="button" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false" data-display="static">
@@ -239,7 +238,7 @@
                                 <li><a href="{{route('ad.index')}}">Ads <span class="badge badge-danger">New</span></a>
                                 </li>
                                 <li><a href="{{route('package.index')}}">Packages <span
-                                             class="badge badge-danger">New</span></a></li>
+                                            class="badge badge-danger">New</span></a></li>
                                 <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
                                 <li><a
                                         href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact

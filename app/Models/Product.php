@@ -92,6 +92,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttribute::class);
     }
+    public function expertRating()
+    {
+        return $this->hasOne(ExpertRating::class);
+    }
     public function getRamInGbAttribute()
     {
         $ramAttribute = $this->ProductAttributeViews()->where('attribute_label', 'ram_in_gb')->first();

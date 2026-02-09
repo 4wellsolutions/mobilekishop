@@ -18,15 +18,15 @@ use App\Http\Controllers\Dashboard\RobotsController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
 
 Route::prefix('dashboard')
-    ->middleware(['auth', 'admin'])
-    ->name('dashboard.')
-    ->group(function () {
-        // Dashboard Home
-        Route::get('/', [DashboardController::class, 'index'])->name('index');
+	->middleware(['auth', 'admin'])
+	->name('dashboard.')
+	->group(function () {
+		// Dashboard Home
+		Route::get('/', [DashboardController::class, 'index'])->name('index');
 
 
-        // Product Routes
-        Route::get('products/scrap', [ProductController::class, 'scrap'])->name('products.scrap');
+		// Product Routes
+		Route::get('products/scrap', [ProductController::class, 'scrap'])->name('products.scrap');
 		Route::post('products/scrap/amazon', [ProductController::class, 'scrapAmazon'])->name('products.scrap.amazon');
 		Route::get('products/price/getPrices', [ProductController::class, 'getPrices'])->name('products.price.getPrices');
 		Route::get('products/index', [ProductController::class, 'index'])->name('products.index');
@@ -40,15 +40,15 @@ Route::prefix('dashboard')
 		// Additional Product Routes
 		Route::get('products/price/{id}', [ProductController::class, 'priceCreate'])->name('products.price.create');
 		Route::post('products/price/{id}', [ProductController::class, 'priceStore'])->name('products.price.store');
-		
+
 		Route::post('products/price/update/{id}', [ProductController::class, 'priceUpdate'])->name('products.price.update');
 		Route::get('products/delete-image/{id}', [ProductController::class, 'deleteImage'])->name('products.image.delete');
 		Route::get('products/brand/{brand_id}', [ProductController::class, 'byBrand'])->name('products.brand.products');
 		Route::delete('products/{product}/color/{color}', [ProductController::class, 'removeColor'])->name('products.color.remove');
-		
 
 
-        // Variant Routes
+
+		// Variant Routes
 		Route::get('variants', [VariantController::class, 'index'])->name('variants.index');
 		Route::get('variants/create', [VariantController::class, 'create'])->name('variants.create');
 		Route::post('variants', [VariantController::class, 'store'])->name('variants.store');
@@ -58,7 +58,7 @@ Route::prefix('dashboard')
 		Route::delete('variants/{variant}', [VariantController::class, 'destroy'])->name('variants.destroy');
 
 
-        // Color Routes
+		// Color Routes
 		Route::get('colors', [ColorController::class, 'index'])->name('colors.index');
 		Route::get('colors/create', [ColorController::class, 'create'])->name('colors.create');
 		Route::post('colors', [ColorController::class, 'store'])->name('colors.store');
@@ -68,7 +68,7 @@ Route::prefix('dashboard')
 		Route::delete('colors/{color}', [ColorController::class, 'destroy'])->name('colors.destroy');
 
 
-        // Category Routes
+		// Category Routes
 		Route::get('categories/index', [CategoryController::class, 'index'])->name('categories.index');
 		Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
 		Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
@@ -78,7 +78,7 @@ Route::prefix('dashboard')
 		Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
-        // Attribute Routes
+		// Attribute Routes
 		Route::get('attributes/index', [AttributeController::class, 'index'])->name('attributes.index');
 		Route::get('attributes/create', [AttributeController::class, 'create'])->name('attributes.create');
 		Route::post('attributes', [AttributeController::class, 'store'])->name('attributes.store');
@@ -88,7 +88,7 @@ Route::prefix('dashboard')
 		Route::delete('attributes/{attribute}', [AttributeController::class, 'destroy'])->name('attributes.destroy');
 
 
-        // Tax Routes
+		// Tax Routes
 		Route::get('taxes/index', [TaxController::class, 'index'])->name('taxes.index');
 		Route::get('taxes/create', [TaxController::class, 'create'])->name('taxes.create');
 		Route::post('taxes', [TaxController::class, 'store'])->name('taxes.store');
@@ -98,7 +98,7 @@ Route::prefix('dashboard')
 		Route::delete('taxes/{tax}', [TaxController::class, 'destroy'])->name('taxes.destroy');
 
 
-        // Brand Routes
+		// Brand Routes
 		Route::get('brands/index', [BrandController::class, 'index'])->name('brands.index');
 		Route::get('brands/create', [BrandController::class, 'create'])->name('brands.create');
 		Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
@@ -108,7 +108,7 @@ Route::prefix('dashboard')
 		Route::delete('brands/{brand}', [BrandController::class, 'destroy'])->name('brands.destroy');
 
 
-        // Package Routes
+		// Package Routes
 		Route::get('packages/index', [PackageController::class, 'index'])->name('packages.index');
 		Route::get('packages/create', [PackageController::class, 'create'])->name('packages.create');
 		Route::post('packages', [PackageController::class, 'store'])->name('packages.store');
@@ -118,7 +118,7 @@ Route::prefix('dashboard')
 		Route::delete('packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
 
-        // Country Routes
+		// Country Routes
 		Route::get('countries/index', [CountryController::class, 'index'])->name('countries.index');
 		Route::get('countries/create', [CountryController::class, 'create'])->name('countries.create');
 		Route::post('countries', [CountryController::class, 'store'])->name('countries.store');
@@ -128,7 +128,7 @@ Route::prefix('dashboard')
 		Route::delete('countries/{country}', [CountryController::class, 'destroy'])->name('countries.destroy');
 
 
-        // Compare Routes
+		// Compare Routes
 		Route::get('compares/index', [CompareController::class, 'index'])->name('compares.index');
 		Route::get('compares/create', [CompareController::class, 'create'])->name('compares.create');
 		Route::post('compares', [CompareController::class, 'store'])->name('compares.store');
@@ -141,13 +141,20 @@ Route::prefix('dashboard')
 		Route::get('compares/image', [CompareController::class, 'mergeImages'])->name('compare.merge');
 		Route::get('compares/autocomplete-search', [CompareController::class, 'autocompleteSearch'])->name('compare.autocomplete');
 
-        // Review Routes
+		// Review Routes
 		Route::get('reviews/index', [ReviewController::class, 'index'])->name('reviews.index');
 		Route::get('reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
 		Route::put('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
 
 
-        // Filter Routes
+		// Expert Rating Routes
+		Route::get('expert-ratings/index', [\App\Http\Controllers\Dashboard\ExpertRatingController::class, 'index'])->name('expert-ratings.index');
+		Route::get('expert-ratings/{product}/edit', [\App\Http\Controllers\Dashboard\ExpertRatingController::class, 'edit'])->name('expert-ratings.edit');
+		Route::put('expert-ratings/{product}', [\App\Http\Controllers\Dashboard\ExpertRatingController::class, 'update'])->name('expert-ratings.update');
+		Route::delete('expert-ratings/{product}', [\App\Http\Controllers\Dashboard\ExpertRatingController::class, 'destroy'])->name('expert-ratings.destroy');
+
+
+		// Filter Routes
 		Route::get('filters/index', [FilterController::class, 'index'])->name('filters.index');
 		Route::get('filters/create', [FilterController::class, 'create'])->name('filters.create');
 		Route::post('filters', [FilterController::class, 'store'])->name('filters.store');
@@ -157,7 +164,7 @@ Route::prefix('dashboard')
 		Route::delete('filters/{filter}', [FilterController::class, 'destroy'])->name('filters.destroy');
 
 
-        // Redirection Routes
+		// Redirection Routes
 		Route::get('redirections/index', [RedirectionController::class, 'index'])->name('redirections.index');
 		Route::get('redirections/create', [RedirectionController::class, 'create'])->name('redirections.create');
 		Route::post('redirections', [RedirectionController::class, 'store'])->name('redirections.store');
@@ -167,7 +174,7 @@ Route::prefix('dashboard')
 		Route::delete('redirections/{redirection}', [RedirectionController::class, 'destroy'])->name('redirections.destroy');
 
 
-        // Page Routes
+		// Page Routes
 		Route::get('pages/index', [PageController::class, 'index'])->name('pages.index');
 		Route::get('pages/create', [PageController::class, 'create'])->name('pages.create');
 		Route::post('pages', [PageController::class, 'store'])->name('pages.store');
@@ -179,8 +186,8 @@ Route::prefix('dashboard')
 		Route::get('robots/{countryCode}/edit', [RobotsController::class, 'edit'])->name('robots.edit');
 		Route::post('robots/{countryCode}/update', [RobotsController::class, 'update'])->name('robots.update');
 
-    	Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
-    	Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
+		Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
+		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
 
 
-    });
+	});

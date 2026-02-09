@@ -18,6 +18,7 @@ class ProductDetailService
             'brand',
             'category',
             'attributes',
+            'expertRating',
             'reviews' => function ($query) {
                 $query->where('is_active', 1)->latest();
             },

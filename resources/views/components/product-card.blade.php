@@ -92,11 +92,6 @@
             </div>
         @endif
 
-        {{-- Wishlist --}}
-        <div class="absolute right-2 sm:right-5 top-2 sm:top-5 z-10">
-            @include('includes.wishlist-button', ['product' => $product])
-        </div>
-
         {{-- Image --}}
         <a href="{{ $productUrl }}"
             class="relative mb-3 sm:mb-6 flex h-36 sm:h-64 items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-900/50">

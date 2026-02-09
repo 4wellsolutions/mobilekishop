@@ -14,12 +14,6 @@
 					<span class="material-symbols-outlined text-[18px]">rate_review</span> Reviews
 				</a>
 			</li>
-			<li>
-				<a href="{{ route('user.wishlist') }}"
-					class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ Request::routeIs('user.wishlist') ? 'bg-primary/10 text-primary font-bold' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800' }}">
-					<span class="material-symbols-outlined text-[18px]">favorite</span> Wishlist
-				</a>
-			</li>
 		</ul>
 	</div>
 </aside>
