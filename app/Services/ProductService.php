@@ -24,7 +24,12 @@ class ProductService
                 'variants' => function ($query) use ($country) {
                     $query->where('country_id', $country->id)
                         ->where('price', '>', 0);
-                }
+                },
+                'brand',
+                'category',
+                'attributes' => function ($query) {
+                    $query->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                },
             ]);
 
         if (!empty($filters)) {
@@ -48,7 +53,12 @@ class ProductService
                 'variants' => function ($query) use ($country) {
                     $query->where('country_id', $country->id)
                         ->where('price', '>', 0);
-                }
+                },
+                'brand',
+                'category',
+                'attributes' => function ($query) {
+                    $query->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                },
             ]);
 
         if ($category) {
@@ -70,7 +80,17 @@ class ProductService
         $products = Product::query()->whereHas('variants', function ($query) use ($country, $minPrice, $maxPrice) {
             $query->where('country_id', $country->id)
                 ->whereBetween('price', [$minPrice, $maxPrice]);
-        });
+        })->with([
+                    'variants' => function ($query) use ($country, $minPrice, $maxPrice) {
+                        $query->where('country_id', $country->id)
+                            ->whereBetween('price', [$minPrice, $maxPrice]);
+                    },
+                    'brand',
+                    'category',
+                    'attributes' => function ($query) {
+                        $query->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                    },
+                ]);
 
         if ($category) {
             $products->where('category_id', $category->id);

@@ -17,7 +17,17 @@ class SearchService
         $products = Product::whereHas('variants', function ($q) use ($country) {
             $q->where('country_id', $country->id)
                 ->where('price', '>', 0);
-        });
+        })->with([
+                    'variants' => function ($q) use ($country) {
+                        $q->where('country_id', $country->id)
+                            ->where('price', '>', 0);
+                    },
+                    'brand',
+                    'category',
+                    'attributes' => function ($q) {
+                        $q->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                    },
+                ]);
 
         $products = $products->search($query);
 

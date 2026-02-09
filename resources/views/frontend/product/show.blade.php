@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', Str::title($product->name) . ": Price, Specs & Deals in {$country->country_name} | MobileKiShop")
 

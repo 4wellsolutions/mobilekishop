@@ -1,25 +1,4 @@
-@props(['product', 'country', 'variant' => 'grid'])
-
-@php
-    $isPk = $country->country_code === 'pk';
-    $productUrl = $isPk
-        ? route('product.show', [$product->slug])
-        : route('country.product.show', [$country->country_code, $product->slug]);
-
-    $price = $product->getFirstVariantPriceForCountry($product->id, $country->id);
-
-    // Specs — name-based lookup, works for ALL categories
-    $cardStats = $product->attributes()
-        ->whereIn('attributes.name', ['size', 'technology', 'chipset', 'main', 'capacity', 'battery'])
-        ->get()->keyBy('name');
-
-    $screen = $cardStats->get('size')?->pivot?->value;
-    $chipset = $cardStats->get('chipset')?->pivot?->value;
-    $camera = $cardStats->get('main')?->pivot?->value;
-    $battery = $cardStats->get('capacity')?->pivot?->value ?? $cardStats->get('battery')?->pivot?->value;
-
-    $isNew = \Carbon\Carbon::parse($product->release_date)->diffInDays(now()) < 90;
-@endphp
+{{-- All data prepared by App\View\Components\ProductCard --}}
 
 @if($variant === 'featured')
     {{-- ═══════════════════════════════════════════════════
@@ -29,7 +8,7 @@
         class="bg-surface-card rounded-xl overflow-hidden border border-border-light group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex flex-col">
         <a href="{{ $productUrl }}"
             class="relative block w-full aspect-video bg-gradient-to-tr from-slate-50 to-white overflow-hidden">
-            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}"
+            <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
                 class="absolute inset-0 w-full h-full object-contain p-4" loading="lazy" />
             @if($isNew)
                 <div
@@ -45,7 +24,7 @@
             <div class="flex justify-between items-start mb-2">
                 <div>
                     <h3 class="text-xl font-bold text-text-main group-hover:text-primary transition-colors">
-                        <a href="{{ $productUrl }}" class="no-underline text-inherit">{{ $product->name }}</a>
+                        <a href="{{ $productUrl }}" class="no-underline text-inherit">{{ $productName }}</a>
                     </h3>
                     <p class="text-sm text-text-muted mt-1">Released
                         {{ \Carbon\Carbon::parse($product->release_date)->format('M Y') }}
@@ -121,7 +100,7 @@
         {{-- Image --}}
         <a href="{{ $productUrl }}"
             class="relative mb-3 sm:mb-6 flex h-36 sm:h-64 items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-900/50">
-            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}"
+            <img src="{{ $product->thumbnail }}" alt="{{ $productName }}"
                 class="h-32 sm:h-56 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 loading="lazy" />
         </a>
@@ -129,7 +108,7 @@
         {{-- Content --}}
         <div class="mb-2 sm:mb-4">
             <h3 class="mb-1 text-sm sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                <a class="after:absolute after:inset-0" href="{{ $productUrl }}">{{ $product->name }}</a>
+                <a class="after:absolute after:inset-0" href="{{ $productUrl }}">{{ $productName }}</a>
             </h3>
             <div class="flex items-center gap-1">
                 <div class="flex text-yellow-400 text-[12px] sm:text-[16px]">

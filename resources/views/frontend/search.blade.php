@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', $metas->title)
 @section('description', $metas->description)

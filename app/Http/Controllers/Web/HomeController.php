@@ -39,7 +39,7 @@ class HomeController extends Controller
         $categories = Category::where('is_active', 1)
             ->get()
             ->map(function ($category) use ($country) {
-                /** @var \App\Category $category */
+                /** @var \App\Models\Category $category */
                 $category->latest_products = $category->products()
                     ->whereHas('variants', function ($query) use ($country) {
                         $query->where('country_id', $country->id)->where('price', '>', 0);
@@ -49,7 +49,10 @@ class HomeController extends Controller
                             $query->where('country_id', $country->id)->where('price', '>', 0);
                         },
                         'brand',
-                        'category'
+                        'category',
+                        'attributes' => function ($query) {
+                            $query->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                        },
                     ])
                     ->latest()
                     ->take(4)
@@ -129,7 +132,7 @@ class HomeController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        /** @var \App\Wishlist $wishlist */
+        /** @var \App\Models\Wishlist $wishlist */
         if ($wishlist = Wishlist::where(["product_id" => $request->product_id, "user_id" => Auth::user()->id])->first()) {
             $wishlist->type = $request->type;
             $wishlist->save();

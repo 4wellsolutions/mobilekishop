@@ -15,7 +15,7 @@
     $country = DB::table("countries")->where("country_code", $countryCode)->first();
 @endphp
 
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', '404 - Page not Found | MobileKiShop')
 @section('description', '404 - The page you are looking for could not be found.')

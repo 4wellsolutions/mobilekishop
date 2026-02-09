@@ -28,6 +28,10 @@ class Product extends Model
     protected $searchable = [
         'columns' => [
             'products.name' => 10,
+            'brands.name' => 5,
+        ],
+        'joins' => [
+            'brands' => ['products.brand_id', 'brands.id'],
         ],
     ];
     // Or, preferably using $casts

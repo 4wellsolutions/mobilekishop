@@ -25,8 +25,8 @@
     @php
         $allCountries = \App\Models\Country::select('country_code', 'locale')->get();
         $currentPath = request()->path();
-        // Strip country prefix from path if present
-        $basePath = preg_replace('/^[a-z]{2}\//', '', $currentPath);
+        // Strip country prefix from path if present (handles both "us/something" and bare "us")
+        $basePath = preg_replace('/^[a-z]{2}(\/|$)/', '', $currentPath);
     @endphp
     <link rel="alternate" hreflang="x-default" href="{{ url($basePath) }}" />
     @foreach($allCountries as $c)

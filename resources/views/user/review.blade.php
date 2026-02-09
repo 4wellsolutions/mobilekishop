@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', 'My Reviews - MKS')
 @section('description', 'View and manage your product reviews.')

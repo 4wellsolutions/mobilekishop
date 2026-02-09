@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', 'Login - MobileKiShop')
 @section('description', 'Login or register for MobileKiShop')

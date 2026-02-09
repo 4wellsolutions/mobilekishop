@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', 'My Account - MKS')
 @section('description', 'Manage your account settings and profile information.')

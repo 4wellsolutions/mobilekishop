@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', 'Wishlist - MKS')
 @section('description', 'View and manage your wishlist items.')

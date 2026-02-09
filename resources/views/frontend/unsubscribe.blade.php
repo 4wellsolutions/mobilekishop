@@ -1,4 +1,4 @@
-@extends('layouts.techspec')
+@extends('layouts.frontend')
 
 @section('title', "Unsubscribe - MKS")
 @section('description', "Unsubscribe - MKS")
