@@ -1,133 +1,137 @@
-@extends("layouts.frontend")
+@extends('layouts.techspec')
 
-@section('title')My Account - MKS @stop
-
-@section('description') @stop
-
-@section("keywords") @stop
-
-@section("canonical") @stop
-
-@section("og_graph") @stop
-
+@section('title', 'My Reviews - MKS')
+@section('description', 'View and manage your product reviews.')
 
 @section("content")
-<main class="main container-lg">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="my-1" style="font-size: 12px;">
-            <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item"><a href="{{URL::to('/')}}" class="text-decoration-none text-secondary">
-                        <img src="{{URL::to('/images/icons/home.png')}}" alt="home-icon" width="16" height="14">
-                    </a></li>
-                <li class="breadcrumb-item active" aria-current="page">My Account</li>
-            </ol>
-        </div>
-    </nav>
+    <!-- Breadcrumbs -->
+    <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <a class="hover:text-primary hover:underline" href="{{ url('/') }}">Home</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <a class="hover:text-primary hover:underline" href="{{ route('user.index') }}">My Account</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="font-medium text-slate-900 dark:text-white">Reviews</span>
+    </div>
 
-    <div class="mb-5">
-        <div class="row">
-            <div class="col-12 col-md-3">
-                @include("includes.user-sidebar")
-            </div>
-            <div class="col-lg-9 order-lg-last dashboard-content">
-                @include("includes.info-bar")
+    <div class="flex flex-col gap-8 lg:flex-row">
+        <!-- Sidebar -->
+        <aside class="w-full shrink-0 lg:w-64">
+            @include("includes.user-sidebar")
+        </aside>
 
-                <div class="product-reviews-content">
-                    <div class="row">
-                        <div class="col-12">
-                            <h2>Reviews ({{(Auth::user()->reviews) ? Auth::user()->reviews->count() : '0'}})</h2>
-                            @foreach($reviews as $review)
-                                <div class="row my-2 my-md-4">
-                                    <div class="col-auto my-auto">
-                                        <img src="{{$review->product->thumbnail}}" width="65" height="65"
-                                            alt="{{$review->product->name}}" class="img-fluid rounded-0" />
-                                    </div>
-                                    <div class="col-9">
-                                        <h2 class="fs-4">{{Str::title($review->product->name)}}</h2>
-                                        <div class="rating">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= $review->stars)
-                                                    <img src="{{URL::to('/images/icons/star-fill.png')}}" alt="filled star">
-                                                @else
-                                                    <img src="/images/icons/star.png" alt="empty star">
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <p class="mb-1 comment-text-{{$review->id}}">{!! $review->review !!}</p>
-                                        <span class="comment-date fs-14"> Posted:
-                                            {{\Carbon\Carbon::parse($review->created_at)->diffForHumans()}}</span>
-                                        <div class="row">
-                                            <div class="col-auto mt-2">
-                                                @if($review->is_active)
-                                                    <a href="#" class="btn btn-info btn-sm editReview text-white"
-                                                        data-bs-toggle="modal" data-bs-target="#reviewEdit"
-                                                        data-star="{{$review->stars}}" data-id="{{$review->id}}"><i
-                                                            class="far fa-edit"></i> Edit</a>
-                                                    <a href="{{route('user.review.delete', [$review->id])}}"
-                                                        data-url="{{route('user.review.delete', [$review->id])}}"
-                                                        class="btn btn-danger btn-sm  deleteButton"
-                                                        onclick="return confirm('Are you sure!')"><i
-                                                            class="fas fa-trash-alt"></i> Delete</a>
-                                                @else
-                                                    <span class="text-dark fst-italic fs-14">Pending Approval</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
+        <!-- Main Content -->
+        <div class="flex-1 min-w-0">
+            @include("includes.info-bar")
+
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                Reviews ({{ (Auth::user()->reviews) ? Auth::user()->reviews->count() : '0' }})
+            </h1>
+
+            <div class="space-y-4">
+                @foreach($reviews as $review)
+                    <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-4 sm:p-6 dark:bg-slate-900 dark:ring-slate-800">
+                        <div class="flex gap-4">
+                            <a href="{{ route('product.show', [$review->product->brand->slug ?? '', $review->product->slug]) }}" class="shrink-0">
+                                <img src="{{ $review->product->thumbnail }}" width="65" height="65"
+                                    alt="{{ $review->product->name }}" class="rounded-lg object-contain" />
+                            </a>
+                            <div class="flex-1 min-w-0">
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">{{ Str::title($review->product->name) }}</h2>
+                                <div class="flex text-yellow-400 mb-2">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $review->stars)
+                                            <span class="material-symbols-outlined text-[16px]">star</span>
+                                        @else
+                                            <span class="material-symbols-outlined text-[16px] text-slate-300">star</span>
+                                        @endif
+                                    @endfor
                                 </div>
-                                <hr>
-                            @endforeach
-                            {{$reviews->links()}}
-                        </div>
-                    </div>
-                </div><!-- End .product-reviews-content -->
-            </div><!-- End .col-lg-9 -->
-
-        </div><!-- End .row -->
-    </div><!-- End .container -->
-
-</main><!-- End .main -->
-<!-- Modal -->
-<div class="modal fade" id="reviewEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog reviewModal modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body px-3">
-                <form action="{{route('user.review.update')}}" method="post" class="form-row" id="reviewForm">
-                    @csrf
-                    <input type="hidden" name="review_id" id="review_id">
-                    <input type="hidden" name="stars" id="stars">
-                    <div class="col-12">
-                        <div class="form-group rating-form">
-                            <label for="rating">Your rating</label>
-                            <span class="rating-stars">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    @if ($i <= $review->stars)
-                                        <img class="stars star-{{$i}}" id="{{$i}}"
-                                            src="{{URL::to('/images/icons/star-fill.png')}}" alt="filled star">
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">{!! $review->review !!}</p>
+                                <span class="text-xs text-slate-400">Posted: {{ \Carbon\Carbon::parse($review->created_at)->diffForHumans() }}</span>
+                                <div class="flex items-center gap-2 mt-3">
+                                    @if($review->is_active)
+                                        <button class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-100 transition editReview"
+                                            onclick="openReviewModal({{ $review->id }}, {{ $review->stars }})">
+                                            <span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                                        </button>
+                                        <a href="{{ route('user.review.delete', [$review->id]) }}"
+                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition"
+                                            onclick="return confirm('Are you sure!')">
+                                            <span class="material-symbols-outlined text-[14px]">delete</span> Delete
+                                        </a>
                                     @else
-                                        <img class="stars star-{{$i}}" id="{{$i}}" src="/images/icons/star.png"
-                                            alt="empty star">
+                                        <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 text-xs font-bold rounded-lg">
+                                            <span class="material-symbols-outlined text-[14px]">schedule</span> Pending Approval
+                                        </span>
                                     @endif
-                                @endfor
-                            </span>
-                        </div>
-                        <div class="form-group">
-                            <label>Rating</label>
-                            <textarea name="review" class="form-control" id="review" rows="5"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </form>
+                @endforeach
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-sm submitButton">Save changes</button>
+
+            <div class="mt-6">
+                {{ $reviews->links() }}
             </div>
         </div>
     </div>
-</div>
-@stop
 
-@section('script') @stop
+    <!-- Review Edit Modal -->
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm" id="reviewEditModal">
+        <div class="bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 w-full max-w-md mx-4 dark:bg-slate-900 dark:ring-slate-800">
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Review</h3>
+                <button onclick="document.getElementById('reviewEditModal').classList.replace('flex','hidden')"
+                    class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form action="{{ route('user.review.update') }}" method="post" id="reviewForm" class="p-4">
+                @csrf
+                <input type="hidden" name="review_id" id="review_id">
+                <input type="hidden" name="stars" id="stars">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Your Rating</label>
+                    <div class="flex gap-1" id="ratingStars">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <span class="material-symbols-outlined text-[28px] cursor-pointer text-slate-300 hover:text-yellow-400 transition star-btn"
+                                data-star="{{ $i }}" onclick="setRating({{ $i }})">star</span>
+                        @endfor
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Review</label>
+                    <textarea name="review" id="review" rows="4"
+                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white"></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('reviewEditModal').classList.replace('flex','hidden')"
+                        class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-600 transition shadow-sm">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection
 
-@section('style') @stop
+@section("script")
+    <script>
+        function openReviewModal(id, stars) {
+            document.getElementById('review_id').value = id;
+            document.getElementById('stars').value = stars;
+            var text = document.querySelector('.comment-text-' + id);
+            document.getElementById('review').value = text ? text.textContent.trim() : '';
+            setRating(stars);
+            document.getElementById('reviewEditModal').classList.replace('hidden', 'flex');
+        }
+        function setRating(rating) {
+            document.getElementById('stars').value = rating;
+            document.querySelectorAll('.star-btn').forEach(function(star) {
+                star.classList.toggle('text-yellow-400', parseInt(star.dataset.star) <= rating);
+                star.classList.toggle('text-slate-300', parseInt(star.dataset.star) > rating);
+            });
+        }
+    </script>
+@endsection

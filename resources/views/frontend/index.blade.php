@@ -61,53 +61,7 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             @foreach ($category->latest_products as $product)
-                                <div
-                                    class="bg-surface-card rounded-xl overflow-hidden border border-border-light group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex flex-col">
-                                    <div class="aspect-video w-full bg-cover bg-center relative" data-alt="{{ $product->name }}"
-                                        style="background-image: url('{{ $product->thumbnail }}');">
-                                        <div
-                                            class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2 py-1 rounded text-xs font-bold text-slate-900 shadow-sm">
-                                            {{ $product->category->category_name }}
-                                        </div>
-                                    </div>
-                                    <div class="p-5 flex flex-col flex-1">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h3 class="text-xl font-bold text-text-main group-hover:text-primary transition-colors">
-                                                    {{ $product->name }}
-                                                </h3>
-                                                <p class="text-sm text-text-muted mt-1">Released
-                                                    {{ \Carbon\Carbon::parse($product->release_date)->format('M Y') }}
-                                                </p>
-                                            </div>
-                                            @php
-                                                $price = $product->variants->first()->price ?? 0;
-                                            @endphp
-                                            <span
-                                                class="bg-primary/10 text-primary text-sm font-bold px-3 py-1 rounded-full">{{ $country->currency }}
-                                                {{ number_format($price) }}</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-2 py-4 border-y border-slate-100 my-4">
-                                            <!-- Note: Actual specs would need to be dynamically pulled from attributes if available in a standardized way. Using placeholder icons for layout. -->
-                                            <div class="flex flex-col items-center gap-1 text-center">
-                                                <span class="material-symbols-outlined text-text-muted text-[20px]">memory</span>
-                                                <span class="text-xs text-text-main font-medium">Spec 1</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 text-center border-l border-slate-100">
-                                                <span class="material-symbols-outlined text-text-muted text-[20px]">photo_camera</span>
-                                                <span class="text-xs text-text-main font-medium">Spec 2</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 text-center border-l border-slate-100">
-                                                <span class="material-symbols-outlined text-text-muted text-[20px]">battery_full</span>
-                                                <span class="text-xs text-text-main font-medium">Spec 3</span>
-                                            </div>
-                                        </div>
-                                        <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'product.show', ($country->country_code == 'pk' ? $product->slug : ['country_code' => $country->country_code, 'product' => $product->slug])) }}"
-                                            class="w-full mt-auto bg-slate-50 hover:bg-slate-100 text-text-main hover:text-primary text-sm font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-slate-100 decoration-0">
-                                            View Full Specs
-                                        </a>
-                                    </div>
-                                </div>
+                                <x-product-card :product="$product" :country="$country" variant="featured" />
                             @endforeach
                         </div>
                     </div>

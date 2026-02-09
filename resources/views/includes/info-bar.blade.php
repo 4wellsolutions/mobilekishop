@@ -1,24 +1,19 @@
 @if($errors->any())
-  <div class="alert alert-danger alert-dismissible fade show py-2 rounded-0 mx-0 btn-block" role="alert">
-          <ul class="my-0 py-0">
-              @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-              @endforeach
-          </ul>
-  </div>
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
+        <ul class="list-disc list-inside m-0 p-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
 @if(Session::has('fail'))
-    <div class="alert alert-danger alert-dismissible fade show rounded-0 mx-0 btn-block" role="alert">
-        <ul class="my-0 py-0">
-            <li>{{Session::get('fail')}}</li>
-        </ul>
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
+        {{ Session::get('fail') }}
     </div>
 @endif
 @if(Session::has('success'))
-    <div class="alert alert-success alert-dismissible fade show rounded-0 mx-0 btn-block py-2" role="alert">
-        <ul class="my-0 py-0">
-            <li>{{Session::get('success')}}</li>
-        </ul>
+    <div class="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 mb-4 text-sm">
+        {{ Session::get('success') }}
     </div>
 @endif
-    

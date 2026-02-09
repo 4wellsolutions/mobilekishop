@@ -1,8 +1,9 @@
-<form action="{{route('search')}}" class="form-inline my-3" method="get">
-  <div class="input-group rounded-pill border border-3 m-2 bg-white">
-    <input type="search" class="form-control rounded-pill border-0" name="query" id="searchInput" placeholder="Search..." required>
-    <div class="input-group-text bg-white rounded-pill border-0 border-start">
-      <button class="bg-white border-0 px-0" type="submit"><img src="{{URL::to('/images/icons/search.png')}}" alt="search-icon" width="24" height="24"></button>
-    </div>
+<form action="{{ route('search') }}" class="my-3" method="get">
+  <div class="flex items-center border-2 border-border-light rounded-full bg-white overflow-hidden max-w-md mx-auto">
+    <input type="search" name="query" id="searchInput" placeholder="Search..."
+      class="flex-1 px-4 py-2 text-sm border-0 outline-none bg-transparent" required>
+    <button type="submit" class="px-3 py-2 bg-transparent border-0 hover:bg-surface-alt transition-colors">
+      <span class="material-symbols-outlined text-xl text-text-muted">search</span>
+    </button>
   </div>
 </form>

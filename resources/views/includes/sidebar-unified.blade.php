@@ -16,13 +16,13 @@
 @endphp
 
 {{-- Categories --}}
-<div class="sidebar-card">
-    <h5 class="sidebar-title">Categories</h5>
-    <ul class="sidebar-list">
+<div class="bg-surface-card rounded-xl p-4 mb-3">
+    <h5 class="text-sm font-semibold text-text-main mb-3">Categories</h5>
+    <ul class="space-y-1.5 list-none p-0 m-0">
         @foreach($mksCategories as $mksCat)
             <li>
                 <a href="{{ url($prefix . '/category/' . $mksCat['slug']) }}"
-                    class="{{ ($currentSlug == $mksCat['slug']) ? 'active' : '' }}">
+                    class="text-sm no-underline block py-0.5 transition-colors {{ ($currentSlug == $mksCat['slug']) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
                     {{ $mksCat['name'] }}
                 </a>
             </li>
@@ -32,30 +32,28 @@
 
 {{-- Brands --}}
 @if(isset($category) && $category)
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Brands</h5>
-            <a data-bs-toggle="collapse" href="#brands-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Brands</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="brands-collapse">
-            <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
-                <ul class="sidebar-list">
-                    @foreach($category->brands as $brand)
-                        <li>
-                            <a
-                                href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}">
-                                {{ $brand->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                    <li class="mt-2">
-                        <a href="{{ route('brands.by.category', $category->slug) }}" class="fw-bold text-dark">View All
-                            Brands</a>
+        <div class="max-h-[250px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($category->brands as $brand)
+                    <li>
+                        <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $brand->name }}
+                        </a>
                     </li>
-                </ul>
-            </div>
+                @endforeach
+                <li class="mt-2">
+                    <a href="{{ route('brands.by.category', $category->slug) }}"
+                        class="text-sm font-semibold text-text-main hover:text-primary no-underline transition-colors">View
+                        All Brands</a>
+                </li>
+            </ul>
         </div>
     </div>
 @endif
@@ -97,34 +95,37 @@
     @endphp
 
     {{-- Network --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Network</h5>
-            <a data-bs-toggle="collapse" href="#network-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Network</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="network-collapse">
-            <ul class="sidebar-list">
-                <li><a href="{{ url($prefix . '/4g-mobile-phones') }}">4G</a></li>
-                <li><a href="{{ url($prefix . '/5g-mobile-phones') }}">5G</a></li>
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                <li><a href="{{ url($prefix . '/4g-mobile-phones') }}"
+                        class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">4G</a>
+                </li>
+                <li><a href="{{ url($prefix . '/5g-mobile-phones') }}"
+                        class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">5G</a>
+                </li>
             </ul>
         </div>
     </div>
 
     {{-- Phone Type --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Phone Type</h5>
-            <a data-bs-toggle="collapse" href="#type-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Phone Type</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="type-collapse">
-            <ul class="sidebar-list">
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($phoneTypes as $type)
                     <li>
-                        <a href="{{ url($prefix . '/' . $type['slug'] . '-mobile-phones') }}">
+                        <a href="{{ url($prefix . '/' . $type['slug'] . '-mobile-phones') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
                             {{ $type['name'] }}
                         </a>
                     </li>
@@ -134,19 +135,18 @@
     </div>
 
     {{-- Combination --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Combination</h5>
-            <a data-bs-toggle="collapse" href="#combination-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Combination</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="combination-collapse">
-            <ul class="sidebar-list">
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($combinations as $comb)
                     <li>
-                        <a
-                            href="{{ url($prefix . '/mobile-phones-with-' . $comb['ram'] . 'gb-ram-' . $comb['rom'] . 'gb-storage') }}">
+                        <a href="{{ url($prefix . '/mobile-phones-with-' . $comb['ram'] . 'gb-ram-' . $comb['rom'] . 'gb-storage') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
                             {{ $comb['ram'] }}GB + {{ $comb['rom'] }}GB
                         </a>
                     </li>
@@ -156,42 +156,40 @@
     </div>
 
     {{-- Processor --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Processor</h5>
-            <a data-bs-toggle="collapse" href="#processor-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Processor</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="processor-collapse">
-            <div class="scroll-container" style="max-height: 200px; overflow-y: auto;">
-                <ul class="sidebar-list">
-                    @foreach($processors as $proc)
-                        <li>
-                            <a href="{{ url($prefix . '/' . $proc['slug'] . '-mobile-phones') }}">
-                                {{ $proc['name'] }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="max-h-[200px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($processors as $proc)
+                    <li>
+                        <a href="{{ url($prefix . '/' . $proc['slug'] . '-mobile-phones') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $proc['name'] }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 
     {{-- RAM --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">RAM</h5>
-            <a data-bs-toggle="collapse" href="#ram-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">RAM</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="ram-collapse">
-            <ul class="sidebar-list">
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($ramLimits as $ramLimit)
                     <li>
-                        <a href="{{ url($prefix . '/mobile-phones-' . $ramLimit . 'gb-ram') }}">
-                            {{$ramLimit}} GB
+                        <a href="{{ url($prefix . '/mobile-phones-' . $ramLimit . 'gb-ram') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $ramLimit }} GB
                         </a>
                     </li>
                 @endforeach
@@ -200,42 +198,39 @@
     </div>
 
     {{-- Storage --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Storage</h5>
-            <a data-bs-toggle="collapse" href="#rom-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Storage</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="rom-collapse">
-            <div class="scroll-container" style="max-height: 200px; overflow-y: auto;">
-                <ul class="sidebar-list">
-                    @foreach($romLimits as $romLimit)
-                        <li>
-                            <a
-                                href="{{ url($prefix . '/mobile-phones-' . ($romLimit >= 1024 ? ($romLimit / 1024) . 'tb' : $romLimit . 'gb-storage')) }}">
-                                {{$romLimit >= 1024 ? ($romLimit / 1024) . ' TB' : $romLimit . ' GB'}}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="max-h-[200px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($romLimits as $romLimit)
+                    <li>
+                        <a href="{{ url($prefix . '/mobile-phones-' . ($romLimit >= 1024 ? ($romLimit / 1024) . 'tb' : $romLimit . 'gb-storage')) }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $romLimit >= 1024 ? ($romLimit / 1024) . ' TB' : $romLimit . ' GB' }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 
     {{-- Screen Size --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Screen Size</h5>
-            <a data-bs-toggle="collapse" href="#screen-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Screen Size</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="screen-collapse">
-            <ul class="sidebar-list">
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($screenSizes as $size)
                     <li>
-                        <a href="{{ url($prefix . '/mobile-phones-screen-' . $size . '-inch') }}">
+                        <a href="{{ url($prefix . '/mobile-phones-screen-' . $size . '-inch') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
                             {{ $size }} Inch
                         </a>
                     </li>
@@ -245,32 +240,31 @@
     </div>
 
     {{-- Camera --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Camera</h5>
-            <a data-bs-toggle="collapse" href="#camera-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Camera</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="camera-collapse">
-            <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
-                <ul class="sidebar-list">
-                    @foreach($cameras as $cam)
-                        <li>
-                            <a href="{{ url($prefix . '/mobile-phones-' . $cam . '-camera') }}">
-                                {{ ucfirst($cam) }} Camera
-                            </a>
-                        </li>
-                    @endforeach
-                    @foreach($cameraMp as $mp)
-                        <li>
-                            <a href="{{ url($prefix . '/mobile-phones-' . $mp . '-camera') }}">
-                                {{ $mp }} MP Camera
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="max-h-[250px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($cameras as $cam)
+                    <li>
+                        <a href="{{ url($prefix . '/mobile-phones-' . $cam . '-camera') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ ucfirst($cam) }} Camera
+                        </a>
+                    </li>
+                @endforeach
+                @foreach($cameraMp as $mp)
+                    <li>
+                        <a href="{{ url($prefix . '/mobile-phones-' . $mp . '-camera') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $mp }} MP Camera
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 @endif
@@ -296,12 +290,13 @@
     @endphp
 
     {{-- Capacity Type --}}
-    <div class="sidebar-card">
-        <h5 class="sidebar-title">Capacity</h5>
-        <ul class="sidebar-list">
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <h5 class="text-sm font-semibold text-text-main mb-3">Capacity</h5>
+        <ul class="space-y-1.5 list-none p-0 m-0">
             @foreach($capacityTypes as $type)
                 <li>
-                    <a href="{{ url($prefix . '/' . $type['slug']) }}">
+                    <a href="{{ url($prefix . '/' . $type['slug']) }}"
+                        class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
                         {{ $type['name'] }}
                     </a>
                 </li>
@@ -310,35 +305,34 @@
     </div>
 
     {{-- Wattage --}}
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Wattage</h5>
-            <a data-bs-toggle="collapse" href="#wattage-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Wattage</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="wattage-collapse">
-            <div class="scroll-container" style="max-height: 250px; overflow-y: auto;">
-                <ul class="sidebar-list">
-                    @foreach($wattages as $watt)
-                        <li>
-                            <a href="{{ url($prefix . '/' . $watt . 'watt-chargers') }}">
-                                {{ $watt }}Watt Chargers
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="max-h-[250px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($wattages as $watt)
+                    <li>
+                        <a href="{{ url($prefix . '/' . $watt . 'watt-chargers') }}"
+                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                            {{ $watt }}Watt Chargers
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 
     {{-- Watt & Type --}}
-    <div class="sidebar-card">
-        <h5 class="sidebar-title">Watt & Type</h5>
-        <ul class="sidebar-list">
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <h5 class="text-sm font-semibold text-text-main mb-3">Watt & Type</h5>
+        <ul class="space-y-1.5 list-none p-0 m-0">
             @foreach($wattAndTypes as $item)
                 <li>
-                    <a href="{{ url($prefix . '/' . $item['slug']) }}">
+                    <a href="{{ url($prefix . '/' . $item['slug']) }}"
+                        class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
                         {{ $item['name'] }}
                     </a>
                 </li>
@@ -351,19 +345,19 @@
 {{-- Dynamic Filters (shared by all categories) --}}
 {{-- ================================================================== --}}
 @if(isset($filters) && $filters->isNotEmpty())
-    <div class="sidebar-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="sidebar-title mb-0">Filters</h5>
-            <a data-bs-toggle="collapse" href="#filters-collapse" role="button" aria-expanded="true" class="text-dark">
-                <i class="bi bi-caret-up-fill small"></i>
-            </a>
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Filters</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
-        <div class="collapse show" id="filters-collapse">
-            <ul class="sidebar-list">
+        <div>
+            <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($filters as $filter)
                     <li>
-                        <a href="{{$filter->url}}" class="{{ str_contains(request()->url(), $filter->url) ? 'active' : '' }}">
-                            {{$filter->title}}
+                        <a href="{{ $filter->url }}"
+                            class="text-sm no-underline block py-0.5 transition-colors {{ str_contains(request()->url(), $filter->url) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
+                            {{ $filter->title }}
                         </a>
                     </li>
                 @endforeach

@@ -1,186 +1,81 @@
-@extends("layouts.frontend")
+@extends('layouts.techspec')
 
 @section('title', $metas->title)
-
 @section('description', $metas->description)
-
-@section("keywords", "Mobiles prices, mobile specification, mobile phone features")
-
-@section("canonical", $metas->canonical)
-
-@section("og_graph") @stop
+@section('canonical', $metas->canonical)
 
 @section("content")
-<main class="main">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="container">
-            <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a href="{{URL::to('/')}}" class="text-decoration-none text-secondary">
-                        <img src="{{URL::to('/images/icons/home.png')}}" alt="home-icon" width="16" height="14">
-                    </a></li>
-                <li class="breadcrumb-item active text-secondary" aria-current="page">Packages</li>
-            </ol>
-        </div>
-    </nav>
+    <!-- Breadcrumbs -->
+    <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <a class="hover:text-primary hover:underline" href="{{ url('/') }}">Home</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <a class="hover:text-primary hover:underline" href="{{ url('/packages') }}">Packages</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="font-medium text-slate-900 dark:text-white">{{ $metas->h1 }}</span>
+    </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-md-3 pe-1">
+    <div class="flex flex-col gap-8 lg:flex-row">
+        <!-- Sidebar -->
+        <aside class="hidden lg:block w-full shrink-0 lg:w-72">
+            <div class="sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto pr-2 pb-10">
                 @include("includes.sidebar.packages")
             </div>
-            <div class="col-12 col-md-9">
-                <div class="row">
-                    <h1 class="pb-2 fs-2 text-center text-uppercase">{{$metas->h1}}</h1>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center uppercase">{{ $metas->h1 }}</h1>
+
+            @if($packages->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($packages as $package)
+                        <a href="{{ route('package.show', [$package->filter_network, $package->slug]) }}"
+                            class="group flex flex-col bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden hover:shadow-lg hover:ring-primary/20 transition-all dark:bg-slate-900 dark:ring-slate-800">
+                            <div
+                                class="flex items-center justify-center py-4 bg-gradient-to-tr from-slate-50 to-white dark:from-slate-800 dark:to-slate-900/50">
+                                <img src="{{ URL::to('/images/packages/' . $package->filter_network . '.png') }}"
+                                    class="h-12 w-auto object-contain" alt="{{ $package->filter_network }}"
+                                    style="max-width: 150px;">
+                            </div>
+                            <div class="p-4 flex-1 flex flex-col">
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white mb-2">{{ $package->name }}</h2>
+                                <div class="grid grid-cols-2 gap-1 text-xs text-slate-500 dark:text-slate-400 mb-3">
+                                    <span><strong class="text-slate-700 dark:text-slate-300">Onnet:</strong>
+                                        {{ $package->onnet }}</span>
+                                    <span><strong class="text-slate-700 dark:text-slate-300">Offnet:</strong>
+                                        {{ $package->offnet }}</span>
+                                    <span><strong class="text-slate-700 dark:text-slate-300">SMS:</strong>
+                                        {{ $package->sms }}</span>
+                                    <span><strong class="text-slate-700 dark:text-slate-300">Data:</strong>
+                                        {{ $package->data }}</span>
+                                </div>
+                                <div
+                                    class="mt-auto flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
+                                    <span class="text-xs text-slate-500"><strong>Validity:</strong>
+                                        {{ Str::title($package->validity) }}</span>
+                                    <span class="text-sm font-bold text-primary">Rs.{{ $package->price }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
-                <form action="" method="get" class="formFilter mb-1 d-none">
-                    <input type="hidden" name="filter" value="true">
-                    <div class="row d-flex justify-content-between filter">
-                        <div class="col-auto">
-                            <div class="">
-                                <label>Sort By:</label>
-                                <div class="select-custom">
-                                    <select name="orderby" id="sort_filter" class="select-filter form-control">
-                                        <option value="new" {{(Request::get('orderby') == "new") ? "selected" : ''}}>Sort
-                                            by Latest</option>
-                                        <option value="price_asc" {{(Request::get('orderby') == "price_asc") ? "selected" : ''}}>Sort by price: low to high</option>
-                                        <option value="price_desc" {{(Request::get('orderby') == "price_desc") ? "selected" : ''}}>Sort by price: high to low</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-auto my-auto">
-                            <div class="border rounded-circle">
-                                <img src="{{URL::to('/images/icons/filter.png')}}" class="img-fluid m-2"
-                                    alt="filter-icon" style="cursor: pointer;" data-bs-toggle="collapse" href="#filter"
-                                    role="button" aria-expanded="false" aria-controls="filter" width="30" height="30">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="collapse {{(new \Jenssegers\Agent\Agent())->isDesktop() ? 'show' : '' }} {{\Request::get('filter') == true ? 'show' : ''}}"
-                            id="filter">
-                            <div class="row mt-3">
-                                <div class="col-6 col-md-6">
-                                    <div class="filter">
-                                        <label class="fw-bold">Network</label>
-                                        <select class="select-filter form-control rounded py-1" name="network">
-                                            <option value="">All Networks</option>
-                                            <option value="jazz">Jazz</option>
-                                            <option value="zong">Zong</option>
-                                            <option value="ufone">Ufone</option>
-                                            <option value="telenor">Telenor</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-6">
-                                    <div class="select-custom">
-                                        <label class="fw-bold">Type</label>
-                                        <select class="select-filter form-control rounded py-1" name="rom_in_gb">
-                                            <option value="">All</option>
-                                            <option value="voice">Voice/Call</option>
-                                            <option value="sms">Sms</option>
-                                            <option value="data">Data</option>
-                                            <option value="hybrid">Hybrid</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-6">
-                                    <div class="select-custom">
-                                        <label class="fw-bold">Validity</label>
-                                        <select class="select-filter form-control rounded py-1" name="rom_in_gb">
-                                            <option value="">All</option>
-                                            <option value="hourly">Hourly</option>
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="fortnightly">Fortnightly</option>
-                                            <option value="monthly">Monthly</option>
-                                            <option value="3-months">3 Months</option>
-                                            <option value="6-months">6 Months</option>
-                                            <option value="12-months">12 Month</option>
-                                        </select>
-                                    </div>
-                                </div>
 
-                                <div class="col-6 col-md-6">
-                                    <div class="select-custom">
-                                        <label class="fw-bold">Data GB</label>
-                                        <select class="select-filter form-control rounded py-1" name="rom_in_gb">
-                                            <option value="">All</option>
-                                            <option value="1">1GB or Less</option>
-                                            <option value="5">5GB or Less</option>
-                                            <option value="10">10GB or Less</option>
-                                            <option value="25">25GB or Less</option>
-                                            <option value="100">100GB or Less</option>
-                                            <option value="1000">1000GB or Less</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-6 mt-2">
-                                    <button class="btn btn-dark rounded-0">Submit</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                @if($packages->isNotEmpty())
-                    <div class="row g-3">
-                        @foreach($packages as $package)
-                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xxl-3 mt-4">
-                                <a href="{{ route('package.show', [$package->filter_network, $package->slug]) }}"
-                                    class="text-decoration-none text-dark">
-                                    <div class="card mb-2 h-100 text-center border-0 shadow">
-                                        <img src="{{ URL::to('/images/packages/' . $package->filter_network . '.png') }}"
-                                            class="img-fluid mx-auto py-2" alt="{{ $package->filter_network }}"
-                                            style="max-width: 150px;">
-                                        <div class="card-body py-1 px-2">
-                                            <h2 class="card-title fs-5 fw-normal">{{ $package->name }}</h2>
-                                            <p class="card-text">
-                                                <small class="text-muted"><strong>Onnet:</strong> {{ $package->onnet }}</small>
-                                                |
-                                                <small class="text-muted"><strong>Offnet:</strong>
-                                                    {{ $package->offnet }}</small> |
-                                                <small class="text-muted"><strong>SMS:</strong> {{ $package->sms }}</small> |
-                                                <small class="text-muted"><strong>Data:</strong> {{ $package->data }}</small>
-                                            </p>
-                                            <p class="card-text">
-                                                <small class="text-muted"><strong>Validity:</strong>
-                                                    {{ Str::title($package->validity) }}</small> |
-                                                <small class="text-muted"><strong>Price:</strong> Rs.{{ $package->price }}
-                                                    (Incl. Tax)</small>
-                                            </p>
-                                            <!-- Detail button removed -->
-                                        </div>
-                                    </div>
-                                </a>
-
-                            </div>
+                @include('includes.page-body')
+            @else
+                @if($networks = App\Models\Package::distinct('filter_network')->pluck('filter_network'))
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        @foreach($networks as $network)
+                            <a href="{{ route('package.network.index', $network) }}"
+                                class="group flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg hover:ring-primary/20 transition-all dark:bg-slate-900 dark:ring-slate-800">
+                                <img src="{{ URL::to('/images/packages/' . $network . '.png') }}"
+                                    class="h-16 w-auto object-contain transition-transform group-hover:scale-110" alt="{{ $network }}">
+                                <span
+                                    class="mt-3 text-sm font-bold text-slate-700 dark:text-slate-300">{{ Str::title($network) }}</span>
+                            </a>
                         @endforeach
                     </div>
-                    <div class="row my-2">
-                        @include('includes.page-body')
-                    </div>
-                @else
-                    @if($networks = App\Models\Package::distinct('filter_network')->pluck('filter_network'))
-                        <div class="row mt-3">
-                            @foreach($networks as $network)
-                                <div class="col-6 col-md-3  text-center p-3">
-                                    <div class="border p-3">
-                                        <a href="{{route('package.network.index', $network)}}" class="text-decoration-none">
-                                            <img src="{{URL::to('/images/packages/' . $network . '.png')}}"
-                                                class="img-fluid network_logo" alt="{{$network}}">
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
                 @endif
-            </div>
+            @endif
         </div>
     </div>
-</main>
-@stop
-
-@section("script") @stop
-
-@section("style") @stop
+@endsection

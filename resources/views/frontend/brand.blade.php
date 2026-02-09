@@ -1,114 +1,329 @@
-@extends('layouts.frontend')
+@extends('layouts.techspec')
 
 @section('title', $metas->title)
-
 @section('description', $metas->description)
-
-@section("keywords", "Mobiles prices, mobile specification, mobile phone features")
-
 @section("canonical", $metas->canonical)
 
-@section("og_graph") @stop
-
-@section("noindex")
-@if(str_contains(URL::full(), '?page='))
-    <meta name="robots" content="noindex">
-@endif
-@stop
-
 @section("content")
-<main class="main container-lg">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="my-1" style="font-size: 12px;">
-            <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a
-                        href="{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-                        class="text-decoration-none text-secondary">
-                        Home
-                    </a></li>
+    <!-- Breadcrumbs & Page Title -->
+    <div
+        class="hidden lg:flex mb-8 flex-col gap-4 border-b border-slate-200 pb-6 dark:border-slate-800 md:flex-row md:items-end md:justify-between">
+        <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <a class="hover:text-primary hover:underline"
+                    href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'index', ($country->country_code == 'pk' ? [] : ['country_code' => $country->country_code])) }}">Home</a>
+                <span class="material-symbols-outlined text-[12px]">chevron_right</span>
                 @if($category)
-                    <li class="breadcrumb-item"><a
-                            href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
-                            class="text-decoration-none text-secondary">
-                            {{ Str::title($category->category_name) }}
-                        </a></li>
+                    <a class="hover:text-primary hover:underline"
+                        href="{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}">{{ Str::title($category->category_name) }}</a>
+                    <span class="material-symbols-outlined text-[12px]">chevron_right</span>
                 @endif
-                <li class="breadcrumb-item active text-secondary" aria-current="page">
-                    {{ Str::title($brand->name) }}
-                </li>
-            </ol>
+                <span class="font-medium text-slate-900 dark:text-white">{{ Str::title($brand->name) }}</span>
+            </div>
+            <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">{{ $metas->h1 }}</h1>
+            <p class="text-slate-500 dark:text-slate-400 max-w-2xl">
+                {!! $metas->body ?? 'Browse ' . Str::title($brand->name) . ' devices.' !!}</p>
         </div>
-    </nav>
+    </div>
 
-    <div class="">
-        <div class="row">
-            <div class="col-12 col-md-4 col-lg-3 pe-1">
+    <!-- Mobile Sticky Bar -->
+    <div
+        class="mobile-sticky-bar lg:hidden w-full bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm dark:bg-[#101622]/95 dark:border-slate-800 -mx-4 px-4 py-2 mb-4 flex items-center justify-between gap-4 sticky top-[64px] z-40">
+        <button
+            class="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition active:scale-95 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 flex-1 justify-center"
+            onclick="document.getElementById('mobileFilters').classList.toggle('hidden')">
+            <span class="material-symbols-outlined text-[20px]">tune</span> Filters
+        </button>
+        <div class="relative flex-1">
+            <select
+                class="w-full appearance-none rounded-lg bg-slate-100 py-2 pl-3 pr-8 text-sm font-bold text-slate-700 ring-0 focus:ring-0 dark:bg-slate-800 dark:text-slate-200 text-center"
+                onchange="window.location.href=this.value">
+                <option value="{{ request()->fullUrlWithQuery(['sort' => 'popular']) }}">Sort: Popular</option>
+                <option value="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}">Sort: Newest</option>
+                <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}">Price: Low-High</option>
+                <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}">Price: High-Low</option>
+            </select>
+            <span
+                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[18px] text-slate-500">expand_more</span>
+        </div>
+        <div class="flex items-center rounded-lg bg-slate-100 p-1 dark:bg-slate-800 shrink-0">
+            <button class="rounded p-1.5 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white">
+                <span class="material-symbols-outlined text-[20px]">grid_view</span>
+            </button>
+            <button class="rounded p-1.5 text-slate-400 hover:text-primary dark:text-slate-500">
+                <span class="material-symbols-outlined text-[20px]">view_list</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Filters Sidebar (Hidden by default) -->
+    <div id="mobileFilters" class="hidden lg:hidden fixed inset-0 z-50 bg-white dark:bg-slate-900 overflow-y-auto p-4">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold dark:text-white">Filters</h3>
+            <button onclick="document.getElementById('mobileFilters').classList.add('hidden')"
+                class="p-2 rounded-full bg-slate-100 dark:bg-slate-800">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        @include("includes.sidebar-unified", ['category' => $category])
+    </div>
+
+    <div class="flex flex-col gap-8 lg:flex-row">
+        <!-- LEFT SIDEBAR: FILTERS -->
+        <aside class="hidden lg:block w-full shrink-0 lg:w-72">
+            <div class="sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar pr-2 pb-10">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Filters</h3>
+                    <a href="{{ request()->url() }}" class="text-sm font-medium text-primary hover:text-blue-700">Clear
+                        All</a>
+                </div>
                 @include("includes.sidebar-unified", ['category' => $category])
             </div>
-            <div class="col-12 col-md-8 col-lg-9 pe-1">
+        </aside>
 
-                <div class="row">
-                    <h1 class="heading1 fs-4">{{$metas->h1}}</h1>
+        <!-- RIGHT MAIN: GRID -->
+        <div class="flex-1 min-w-0">
+            <!-- Sorting Bar -->
+            <div
+                class="hidden lg:flex mb-6 flex-wrap items-center justify-between gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Showing</span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $products->count() }}</span>
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400">of</span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">
+                        {{ ($products instanceof \Illuminate\Pagination\LengthAwarePaginator) ? $products->total() : $products->count() }}
+                    </span>
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400">results</span>
                 </div>
-                @include("includes.filters")
-                <div class="row my-2" id="productList" data-next-page="2">
-                    @if(!$products->isEmpty())
-                        @foreach($products as $product)
-                            <div class="col-6 col-sm-4 col-md-4 col-lg-3">
-                                <x-product-card :product="$product" :country="$country" />
-                            </div>
-                        @endforeach
-                    @else
-                        @include('includes.product-not-found')
-                    @endif
-                </div>
-
-                <div id="dynamicContentEnd"></div>
-                <div id="loadingSpinner" class="text-center" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="hidden text-sm font-medium text-slate-500 sm:inline dark:text-slate-400">Sort
+                            by:</span>
+                        <div class="relative">
+                            <select
+                                class="appearance-none rounded-lg border-none bg-slate-50 py-1.5 pl-3 pr-8 text-sm font-bold text-slate-900 shadow-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-700"
+                                onchange="window.location.href=this.value">
+                                <option value="{{ request()->fullUrlWithQuery(['sort' => 'popular']) }}">Popularity</option>
+                                <option value="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}">Newest Arrivals
+                                </option>
+                                <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}">Price: Low to
+                                    High</option>
+                                <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}">Price: High to
+                                    Low</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[18px] text-slate-500">expand_more</span>
+                        </div>
+                    </div>
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+                    <div
+                        class="flex items-center rounded-lg bg-slate-50 p-1 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
+                        <button id="btnGrid" onclick="switchView('grid')"
+                            class="rounded p-1 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white">
+                            <span class="material-symbols-outlined text-[20px]">grid_view</span>
+                        </button>
+                        <button id="btnList" onclick="switchView('list')"
+                            class="rounded p-1 text-slate-400 hover:text-primary dark:text-slate-500">
+                            <span class="material-symbols-outlined text-[20px]">view_list</span>
+                        </button>
                     </div>
                 </div>
-                <div class="row">
-                    {!! isset($metas->body) ? $metas->body : '' !!}
-                    {!! isset($brand->body) ? $brand->body : '' !!}
-                </div>
-
             </div>
 
-        </div><!-- End .container -->
-</main><!-- End .main -->
-@stop
+            <!-- Product Grid -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3" id="productList">
+                @if(!$products->isEmpty())
+                    @foreach($products as $product)
+                        <x-product-card :product="$product" :country="$country" />
+                    @endforeach
+                @else
+                    <div class="col-span-full text-center py-20">
+                        <span class="material-symbols-outlined text-6xl text-slate-300 opacity-20 mb-4">search_off</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">No Products Found</h3>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2">Try adjusting your filters or check back later.</p>
+                    </div>
+                @endif
+            </div>
 
-@section("style") @stop
+            <!-- Pagination -->
+            <div class="mt-12 flex items-center justify-center gap-2">
+                @if($products instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    {{ $products->links() }}
+                @endif
+            </div>
 
-@section("script")
-<script type="application/ld+json">
-{
-  "@@context": "https://schema.org/",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-       "name": "Home",
-       "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-     },
-    @if($category)
+            <div id="dynamicContentEnd"></div>
+            <div id="loadingSpinner" class="text-center py-8" style="display: none;">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            </div>
+
+            <!-- Body Content -->
+            <div class="mt-6 prose prose-sm max-w-none text-text-muted">
+                {!! isset($metas->body) ? $metas->body : '' !!}
+                {!! isset($brand->body) ? $brand->body : '' !!}
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Comparison Bar -->
+    <div class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-full bg-slate-900 p-2 pl-6 pr-2 shadow-2xl ring-1 ring-slate-800 dark:bg-white w-[90%] max-w-sm sm:w-auto hidden"
+        id="comparisonBar">
+        <div class="flex items-center gap-3">
+            <span
+                class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white"
+                id="compareCount">0</span>
+            <span class="text-xs sm:text-sm font-bold text-white dark:text-slate-900 truncate">Items to compare</span>
+        </div>
+        <div class="h-6 w-px bg-slate-700 dark:bg-slate-200"></div>
+        <button
+            onclick="window.location.href='{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'comparison', ($country->country_code == 'pk' ? [] : ['country_code' => $country->country_code])) }}'"
+            class="flex items-center gap-2 rounded-full bg-primary px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition hover:bg-blue-600 whitespace-nowrap">
+            Compare <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+        <button
+            class="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white dark:bg-slate-100 dark:text-slate-500"
+            onclick="document.getElementById('comparisonBar').classList.add('hidden')">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+    </div>
+@endsection
+
+@section("style")
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        .mobile-sticky-bar {
+            position: sticky;
+            top: 64px;
+            z-index: 40;
+        }
+
+        #productList.list-view {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+
+        #productList.list-view>div {
+            display: grid !important;
+            grid-template-columns: 140px 1fr !important;
+            grid-template-rows: auto auto auto !important;
+            padding: 1rem 1.25rem !important;
+            gap: 0 1.25rem;
+            align-items: start;
+        }
+
+        #productList.list-view>div>a:first-of-type {
+            grid-column: 1;
+            grid-row: 1 / -1;
+            height: 130px !important;
+            width: 140px;
+            margin-bottom: 0 !important;
+            border-radius: 0.75rem;
+            align-self: center;
+        }
+
+        #productList.list-view>div>a:first-of-type img {
+            height: 110px !important;
+        }
+
+        #productList.list-view>div>.absolute {
+            position: absolute;
+        }
+
+        #productList.list-view>div>div:nth-child(3) {
+            grid-column: 2;
+            grid-row: 1;
+            margin-bottom: 0.25rem !important;
+        }
+
+        #productList.list-view>div>div:nth-child(4) {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex !important;
+            gap: 1.25rem;
+            border-top: none !important;
+            border-bottom: none !important;
+            padding: 0.5rem 0 !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        #productList.list-view>div>div:nth-child(4)>div {
+            display: flex !important;
+        }
+
+        #productList.list-view>div>div:nth-child(5) {
+            grid-column: 2;
+            grid-row: 3;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between;
+            margin-top: 0 !important;
+        }
+    </style>
+@endsection
+
+@section('script')
+    <script>
+        function switchView(mode) {
+            const grid = document.getElementById('productList');
+            const btnGrid = document.getElementById('btnGrid');
+            const btnList = document.getElementById('btnList');
+            const activeClass = 'rounded p-1 text-slate-900 shadow-sm bg-white dark:bg-slate-700 dark:text-white';
+            const inactiveClass = 'rounded p-1 text-slate-400 hover:text-primary dark:text-slate-500';
+            if (mode === 'list') {
+                grid.classList.add('list-view');
+                btnList.className = activeClass;
+                btnGrid.className = inactiveClass;
+            } else {
+                grid.classList.remove('list-view');
+                btnGrid.className = activeClass;
+                btnList.className = inactiveClass;
+            }
+            localStorage.setItem('viewMode', mode);
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const saved = localStorage.getItem('viewMode');
+            if (saved === 'list') switchView('list');
+        });
+    </script>
+
+    <script type="application/ld+json">
         {
-          "@type": "ListItem",
-          "position": 2,
-           "name": "{{ Str::title($category->category_name) }}",
-           "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
-         },
-    @endif
-    {
-      "@type": "ListItem",
-      "position": {{ (isset($category) && $category) ? 3 : 2 }},
-      "name": "{{ Str::title($brand->name ?? 'Brand') }}",
-      "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
-    }
-  ]
-}
-</script>
-@stop
+          "@@context": "https://schema.org/",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+               "name": "Home",
+               "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+             },
+            @if($category)
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                   "name": "{{ Str::title($category->category_name) }}",
+                   "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                 },
+            @endif
+            {
+              "@type": "ListItem",
+              "position": {{ (isset($category) && $category) ? 3 : 2 }},
+              "name": "{{ Str::title($brand->name ?? 'Brand') }}",
+              "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
+            }
+          ]
+        }
+        </script>
+@endsection

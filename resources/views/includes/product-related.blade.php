@@ -1,10 +1,12 @@
-<div class="row products-section pt-0 pb-1 mt-3" id="related_mobiles">
-    <p class="ml-2 text-dark fw-bold related_mobiles">Related Mobile</p>
+<div class="mt-6" id="related_mobiles">
+    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Related Mobile</h3>
     @if(!$products->isEmpty())
-        @foreach($products as $prod)
-            <div class="col-6 col-sm-4 col-md-4 col-lg-3">
-                <x-product-card :product="$prod" :country="$country" />
-            </div>
-        @endforeach
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach($products as $prod)
+                <div>
+                    <x-product-card :product="$prod" :country="$country" />
+                </div>
+            @endforeach
+        </div>
     @endif
 </div>

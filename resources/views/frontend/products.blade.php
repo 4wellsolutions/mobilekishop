@@ -1,166 +1,137 @@
-@extends('layouts.frontend')
+@extends('layouts.techspec')
 
 @section('title', $metas->title)
-
 @section('description', $metas->description)
-
-@section("keywords", "Mobiles prices, mobile specification, mobile phone features")
-
 @section("canonical", $metas->canonical)
 
-@section("og_graph") @stop
-
-@section("noindex")
-@if(str_contains(URL::full(), '?page='))
-    <meta name="robots" content="noindex">
-@endif
-@stop
 @section("content")
-
-
-<main class="main container-lg">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="container">
-            <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a href="{{URL::to('/')}}" class="text-decoration-none text-secondary">
-                        <img src="{{URL::to('/images/icons/home.png')}}" alt="home-icon" width="16" height="16">
-                    </a></li>
-                <li class="breadcrumb-item active text-secondary" aria-current="page">Products</li>
+    <main class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-4">
+        {{-- Breadcrumb --}}
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="flex items-center gap-1 text-xs text-text-muted">
+                <li><a href="{{ URL::to('/') }}" class="hover:text-primary no-underline transition-colors">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">Products</li>
             </ol>
-        </div>
-    </nav>
+        </nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-md-3 pe-1">
+        <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-4">
+            {{-- Sidebar --}}
+            <div class="md:col-span-1 lg:col-span-3">
                 @include("frontend.sidebar_widget")
             </div>
-            <div class="col-12 col-md-9">
 
-                <div class="row">
-                    <h1 class="heading1 pb-2 fs-4 text-center">{{$metas->h1}}</h1>
-                </div>
-                <form action="" method="get" class="formFilter mb-1">
+            {{-- Main Content --}}
+            <div class="md:col-span-3 lg:col-span-9">
+                <h1 class="text-lg font-bold text-text-main text-center mb-3">{{ $metas->h1 }}</h1>
+
+                {{-- Sort & Filter --}}
+                <form action="" method="get" class="formFilter mb-3">
                     <input type="hidden" name="filter" value="true">
-                    <div class="row d-flex justify-content-between filter">
-                        <div class="col-auto">
-                            <div class="">
-                                <label>Sort By:</label>
-                                <div class="select-custom">
-                                    <select name="orderby" id="sort_filter" class="select-filter form-control">
-                                        <option value="" selected="selected" {{(Request::get('orderby') == 0) ? "selected" : ''}}>Default sorting</option>
-                                        <option value="new" {{(Request::get('orderby') == "new") ? "selected" : ''}}>Sort
-                                            by Latest</option>
-                                        <option value="price_asc" {{(Request::get('orderby') == "price_asc") ? "selected" : ''}}>Sort by price: low to high</option>
-                                        <option value="price_desc" {{(Request::get('orderby') == "price_desc") ? "selected" : ''}}>Sort by price: high to low</option>
-                                    </select>
-                                </div><!-- End .select-custom -->
-                            </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-text-main whitespace-nowrap">Sort By:</label>
+                            <select name="orderby" id="sort_filter" class="select-filter px-3 py-1.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                                <option value="" {{ (Request::get('orderby') == 0) ? "selected" : '' }}>Default sorting
+                                </option>
+                                <option value="new" {{ (Request::get('orderby') == "new") ? "selected" : '' }}>Sort by Latest
+                                </option>
+                                <option value="price_asc" {{ (Request::get('orderby') == "price_asc") ? "selected" : '' }}>
+                                    Sort by price: low to high</option>
+                                <option value="price_desc" {{ (Request::get('orderby') == "price_desc") ? "selected" : '' }}>
+                                    Sort by price: high to low</option>
+                            </select>
                         </div>
-                        <div class="col-auto my-auto">
-                            <div class="border rounded-circle">
-                                <img src="{{URL::to('/images/icons/filter.png')}}" class="img-fluid m-2"
-                                    alt="filter-icon" style="cursor: pointer;" data-bs-toggle="collapse" href="#filter"
-                                    role="button" aria-expanded="false" aria-controls="filter" width="30" height="30">
-                            </div>
-                        </div>
+                        <button type="button" onclick="document.getElementById('filterPanel').classList.toggle('hidden')"
+                            class="p-2 border border-border-light rounded-full hover:bg-surface-alt transition-colors">
+                            <span class="material-symbols-outlined text-xl">tune</span>
+                        </button>
                     </div>
-                    <div class="row">
-                        <div class="collapse {{(new \Jenssegers\Agent\Agent())->isDesktop() ? 'show' : '' }} {{\Request::get('filter') == true ? 'show' : ''}}"
-                            id="filter">
-                            <div class="row mt-3">
-                                <div class="col-6 col-md-4">
-                                    <div class="select-filter">
-                                        <label class="font-weight-bold">Year</label>
-                                        <select class="select-filter form-control rounded py-1" name="year">
-                                            <option value="">Select Year</option>
-                                            <option value="2023" {{(Request::get('year') == 2023) ? "selected" : ''}}>2023
-                                            </option>
-                                            <option value="2022" {{(Request::get('year') == 2022) ? "selected" : ''}}>2022
-                                            </option>
-                                            <option value="2021" {{(Request::get('year') == 2021) ? "selected" : ''}}>2021
-                                            </option>
-                                            <option value="2020" {{(Request::get('year') == 2020) ? "selected" : ''}}>2020
-                                            </option>
-                                            <option value="2019" {{(Request::get('year') == 2019) ? "selected" : ''}}>2019
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                @if(!isset($brand))
-                                    <div class="col-6 col-md-4">
-                                        <div class="select-filter">
-                                            <label class="font-weight-bold">Brand</label>
-                                            <select class="select-filter form-control rounded py-1" name="brand_id">
-                                                <option value="">Select Brand</option>
-                                                @if($brands = App\Models\Brand::limit(20)->get())
-                                                    @foreach($brands as $brnd)
-                                                        <option value="{{$brnd->id}}" {{(Request::get('brand_id') == $brnd->id) ? "selected" : ''}}>{{$brnd->name}}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                    </div>
-                                @endif
+
+                    {{-- Collapsible Filters --}}
+                    <div id="filterPanel"
+                        class="{{ (new \Jenssegers\Agent\Agent())->isDesktop() || Request::get('filter') ? '' : 'hidden' }}">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                            <div>
+                                <label class="block text-sm font-medium text-text-main mb-1">Year</label>
+                                <select class="select-filter w-full px-3 py-1.5 border border-border-light rounded-lg text-sm
+                                               focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    name="year">
+                                    <option value="">Select Year</option>
+                                    @for($y = 2025; $y >= 2019; $y--)
+                                        <option value="{{ $y }}" {{ (Request::get('year') == $y) ? "selected" : '' }}>{{ $y }}
+                                        </option>
+                                    @endfor
+                                </select>
                             </div>
+                            @if(!isset($brand))
+                                <div>
+                                    <label class="block text-sm font-medium text-text-main mb-1">Brand</label>
+                                    <select class="select-filter w-full px-3 py-1.5 border border-border-light rounded-lg text-sm
+                                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                        name="brand_id">
+                                        <option value="">Select Brand</option>
+                                        @if($brands = App\Models\Brand::limit(20)->get())
+                                            @foreach($brands as $brnd)
+                                                <option value="{{ $brnd->id }}" {{ (Request::get('brand_id') == $brnd->id) ? "selected" : '' }}>{{ $brnd->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </form>
-                <div class="row my-2">
+
+                {{-- Product Grid --}}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 my-2">
                     @if(!$products->isEmpty())
                         @foreach($products as $product)
-                            <div class="col-6 col-sm-4 col-md-3">
-                                <x-product-card :product="$product" :country="$country" />
-                            </div>
+                            <x-product-card :product="$product" :country="$country" />
                         @endforeach
                     @else
-                        <h3>No Product Found.</h3>
+                        <div class="col-span-full">
+                            <h3 class="text-text-muted text-center py-8">No Product Found.</h3>
+                        </div>
                     @endif
                 </div>
 
-                <div class="row">
-                    <div class="col-auto mx-auto">
-                        <nav class="toolboxs toolbox-paginations my-3 text-center">
-                            {{ $products->withQueryString()->links() }}
-                        </nav>
-                    </div>
+                {{-- Pagination --}}
+                <div class="flex justify-center my-4">
+                    {{ $products->withQueryString()->links() }}
                 </div>
-                <div class="row">
+
+                {{-- Body Content --}}
+                <div class="prose prose-sm max-w-none text-text-muted mt-4">
                     {!! isset($metas->body) ? $metas->body : '' !!}
                     {!! isset($brand->body) ? $brand->body : '' !!}
                 </div>
-
             </div>
-
-        </div><!-- End .container -->
-</main><!-- End .main -->
-@stop
-
-
-
-
-@section("style") @stop
+        </div>
+    </main>
+@endsection
 
 @section("script")
-<script type="application/ld+json">
-{
-  "@@context": "https://schema.org/", 
-  "@type": "BreadcrumbList", 
-  "itemListElement": [{
-    "@type": "ListItem", 
-    "position": 1, 
-    "name": "Home",
-    "item": "{{url('/')}}/"  
-  },{
-    "@type": "ListItem", 
-    "position": 2, 
-    "name": "{{$metas->name}}",
-    "item": "{{$metas->canonical}}"  
-  }]
-}
-</script>
-@stop
-
-@section("style")
-
-@stop
+    <script type="text/javascript">
+        $(".select-filter").change(function () {
+            $(".formFilter").submit();
+        });
+    </script>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org/", 
+      "@type": "BreadcrumbList", 
+      "itemListElement": [{
+        "@type": "ListItem", 
+        "position": 1, 
+        "name": "Home",
+        "item": "{{url('/')}}/"  
+      },{
+        "@type": "ListItem", 
+        "position": 2, 
+        "name": "{{$metas->name}}",
+        "item": "{{$metas->canonical}}"  
+      }]
+    }
+    </script>
+@endsection

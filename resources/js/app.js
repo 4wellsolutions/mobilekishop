@@ -48,7 +48,7 @@ $(document).ready(function () {
             e.preventDefault();
             const $btn = $(".login_button");
             const originalHtml = $btn.html();
-            $btn.html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
+            $btn.html('<div class="inline-block size-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>');
 
             const formData = $loginForm.serialize();
             const urlLogin = $loginForm.data("url") || (config.routes && config.routes.login);
@@ -65,13 +65,13 @@ $(document).ready(function () {
                         location.reload();
                     } else {
                         $.each(data.errors, function (key, value) {
-                            $errors.append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
+                            $errors.append('<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-sm mb-2">' + value + '</div>');
                         });
                     }
                 },
                 error: function () {
                     $btn.html(originalHtml);
-                    $errors.append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
+                    $errors.append('<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-sm mb-2">Contact Admin.</div>');
                 }
             });
         });
@@ -84,7 +84,7 @@ $(document).ready(function () {
             e.preventDefault();
             const $btn = $(".register_button");
             const originalHtml = $btn.html();
-            $btn.html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>').attr("disabled", true);
+            $btn.html('<div class="inline-block size-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>').attr("disabled", true);
 
             const formData = $registerForm.serialize();
             const urlRegister = $registerForm.data("url") || (config.routes && config.routes.register);
@@ -100,14 +100,14 @@ $(document).ready(function () {
                         location.reload();
                     } else {
                         $.each(data.errors, function (key, value) {
-                            $errors.append('<div class="alert alert-danger py-2 rounded-0">' + value + '</div>');
+                            $errors.append('<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-sm mb-2">' + value + '</div>');
                         });
                     }
                     $btn.html(originalHtml).attr("disabled", false);
                 },
                 error: function () {
                     $btn.html(originalHtml).attr("disabled", false);
-                    $errors.append('<div class="alert alert-danger py-2 rounded-0">Contact Admin.</div>');
+                    $errors.append('<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-sm mb-2">Contact Admin.</div>');
                 }
             });
         });
@@ -159,8 +159,8 @@ $(document).ready(function () {
     const isLoggedIn = config.isLoggedIn || false;
     $('.stars').on('click', function () {
         if (!isLoggedIn) {
-            const $loginModal = $('#loginModal');
-            if ($loginModal.length) $loginModal.modal('show');
+            const loginModal = document.getElementById('loginModal');
+            if (loginModal) loginModal.classList.replace('hidden', 'flex');
         } else {
             const val = $(this).data('value') || $(this).attr('id');
             $('#stars').val(val);
@@ -199,7 +199,7 @@ $(document).ready(function () {
 
             const $btn = $(".submitReview");
             const originalHtml = $btn.html();
-            $btn.html('<span class="spinner-border spinner-border-sm" role="status"></span> Submitting...').prop('disabled', true);
+            $btn.html('<span class="inline-block size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> Submitting...').prop('disabled', true);
 
             $.ajax({
                 url: config.routes && config.routes.reviewPost ? config.routes.reviewPost : '/review/post',
@@ -240,23 +240,15 @@ $(document).ready(function () {
 
     // 12. Toast Utility
     window.showToast = function (title, message, classes) {
-        const $container = $('#toastContainer');
-        if (!$container.length) return;
-        $container.html('');
-        const toastHtml = `
-            <div class="toast align-items-center ${classes} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <strong>${title}:</strong> ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>`;
-        $container.append(toastHtml);
-        const $toastElem = $container.find('.toast');
-        if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
-            new bootstrap.Toast($toastElem[0]).show();
-        }
+        // Pick style based on classes
+        const isError = classes && classes.includes('danger');
+        const bgClass = isError ? 'bg-red-600' : 'bg-green-600';
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-[9999] ${bgClass} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-3 animate-slide-in`;
+        toast.innerHTML = `<strong>${title}:</strong> ${message}
+            <button onclick="this.parentElement.remove()" class="ml-2 hover:opacity-80 transition">&times;</button>`;
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
     };
 
     // 9. Search/Category Filter Auto-submit
@@ -365,7 +357,7 @@ $(document).ready(function () {
         });
 
         $brandSelect.on('change', function () {
-            $(".modelDiv").addClass("d-none");
+            $(".modelDiv").addClass("hidden");
             if (productChoices) {
                 productChoices.destroy();
             }
@@ -379,7 +371,7 @@ $(document).ready(function () {
                 data: { brand_id: brandId },
                 dataType: 'json',
                 success: function (response) {
-                    $(".modelDiv").removeClass("d-none").fadeIn();
+                    $(".modelDiv").removeClass("hidden").fadeIn();
                     const $productSelect = $('#product_id');
                     $productSelect.empty();
                     $productSelect.append($('<option>', { value: '', text: 'Select Model' }));
@@ -411,7 +403,7 @@ $(document).ready(function () {
             $results.html("");
             const $submitBtn = $('.submitBtn');
             const originalText = $submitBtn.html();
-            $submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...').attr('disabled', true);
+            $submitBtn.html('<span class="inline-block size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> Loading...').attr('disabled', true);
 
             const url = config.routes && config.routes.installmentPlanPost ? config.routes.installmentPlanPost : '/mobile-installment-calculator';
 
@@ -509,14 +501,17 @@ $(document).ready(function () {
 
     // 17. Account Password Toggle
     $("#change-pass-checkbox").on('change', function () {
-        if (this.checked) {
-            $("#account-chage-pass").fadeIn().removeClass("d-none");
-            $("#password").attr("required", true);
-            $("#password_confirmation").attr("required", true);
-        } else {
-            $("#account-chage-pass").fadeOut();
-            $("#password").attr("required", false);
-            $("#password_confirmation").attr("required", false);
+        const section = document.getElementById('password-section');
+        if (section) {
+            if (this.checked) {
+                section.classList.remove('hidden');
+                $("#password").attr("required", true);
+                $("#password_confirmation").attr("required", true);
+            } else {
+                section.classList.add('hidden');
+                $("#password").attr("required", false);
+                $("#password_confirmation").attr("required", false);
+            }
         }
     });
 

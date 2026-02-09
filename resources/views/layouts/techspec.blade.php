@@ -19,6 +19,7 @@
     @endphp
     <meta name="description" content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
 
     {{-- Hreflang tags for multi-country SEO --}}
     @php
@@ -163,17 +164,29 @@
                         <div
                             class="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             <div
-                                class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[180px]">
-                                <a href="{{ $phonesRoute }}"
-                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
-                                    <span class="material-symbols-outlined text-[18px]">smartphone</span>
-                                    Mobile Phones
-                                </a>
-                                <a href="{{ $tabletsRoute }}"
-                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
-                                    <span class="material-symbols-outlined text-[18px]">tablet</span>
-                                    Tablets
-                                </a>
+                                class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[200px]">
+                                @php
+                                    $navCategories = \App\Models\Category::orderBy('category_name')->get();
+                                    $catIcons = [
+                                        'mobile-phones' => 'smartphone',
+                                        'tablets' => 'tablet',
+                                        'smart-watch' => 'watch',
+                                        'earphone' => 'headphones',
+                                        'phone-covers' => 'phone_iphone',
+                                        'power-banks' => 'battery_charging_full',
+                                        'chargers' => 'electrical_services',
+                                        'cables' => 'cable',
+                                    ];
+                                @endphp
+                                @foreach($navCategories as $navCat)
+                                    <a href="{{ route($countryPrefix . 'category.show', array_merge($routeParams, ['category' => $navCat->slug])) }}"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
+                                        <span
+                                            class="material-symbols-outlined text-[18px]">{{ $catIcons[$navCat->slug] ?? 'category' }}</span>
+                                        {{ $navCat->category_name }}
+                                    </a>
+                                @endforeach
+                                <div class="border-t border-slate-100 my-1"></div>
                                 <a href="{{ $upcomingRoute }}"
                                     class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
                                     <span class="material-symbols-outlined text-[18px]">upcoming</span>
@@ -190,6 +203,43 @@
                         href="{{ url('/blogs') }}">Blog</a>
                 </nav>
                 <div class="h-6 w-px bg-border-light hidden md:block"></div>
+
+                {{-- Country Dropdown --}}
+                @php
+                    $menuCountries = \App\Models\Country::where('is_active', 1)->orderBy('country_name')->get();
+                    $currentCountryCode = $country->country_code ?? 'pk';
+                @endphp
+                <div class="relative group" id="countryDropdown">
+                    <button
+                        class="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-all"
+                        onclick="document.getElementById('countryDropdown').classList.toggle('open')">
+                        <span class="fi fi-{{ $currentCountryCode }} rounded-sm" style="font-size: 18px;"></span>
+                        <span class="uppercase text-xs font-bold">{{ $currentCountryCode }}</span>
+                        <span class="material-symbols-outlined text-[14px] transition-transform">expand_more</span>
+                    </button>
+                    <div
+                        class="absolute top-full right-0 pt-1 opacity-0 invisible group-[.open]:opacity-100 group-[.open]:visible transition-all duration-200 z-50">
+                        <div
+                            class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 w-56 max-h-80 overflow-y-auto">
+                            @foreach($menuCountries as $mc)
+                                @php
+                                    $isActive = $mc->country_code === $currentCountryCode;
+                                    $countryUrl = $mc->country_code === 'pk'
+                                        ? url($basePath)
+                                        : url($mc->country_code . '/' . $basePath);
+                                @endphp
+                                <a href="{{ $countryUrl }}"
+                                    class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isActive ? 'text-primary bg-primary/5 font-semibold' : 'text-text-muted hover:text-primary hover:bg-slate-50' }}">
+                                    <span class="fi fi-{{ $mc->country_code }} rounded-sm" style="font-size: 16px;"></span>
+                                    <span class="truncate">{{ $mc->country_name }}</span>
+                                    @if($isActive)
+                                        <span class="material-symbols-outlined text-[16px] ml-auto text-primary">check</span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                 @auth
                     <a href="{{ route('user.index') }}"
                         class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
@@ -316,6 +366,15 @@
         </div>
     </footer>
     @yield('script')
+    <script>
+        // Close country dropdown on outside click
+        document.addEventListener('click', function (e) {
+            const dd = document.getElementById('countryDropdown');
+            if (dd && !dd.contains(e.target)) {
+                dd.classList.remove('open');
+            }
+        });
+    </script>
 </body>
 
 </html>

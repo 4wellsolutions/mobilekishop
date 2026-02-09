@@ -15,95 +15,30 @@
     $country = DB::table("countries")->where("country_code", $countryCode)->first();
 @endphp
 
-@extends('layouts.frontend')
+@extends('layouts.techspec')
 
-@section('title', '404 - Page not Found. MKS')
-
-@section('description', '404 - Page not Found. MKS')
-
-@section("keywords") @stop
-
-@section("canonical") @stop
-
-@section("og_graph") @stop
-
+@section('title', '404 - Page not Found | MobileKiShop')
+@section('description', '404 - The page you are looking for could not be found.')
 
 @section("content")
-
-<main class="main">
-    <div class="container">
-        <div class="row mt-5 pt-5">
-            <div class="col-12">
-                <div class="text-center my-5 py-5">
-                    <h1 class="display-1 fw-bold text-primary">404</h1>
-                    <h2 class="mb-4">Page Not Found</h2>
-                    <p class="lead mb-4">Sorry, the page you are looking for could not be found.</p>
-                    @php
-                        $pathSegments = explode('/', trim(request()->path(), '/'));
-                        $firstSegment = $pathSegments[0] ?? null;
-                        $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
-                        $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
-                        $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
-                    @endphp
-                    <a href="{{ $homeUrl }}" class="btn btn-primary">Go to Homepage</a>
-                </div>
-            </div>
-        </div><!-- End .container -->
-    </div>
-</main><!-- End .main -->
-@stop
-
-
-@section("script")
-
-@stop
-
-@section("style")
-<style type="text/css">
-    .icon-angle-right {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 15px !important;
-        padding-right: 12px !important;
-        padding-bottom: 3px !important;
-    }
-
-    .icon-angle-left {
-        background: #928989ad;
-        margin-left: 10px;
-        padding-left: 12px !important;
-        padding-right: 15px !important;
-        padding-bottom: 3px !important;
-    }
-
-    .mobileImage {
-        height: 120px !important;
-    }
-
-    .card-img {
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
-    .card-title {
-        margin-bottom: 0.3rem;
-    }
-
-    .cat {
-        display: inline-block;
-        margin-bottom: 1rem;
-    }
-
-    .fa-users {
-        margin-left: 1rem;
-    }
-
-    .card-footer {
-        font-size: 0.8rem;
-    }
-
-    .cat-list li a {
-        font-weight: normal !important;
-    }
-</style>
-@stop
+    <main class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-center min-h-[60vh] text-center py-16">
+            <div class="text-8xl md:text-9xl font-black text-primary/20 leading-none select-none">404</div>
+            <h1 class="text-2xl md:text-3xl font-bold text-text-main mt-4 mb-3">Page Not Found</h1>
+            <p class="text-text-muted text-lg mb-8 max-w-md">Sorry, the page you are looking for could not be found or has
+                been moved.</p>
+            @php
+                $pathSegments = explode('/', trim(request()->path(), '/'));
+                $firstSegment = $pathSegments[0] ?? null;
+                $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+                $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+                $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+            @endphp
+            <a href="{{ $homeUrl }}" class="inline-flex items-center gap-2 bg-primary text-white font-semibold py-3 px-8 rounded-xl text-sm
+                       hover:bg-blue-700 transition-colors shadow-lg shadow-primary/20 no-underline">
+                <span class="material-symbols-outlined text-xl">home</span>
+                Go to Homepage
+            </a>
+        </div>
+    </main>
+@endsection

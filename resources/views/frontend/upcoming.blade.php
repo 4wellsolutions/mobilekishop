@@ -1,50 +1,23 @@
-@extends('layouts.frontend')
+@extends('layouts.techspec')
 
 @section("title", $metas->title)
-
 @section("description", $metas->description)
-
-@section("keywords", $metas->keywords ?? "")
-
 @section("canonical", $metas->canonical)
 
-@section("og_graph")
-{!! $metas->og_graph ?? "" !!}
-@stop
-
-@section("noindex")
-@if(str_contains(URL::full(), "?page="))
-    <meta name="robots" content="noindex">
-@endif
-@stop
-
 @section("content")
-<main class="main">
-    <div class="container-lg my-3">
-        <div class="row">
-            <div class="col-12">
-                <div class="row">
-                    <h1 class="fs-4">{{$metas->h1}}</h1>
-                </div>
+    <main class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-4">
+        <h1 class="text-lg font-bold text-text-main mb-2">{{ $metas->h1 }}</h1>
 
-                <div class="row my-2" id="productList" data-next-page="2">
-                    @if(!$products->isEmpty())
-                        @foreach($products as $product)
-                            <div class="col-6 col-sm-4 col-md-4 col-lg-3">
-                                <x-product-card :product="$product" :country="$country" />
-                            </div>
-                        @endforeach
-                    @else
-                        @include("includes.product-not-found")
-                    @endif
-                </div>
-
-                @include("includes.page-body")
-
-            </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 my-2" id="productList" data-next-page="2">
+            @if(!$products->isEmpty())
+                @foreach($products as $product)
+                    <x-product-card :product="$product" :country="$country" />
+                @endforeach
+            @else
+                @include("includes.product-not-found")
+            @endif
         </div>
-    </div>
-</main>
-@stop
 
-@section("script") @stop
+        @include("includes.page-body")
+    </main>
+@endsection

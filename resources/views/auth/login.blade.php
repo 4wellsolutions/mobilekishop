@@ -1,93 +1,109 @@
-@extends('layouts.frontend')
+@extends('layouts.techspec')
 
-@section('title')Login - Mobile Ki Site @stop
-
-@section('description')Login - Mobile Ki Site @stop
-
-@section("keywords")Mobiles prices, mobile specification, mobile phone features @stop
-
-@section('canonical',URL::to('/login'))
+@section('title', 'Login - MobileKiShop')
+@section('description', 'Login or register for MobileKiShop')
+@section('canonical', URL::to('/login'))
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">    
-        <div class="row justify-content-center  pt-3">
-            <div class="col-12">
-                @include("includes.info-bar")
-            </div>
-            <div class="col-12 col-sm-6 col-md-6">
-                <h1 class="fs-2 text-uppercase text-center text-primary bg-light py-2 py-md-3">Login</h1>
-                <form action="{{route('login')}}" method="post">
-                    @csrf
-                    <div class="form-floating mb-3">
-                        <input type="email" value="{{old('email')}}" name="email"  placeholder="name@example.com" class="form-control" id="login-email" required />
-                        <label for="login-email">Email address <span class="required">*</span></label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" name="password"  placeholder="Password" class="form-control" id="login-password" required />
-                        <label for="login-password">Password <span class="required">*</span></label>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-dark rounded-0">Login</button>
-                    </div>
-                    <div class="form-footer mt-2">
-                        <div class="custom-control custom-checkbox form-footer-right">
-                            <input type="checkbox" name="remember" class="custom-control-input" id="lost-password">
-                            <label class="custom-control-label form-footer-right" for="lost-password">Remember Me</label>
+    <main class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-8">
+        <div class="max-w-4xl mx-auto">
+            @include("includes.info-bar")
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                {{-- Login --}}
+                <div class="bg-surface-card rounded-2xl shadow-sm p-6">
+                    <h1
+                        class="text-xl font-bold text-center text-primary bg-surface-alt py-3 rounded-xl mb-6 uppercase tracking-wide">
+                        Login</h1>
+                    <form action="{{ route('login') }}" method="post" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-text-main mb-1">Email address
+                                <span class="text-red-500">*</span></label>
+                            <input type="email" value="{{ old('email') }}" name="email" placeholder="name@example.com"
+                                id="login-email" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
                         </div>
-                    </div><!-- End .form-footer -->
-                    <div class="form-group my-2">
-                        <a href="#" class="forget-password text-secondary text-decoration-none">Forgot your password?</a>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-sm-6">
-                            <a href="#" data-href="{{URL::to('/google/redirect')}}" id="sign-with-google">
-                                <img src="{{URL::to('/images/login-with-google.png')}}" alt="login-with-google" class="img-fluid">
+                        <div>
+                            <label for="login-password" class="block text-sm font-medium text-text-main mb-1">Password <span
+                                    class="text-red-500">*</span></label>
+                            <input type="password" name="password" placeholder="Password" id="login-password" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
+                        </div>
+                        <button type="submit" class="w-full bg-text-main text-white font-semibold py-2.5 rounded-lg text-sm
+                                   hover:bg-gray-700 transition-colors">
+                            Login
+                        </button>
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center gap-2 text-text-muted cursor-pointer">
+                                <input type="checkbox" name="remember"
+                                    class="rounded border-border-light text-primary focus:ring-primary">
+                                Remember Me
+                            </label>
+                            <a href="#" class="text-text-muted hover:text-primary no-underline transition-colors">Forgot
+                                password?</a>
+                        </div>
+                        <div>
+                            <a href="{{ URL::to('/google/redirect') }}" id="sign-with-google">
+                                <img src="{{ URL::to('/images/login-with-google.png') }}" alt="Login with Google"
+                                    class="max-w-[200px]">
                             </a>
                         </div>
-                    </div>
-                </form>
-            </div><!-- End .col-md-6 -->
+                    </form>
+                </div>
 
-            <div class="col-12 col-sm-6 col-md-6">
-                <h4 class="fs-2 text-uppercase text-center text-primary bg-light py-2 py-md-3">Register</h4>
-
-                <form action="{{route('register')}}" method="post">
-                    @csrf
-                    <div class="form-floating mb-3">
-                        <input type="text" name="name" placeholder="Full name" value="{{old('name')}}" class="form-control mb-2" id="register-name" required>
-                        <label for="register-name">Full Name<span class="required">*</span></label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <input type="text" name="phone_number"  placeholder="Phone number" value="{{old('phone_number')}}" class="form-control mb-2" id="register-phone" required>
-                        <label for="register-phone">Phone Number<span class="required">*</span></label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <input type="email"  placeholder="name@example.com" name="email" value="{{old('email')}}" class="form-control mb-2" id="register-email" required>
-                        <label for="register-email">Email address<span class="required">*</span></label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <input type="password" name="password" placeholder="password*" class="form-control mb-2" id="register-password" required>
-                        <label for="register-password">Password <span class="required">*</span></label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <div class="custom-control custom-checkbox my-2">
-                            <input type="checkbox" name="newsletter" class="custom-control-input" id="newsletter-signup" checked>
-                            <label class="custom-control-label" for="newsletter-signup">Sign up our Newsletter</label>
+                {{-- Register --}}
+                <div class="bg-surface-card rounded-2xl shadow-sm p-6">
+                    <h4
+                        class="text-xl font-bold text-center text-primary bg-surface-alt py-3 rounded-xl mb-6 uppercase tracking-wide">
+                        Register</h4>
+                    <form action="{{ route('register') }}" method="post" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label for="register-name" class="block text-sm font-medium text-text-main mb-1">Full Name <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="name" placeholder="Full name" value="{{ old('name') }}"
+                                id="register-name" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
                         </div>
-                    </div>
-
-
-                    <div class="form-group my-3">
-                        <button type="submit" class="btn btn-dark rounded-0">Register</button>
-                    </div><!-- End .form-footer -->
-                </form>
-            </div><!-- End .col-md-6 -->
-            </div><!-- End .row -->
-    </div>
-</div>
+                        <div>
+                            <label for="register-phone" class="block text-sm font-medium text-text-main mb-1">Phone Number
+                                <span class="text-red-500">*</span></label>
+                            <input type="text" name="phone_number" placeholder="Phone number"
+                                value="{{ old('phone_number') }}" id="register-phone" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label for="register-email" class="block text-sm font-medium text-text-main mb-1">Email address
+                                <span class="text-red-500">*</span></label>
+                            <input type="email" placeholder="name@example.com" name="email" value="{{ old('email') }}"
+                                id="register-email" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label for="register-password" class="block text-sm font-medium text-text-main mb-1">Password
+                                <span class="text-red-500">*</span></label>
+                            <input type="password" name="password" placeholder="Password" id="register-password" required
+                                class="w-full px-3 py-2.5 border border-border-light rounded-lg text-sm
+                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors">
+                        </div>
+                        <label class="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
+                            <input type="checkbox" name="newsletter" checked
+                                class="rounded border-border-light text-primary focus:ring-primary">
+                            Sign up for our Newsletter
+                        </label>
+                        <button type="submit" class="w-full bg-text-main text-white font-semibold py-2.5 rounded-lg text-sm
+                                   hover:bg-gray-700 transition-colors">
+                            Register
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
 @endsection

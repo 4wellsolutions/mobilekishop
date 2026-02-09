@@ -1,192 +1,178 @@
-<!-- Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header w-auto"
-        style="border-bottom: none;position: absolute;right: -10px;top: -15px;z-index: 100;">
-        <button type="button" class="close btn-dark bg-white border-0 text-dark" aria-label="Close"
-          data-bs-dismiss="modal">x</button>
+<!-- Login/Register Modal -->
+<div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm" id="loginModal">
+  <div
+    class="bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto dark:bg-slate-900 dark:ring-slate-800">
+    <div class="flex items-center justify-end p-3">
+      <button type="button" onclick="document.getElementById('loginModal').classList.replace('flex','hidden')"
+        class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="px-6 pb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="validation-errors"></div>
+        <div>
+          <h4 class="text-lg font-bold text-primary uppercase mb-4">Login</h4>
+          <form action="#" method="post" id="loginForm" data-url="{{ url('auth/login') }}">
+            @csrf
+            <div class="mb-3">
+              <label for="login-email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email
+                address <span class="text-red-500">*</span></label>
+              <input type="email" name="login_email" id="login-email" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
+            </div>
+            <div class="mb-3">
+              <label for="login-password"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password <span
+                  class="text-red-500">*</span></label>
+              <input type="password" name="login_password" id="login-password" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
+            </div>
+            <button type="submit"
+              class="w-full px-4 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition login_button dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100">Login</button>
+
+            <label class="flex items-center gap-2 mt-3 cursor-pointer">
+              <input type="checkbox" name="remember" id="lost-password"
+                class="size-4 rounded border-slate-300 text-primary focus:ring-primary">
+              <span class="text-sm text-slate-600 dark:text-slate-400">Remember Me</span>
+            </label>
+
+            <div class="mt-3">
+              <a href="#" data-href="{{ URL::to('/google/redirect') }}" id="sign-with-google">
+                <img src="{{ URL::to('/images/login-with-google.png') }}" alt="login-with-google"
+                  class="max-w-full h-auto">
+              </a>
+            </div>
+            <a href="#" class="text-xs text-slate-500 hover:text-primary mt-2 inline-block forget-password">Forgot your
+              password?</a>
+          </form>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-bold text-primary uppercase mb-4">Register</h4>
+          <form action="{{ url('register') }}" method="post" data-url="{{ url('auth/register') }}" id="registerForm">
+            @csrf
+            <div class="mb-3">
+              <label for="register-name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full
+                Name <span class="text-red-500">*</span></label>
+              <input type="text" name="name" id="register-name" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+            </div>
+            <div class="mb-3">
+              <label for="register-phone"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number <span
+                  class="text-red-500">*</span></label>
+              <input type="text" name="phone_number" id="register-phone" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+            </div>
+            <div class="mb-3">
+              <label for="register-email"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email address <span
+                  class="text-red-500">*</span></label>
+              <input type="email" name="email" id="register-email" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+            </div>
+            <div class="mb-3">
+              <label for="register-password"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password <span
+                  class="text-red-500">*</span></label>
+              <input type="password" name="password" id="register-password" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+            </div>
+            <button type="submit"
+              class="w-full px-4 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition register_button dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100">Register</button>
+          </form>
+        </div>
       </div>
-      <div class="modal-body">
-        <div class="row row-sparse">
-          <div class="col-11">
-            <div class="validation-errors"></div>
-          </div>
-          <div class="col-md-6">
-            <h4 class="fs-4 text-primary text-uppercase mt-2">Login</h4>
-            <form action="#" method="post" id="loginForm" data-url="{{url('auth/login')}}">
-              @csrf
-              <label for="login-email">Email address <span class="required">*</span></label>
-              <input type="email" name="login_email" class="form-control mb-2 rounded-0" id="login-email" required />
-
-              <label for="login-password">Password <span class="required">*</span></label>
-              <input type="password" name="login_password" class="form-control mb-2 rounded-0" id="login-password"
-                required />
-
-              <div class="form-footer my-1">
-                <button type="submit" class="btn btn-dark btn-md rounded-0 w-100 login_button">Login</button>
-
-                <div class="custom-control custom-checkbox form-footer-right">
-                  <input type="checkbox" name="remember" class="custom-control-input" id="lost-password">
-                  <label class="custom-control-label form-footer-right" for="lost-password">Remember Me</label>
-                </div>
-
-              </div>
-              <div class="row">
-                <div class="col-12 col-sm-6">
-                  <a href="#" data-href="{{URL::to('/google/redirect')}}" id="sign-with-google">
-                    <img src="{{URL::to('/images/login-with-google.png')}}" alt="login-with-google" class="img-fluid">
-                  </a>
-                </div>
-                <div class="col-12 col-sm-6 d-none">
-                  <a href="#" id="sign-with-facebook">
-                    <img src="{{URL::to('/images/login-with-facebook.jpg')}}" alt="login-with-facebook"
-                      class="img-fluid">
-                  </a>
-                </div>
-              </div>
-              <u>
-                <small>
-                  <a href="#" class="forget-password text-decoration-none text-secondary">Forgot your password?</a>
-                </small>
-              </u>
-            </form>
-
-          </div><!-- End .col-md-6 -->
-
-          <div class="col-md-6">
-            <h4 class="fs-4 text-primary text-uppercase mt-2">Register</h4>
-
-            <form action="{{url('register')}}" method="post" data-url="{{url('auth/register')}}" id="registerForm">
-              @csrf
-              <label for="register-name">Full Name <span class="required">*</span></label>
-              <input type="text" name="name" class="form-control mb-2 rounded-0" id="register-name" required>
-
-              <label for="register-phone">Phone Number<span class="required">*</span></label>
-              <input type="text" name="phone_number" class="form-control mb-2 rounded-0" id="register-phone" required>
-
-              <label for="register-email">Email address <span class="required">*</span></label>
-              <input type="email" name="email" class="form-control mb-2 rounded-0" id="register-email" required>
-
-              <label for="register-password">Password <span class="required">*</span></label>
-              <input type="password" name="password" class="form-control mb-2 rounded-0" id="register-password"
-                required>
-
-
-              <div class="form-footer">
-                <button type="submit" class="btn btn-dark btn-md w-100 rounded-0 register_button">Register</button>
-              </div><!-- End .form-footer -->
-            </form>
-          </div><!-- End .col-md-6 -->
-        </div><!-- End .row -->
-      </div>
-
     </div>
   </div>
 </div>
-<footer class="footer bg-dark py-3">
-  <div class="container">
-    <div class="footer-top d-flex flex-wrap">
-      <div class="col-12 col-md-4 col-lg-5">
-        <div class="widget widget-about pe-2">
-          <p class="widget-title fs-6 fw-bolder">About Us</p>
+
+<footer class="bg-slate-900 py-8 text-slate-300">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wide mb-3">About Us</h3>
+        @php
+          $pathSegments = explode('/', trim(request()->path(), '/'));
+          $firstSegment = $pathSegments[0] ?? null;
+          $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
+          $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
+          $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+        @endphp
+        <a href="{{ $homeUrl }}" class="inline-block mb-2">
+          <span class="text-xl font-bold text-white">MOBILE KI SHOP</span>
+        </a>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          MKS is leading source for the latest mobile phone, smart watches, tablets and other electronic devices
+          prices, specs, reviews, and comparisons. Stay informed and make the best mobile choices with us.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Featured Links</h3>
+        <ul class="space-y-1.5 text-sm">
           @php
-            // Extract country from current URL path
-            $pathSegments = explode('/', trim(request()->path(), '/'));
-            $firstSegment = $pathSegments[0] ?? null;
-            $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
-            $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
-            $homeUrl = $countryCode === 'pk' ? url('/') : url('/' . $countryCode);
+            $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
           @endphp
-          <a href="{{$homeUrl}}" class="logo mb-2">
-            <p class="text-white fs-4 fw-bolder">MOBILE KI SHOP</p>
-          </a>
-          <p class="mb-3 text-white fw-normal">
-            MKS is leading source for the latest mobile phone, smart watches, tablets and other electronic devices
-            prices, specs, reviews, and comparisons. Stay informed and make the best mobile choices with us.
-          </p>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-5 col-lg-5">
-        <div class="widget">
-          <p class="widget-title fs-6 fw-bolder">Featured Links</p>
-          <ul class="contact-info list-unstyled">
-            @php
-              // Extract country from current URL path
-              $pathSegments = explode('/', trim(request()->path(), '/'));
-              $firstSegment = $pathSegments[0] ?? null;
-              $allowedCountries = ['us', 'uk', 'bd', 'ae', 'in'];
-              $countryCode = in_array($firstSegment, $allowedCountries) ? $firstSegment : 'pk';
-              $urlPrefix = $countryCode === 'pk' ? '' : '/' . $countryCode;
-            @endphp
-            @if($categories = App\Models\Category::has('products')->where("is_active", 1)->get())
-              @foreach($categories as $categori)
-                <li>
-                  <a href="{{url($urlPrefix . '/category/' . $categori->slug)}}"
-                    class="text-decoration-none">{{$categori->category_name}}</a>
-                </li>
-              @endforeach
-            @endif
-            @if(session('country_code') == 'pk')
+          @if($categories = App\Models\Category::has('products')->where("is_active", 1)->get())
+            @foreach($categories as $categori)
               <li>
-                <a href="{{url($urlPrefix . '/packages')}}" class="text-decoration-none">Packages</a>
+                <a href="{{ url($urlPrefix . '/category/' . $categori->slug) }}"
+                  class="text-slate-400 hover:text-white transition">{{ $categori->category_name }}</a>
               </li>
-            @endif
-          </ul>
-        </div>
-
+            @endforeach
+          @endif
+          @if(session('country_code') == 'pk')
+            <li>
+              <a href="{{ url($urlPrefix . '/packages') }}"
+                class="text-slate-400 hover:text-white transition">Packages</a>
+            </li>
+          @endif
+        </ul>
       </div>
 
-      <div class="col-12 col-md-3 col-lg-2">
-        <div class="widget">
-          <p class="widget-title fs-6 fw-bolder">Other Links</p>
-          <ul class="list-unstyled">
-
-            <li>
-              <a href="{{url($urlPrefix . '/about-us')}}" class="text-decoration-none">About Us</a>
-            </li>
-            <li>
-              <a href="{{url($urlPrefix . '/privacy-policy')}}" class="text-decoration-none">Privacy Policy</a>
-            </li>
-            <li>
-              <a href="{{url($urlPrefix . '/terms-and-conditions')}}" class="text-decoration-none">Terms and
-                Conditions</a>
-            </li>
-            <li>
-              <a href="{{url($urlPrefix . '/html-sitemap')}}" class="text-decoration-none">Sitemap</a>
-            </li>
-            <li>
-              <a href="{{url($urlPrefix . '/contact')}}" class="text-decoration-none">Contact Us</a>
-            </li>
-          </ul>
-        </div>
-        <div class="social-icons">
-          <a href="https://www.facebook.com/mobilekishop/" rel="noreferrer" class="text-decoration-none" target="_blank"
-            title="Facebook">
-            <img src="{{URL::to('/images/icons/facebook.png')}}" alt="facebook" width="24" height="24">
+      <div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Other Links</h3>
+        <ul class="space-y-1.5 text-sm">
+          <li><a href="{{ url($urlPrefix . '/about-us') }}" class="text-slate-400 hover:text-white transition">About
+              Us</a></li>
+          <li><a href="{{ url($urlPrefix . '/privacy-policy') }}"
+              class="text-slate-400 hover:text-white transition">Privacy Policy</a></li>
+          <li><a href="{{ url($urlPrefix . '/terms-and-conditions') }}"
+              class="text-slate-400 hover:text-white transition">Terms and Conditions</a></li>
+          <li><a href="{{ url($urlPrefix . '/html-sitemap') }}"
+              class="text-slate-400 hover:text-white transition">Sitemap</a></li>
+          <li><a href="{{ url($urlPrefix . '/contact') }}" class="text-slate-400 hover:text-white transition">Contact
+              Us</a></li>
+        </ul>
+        <div class="flex items-center gap-3 mt-4">
+          <a href="https://www.facebook.com/mobilekishop/" rel="noreferrer" target="_blank" title="Facebook"
+            class="hover:opacity-80 transition">
+            <img src="{{ URL::to('/images/icons/facebook.png') }}" alt="facebook" width="24" height="24">
           </a>
-          <a href="https://twitter.com/mobilekishop" rel="noreferrer" class="text-decoration-none" target="_blank"
-            title="Twitter">
-            <img src="{{URL::to('/images/icons/twitter.png')}}" alt="twitter" width="24" height="24">
+          <a href="https://twitter.com/mobilekishop" rel="noreferrer" target="_blank" title="Twitter"
+            class="hover:opacity-80 transition">
+            <img src="{{ URL::to('/images/icons/twitter.png') }}" alt="twitter" width="24" height="24">
           </a>
-          <a href="https://www.instagram.com/mobilekishop/" rel="noreferrer" class="text-decoration-none"
-            target="_blank" title="Instagram">
-            <img src="{{URL::to('/images/icons/instagram.png')}}" alt="instagram" width="24" height="24">
+          <a href="https://www.instagram.com/mobilekishop/" rel="noreferrer" target="_blank" title="Instagram"
+            class="hover:opacity-80 transition">
+            <img src="{{ URL::to('/images/icons/instagram.png') }}" alt="instagram" width="24" height="24">
           </a>
-          <a href="https://www.youtube.com/@MobileKiShop" rel="noreferrer" class="text-decoration-none" target="_blank">
-            <img src="{{URL::to('/images/icons/youtube.png')}}" alt="youtube" width="24" height="24">
+          <a href="https://www.youtube.com/@MobileKiShop" rel="noreferrer" target="_blank"
+            class="hover:opacity-80 transition">
+            <img src="{{ URL::to('/images/icons/youtube.png') }}" alt="youtube" width="24" height="24">
           </a>
         </div>
       </div>
     </div>
-    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap py-3">
-      <p class="footer-copyright mb-0 text-white">Copyright © {{date('Y')}}. All Rights Reserved</p>
+
+    <div class="border-t border-slate-800 mt-8 pt-6 flex items-center justify-between">
+      <p class="text-sm text-slate-500">Copyright © {{ date('Y') }}. All Rights Reserved</p>
     </div>
   </div>
-
 </footer>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
 @if (App::environment('production'))
   <!-- Google tag (gtag.js) -->
@@ -200,14 +186,6 @@
 @endif
 
 @yield("script")
-
-@yield("style")
-
-
-<!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css"> -->
 
 @yield("style")
 

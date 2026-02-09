@@ -1,16 +1,15 @@
 @if(!$product->images->isEmpty())
-<!-- images div -->
-<div class="row my-3 my-md-5" id="images">
-    <div class="col-12">
-        <h2>Images</h2>
+    <!-- images div -->
+    <div class="my-6" id="images">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Images</h2>
+        <div class="space-y-4">
             @foreach($product->images as $image)
-            <div class="row">
-                <div class="col-12 text-center">
-                    <img src="{{URL::to('/images/thumbnail.png')}}" data-echo="{{URL::to('/products/'.$image->name)}}" class="img-fluid mx-auto my-2" alt="{{$product->slug}}">
+                <div class="text-center">
+                    <img src="{{ URL::to('/images/thumbnail.png') }}" data-echo="{{ URL::to('/products/' . $image->name) }}"
+                        class="max-w-full h-auto mx-auto rounded-lg" alt="{{ $product->slug }}">
                 </div>
-            </div>
             @endforeach
+        </div>
     </div>
-</div>
-<!-- images div -->
+    <!-- images div -->
 @endif
