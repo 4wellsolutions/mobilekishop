@@ -245,4 +245,33 @@
             </details>
         </div>
     @endif
+
+    {{-- Dynamic Filters from Database --}}
+    @php
+        $currentUrl = request()->url();
+        $dbFilters = \App\Models\Filter::where('page_url', $currentUrl)
+            ->whereNotNull('title')->where('title', '!=', '')
+            ->whereNotNull('url')->where('url', '!=', '')
+            ->orderBy('title')
+            ->get();
+    @endphp
+
+    @if($dbFilters->isNotEmpty())
+    <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+        <details class="group" open>
+            <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
+                <span>Quick Filters</span>
+                <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
+            </summary>
+            <div class="pt-2 space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                @foreach($dbFilters as $filter)
+                    <a href="{{ $filter->url }}" class="block text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">
+                        {{ $filter->title }}
+                    </a>
+                @endforeach
+            </div>
+        </details>
+    </div>
+    @endif
+
 </div>

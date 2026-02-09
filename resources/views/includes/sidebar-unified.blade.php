@@ -59,6 +59,40 @@
 @endif
 
 {{-- ================================================================== --}}
+{{-- Dynamic Filters from Database --}}
+{{-- ================================================================== --}}
+@php
+    $currentUrl = request()->url();
+    $dbFilters = \App\Models\Filter::where('page_url', $currentUrl)
+        ->whereNotNull('title')->where('title', '!=', '')
+        ->whereNotNull('url')->where('url', '!=', '')
+        ->orderBy('title')
+        ->get();
+@endphp
+
+@if($dbFilters->isNotEmpty())
+    <div class="bg-surface-card rounded-xl p-4 mb-3">
+        <div class="flex justify-between items-center mb-3 cursor-pointer"
+            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+            <h5 class="text-sm font-semibold text-text-main m-0">Quick Filters</h5>
+            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
+        </div>
+        <div class="max-h-[300px] overflow-y-auto">
+            <ul class="space-y-1.5 list-none p-0 m-0">
+                @foreach($dbFilters as $dbFilter)
+                    <li>
+                        <a href="{{ $dbFilter->url }}"
+                            class="text-sm no-underline block py-0.5 transition-colors {{ str_contains(request()->url(), $dbFilter->url) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
+                            {{ $dbFilter->title }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
+
+{{-- ================================================================== --}}
 {{-- Mobile Phones-specific filters --}}
 {{-- ================================================================== --}}
 @if($currentSlug === 'mobile-phones')
@@ -338,30 +372,5 @@
                 </li>
             @endforeach
         </ul>
-    </div>
-@endif
-
-{{-- ================================================================== --}}
-{{-- Dynamic Filters (shared by all categories) --}}
-{{-- ================================================================== --}}
-@if(isset($filters) && $filters->isNotEmpty())
-    <div class="bg-surface-card rounded-xl p-4 mb-3">
-        <div class="flex justify-between items-center mb-3 cursor-pointer"
-            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
-            <h5 class="text-sm font-semibold text-text-main m-0">Filters</h5>
-            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
-        </div>
-        <div>
-            <ul class="space-y-1.5 list-none p-0 m-0">
-                @foreach($filters as $filter)
-                    <li>
-                        <a href="{{ $filter->url }}"
-                            class="text-sm no-underline block py-0.5 transition-colors {{ str_contains(request()->url(), $filter->url) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
-                            {{ $filter->title }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
     </div>
 @endif
