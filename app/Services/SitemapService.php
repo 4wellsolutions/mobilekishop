@@ -329,8 +329,8 @@ class SitemapService
             $indexFile = "{$dir}/sitemap.xml";
 
             if (File::exists($indexFile)) {
-                $baseUrl = rtrim($country->domain, '/');
-                $sitemapIndex->add("{$baseUrl}/sitemaps/{$country->country_code}/sitemap.xml", now());
+                $mainDomain = 'https://mobilekishop.net';
+                $sitemapIndex->add("{$mainDomain}/sitemaps/{$country->country_code}/sitemap.xml", now());
                 $included[] = $country->country_name;
             }
         }
