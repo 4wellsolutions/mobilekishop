@@ -115,7 +115,8 @@ class SeedProductReviews extends Command
 
             $reviews = $this->generateReviewsForProducts($chunk);
 
-            if ($reviews === null) {
+            if ($reviews === null || empty($reviews)) {
+                $this->line(' [no reviews returned for batch, skipping]');
                 $bar->advance($chunk->count());
                 continue;
             }
@@ -332,9 +333,17 @@ PROMPT;
                 $json = json_decode($response, true);
                 if (isset($json['candidates'][0]['content']['parts'][0]['text'])) {
                     $this->slotUsage[$this->currentSlotIndex]++;
+                    $this->line(' [slot ' . ($this->currentSlotIndex + 1) . '/' . count($this->slots) . " {$model} OK]");
                     return $json['candidates'][0]['content']['parts'][0]['text'];
                 }
-                // 200 but no content — possibly blocked, try next slot
+                // 200 but no content — check finish reason
+                $finishReason = $json['candidates'][0]['finishReason'] ?? 'UNKNOWN';
+                $this->line(" [slot " . ($this->currentSlotIndex + 1) . " {$model} empty: {$finishReason}]");
+                if ($finishReason === 'SAFETY' || $finishReason === 'RECITATION') {
+                    // Content was blocked, retry with same slot
+                    continue;
+                }
+                // Other reason (e.g. rate limit disguised as 200) — try next slot
                 $this->currentSlotIndex++;
                 continue;
             }
