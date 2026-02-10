@@ -296,4 +296,84 @@ class AccessoryController extends Controller
 
         return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
     }
+
+    /**
+     * Show cables by type (e.g., usb-c-to-usb-c, usb-a-to-usb-c)
+     */
+    public function cablesByType(Request $request)
+    {
+        $slug = $request->route('slug');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getCablesByType($slug);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $title = Str::title(str_replace('-', ' ', $slug));
+
+        $metas = (object) [
+            'title' => "{$title} Cables – Premium Quality in {$country->country_name}",
+            'description' => "Shop {$title} cables for fast and reliable data transfer and charging. Premium quality cables available in {$country->country_name}.",
+            'canonical' => request()->fullUrl(),
+            'h1' => "{$title} Cables in {$country->country_name}",
+            'name' => "{$title} Cables"
+        ];
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(11); // Cables
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
+
+    /**
+     * Show cables by brand and wattage (e.g., anker-15w-cables)
+     */
+    public function cablesByBrandAndWatt(Request $request)
+    {
+        $brand = $request->route('brand');
+        $brandSlug = ($brand instanceof \App\Models\Brand) ? $brand->slug : $brand;
+        $watt = (int) $request->route('watt');
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getCablesByBrandAndWatt($brandSlug, $watt);
+
+        if ($request->has('filter')) {
+            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $products->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $brandName = Str::title(str_replace('-', ' ', $brandSlug));
+
+        $metas = (object) [
+            'title' => "{$brandName} {$watt}W Cables – Fast Charging in {$country->country_name}",
+            'description' => "Discover {$brandName} {$watt}W cables for fast charging and data transfer. Premium quality available in {$country->country_name}.",
+            'canonical' => request()->fullUrl(),
+            'h1' => "{$brandName} {$watt}W Cables in {$country->country_name}",
+            'name' => "{$brandName} {$watt}W Cables"
+        ];
+
+        $products = $products->simplePaginate(32);
+        $category = Category::find(11); // Cables
+        $filters = collect($request->query());
+
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+    }
 }

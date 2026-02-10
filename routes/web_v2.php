@@ -254,6 +254,20 @@ $webRoutes = function () {
         ->name('filter.charger.watt_type')
         ->where('watt', '[0-9]+');
 
+    // =========================================================================
+    // Cable Routes
+    // =========================================================================
+
+    // Cables by brand and wattage: {brand}-{watt}w-cables (must be before generic slug route)
+    Route::get('{brand}-{watt}w-cables', [AccessoryController::class, 'cablesByBrandAndWatt'])
+        ->name('filter.cable.brand_watt')
+        ->where(['watt' => '[0-9]+']);
+
+    // Cables by type: {slug}-cables (e.g., usb-c-to-usb-c-cables, usb-a-to-usb-c-cables)
+    Route::get('{slug}-cables', [AccessoryController::class, 'cablesByType'])
+        ->name('filter.cable.type')
+        ->where('slug', '[a-z0-9-]+');
+
     // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
     // We add a regex to ensure it doesn't match routes like 'category/xxx', 'product/xxx', etc.
     Route::get('{brand}/{product}', [ProductController::class, 'show'])

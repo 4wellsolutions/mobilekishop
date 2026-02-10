@@ -423,4 +423,36 @@ class FilterService
         }
         return null;
     }
+
+    /**
+     * Get cables by type slug (e.g., usb-c-to-usb-c, usb-a-to-usb-c)
+     * Matches against the product name/slug containing the type string.
+     */
+    public function getCablesByType(string $typeSlug): Builder
+    {
+        $search = str_replace('-', ' ', $typeSlug); // "usb c to usb c"
+        return Product::where('category_id', 11)
+            ->where('name', 'like', "%{$search}%")
+            ->with(['brand', 'category']);
+    }
+
+    /**
+     * Get cables by brand and wattage
+     */
+    public function getCablesByBrandAndWatt(string $brandSlug, int $watt): Builder
+    {
+        $watt_values = [0, 15, 30, 60, 100, 140, 240];
+        $lowerWatt = $this->getLowerValue($watt, $watt_values);
+
+        $query = Product::where('category_id', 11)
+            ->whereHas('brand', function ($q) use ($brandSlug) {
+                $q->where('slug', $brandSlug);
+            });
+
+        if ($lowerWatt !== null) {
+            $query->where('name', 'like', "%{$watt}%");
+        }
+
+        return $query->with(['brand', 'category']);
+    }
 }
