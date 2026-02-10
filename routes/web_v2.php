@@ -280,11 +280,11 @@ $webRoutes = function () {
 // 1. Specific Country Routes (With Prefix) - Matches 'domain.com/ae/path'
 Route::group([
     'prefix' => '{country_code}',
-    'middleware' => ['default.country'],
+    'middleware' => ['default.country', 'cache.page'],
     'as' => 'country.', // Prefix route names with 'country.'
     'where' => ['country_code' => '[a-z]{2}']
 ], $webRoutes);
 
 // 2. Default Country Routes (No Prefix) - Matches 'domain.com/path'
-Route::middleware(['default.country'])
+Route::middleware(['default.country', 'cache.page'])
     ->group($webRoutes);

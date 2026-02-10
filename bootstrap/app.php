@@ -61,6 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'default.country' => \App\Http\Middleware\SetDefaultCountry::class,
             'handle.redirections' => \App\Http\Middleware\HandleRedirections::class,
+            'cache.page' => \App\Http\Middleware\CachePage::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
