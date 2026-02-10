@@ -118,11 +118,14 @@
     {{-- Page-specific structured data (Product, BreadcrumbList, etc.) --}}
     @yield('structured_data')
 
-    {{-- Custom head code (Analytics, AdSense, etc.) --}}
-    @php try {
-            echo \App\Models\SiteSetting::get('head_code');
-        } catch (\Throwable $e) {
-    } @endphp
+    {{-- Custom head code (Analytics, AdSense, etc.) – lazy-loaded on user interaction --}}
+    @php
+        $__headCode = '';
+        try { $__headCode = \App\Models\SiteSetting::get('head_code') ?? ''; } catch (\Throwable $e) {}
+    @endphp
+    @if($__headCode)
+        <template id="deferred-head-code">{!! $__headCode !!}</template>
+    @endif
 </head>
 
 <body
@@ -551,10 +554,35 @@
             });
         })();
     </script>
-    @php try {
-            echo \App\Models\SiteSetting::get('body_end_code');
-        } catch (\Throwable $e) {
-    } @endphp
+    @php
+        $__bodyCode = '';
+        try { $__bodyCode = \App\Models\SiteSetting::get('body_end_code') ?? ''; } catch (\Throwable $e) {}
+    @endphp
+    @if($__bodyCode)
+        <template id="deferred-body-code">{!! $__bodyCode !!}</template>
+    @endif
+    <script>
+        // Lazy-load third-party scripts (AdSense, etc.) on first user interaction
+        (function() {
+            var loaded = false;
+            function loadDeferred() {
+                if (loaded) return;
+                loaded = true;
+                ['deferred-head-code', 'deferred-body-code'].forEach(function(id) {
+                    var tpl = document.getElementById(id);
+                    if (!tpl) return;
+                    var frag = document.createRange().createContextualFragment(tpl.innerHTML);
+                    document.head.appendChild(frag);
+                    tpl.remove();
+                });
+            }
+            ['scroll','click','touchstart','keydown'].forEach(function(evt) {
+                window.addEventListener(evt, loadDeferred, { once: true, passive: true });
+            });
+            // Fallback: load after 5 seconds even without interaction
+            setTimeout(loadDeferred, 5000);
+        })();
+    </script>
 </body>
 
 </html>
