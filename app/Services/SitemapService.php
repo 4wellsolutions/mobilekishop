@@ -48,8 +48,14 @@ class SitemapService
         $countryCode = $country->country_code;
         $domain = $country->domain;
 
-        // Remove trailing slash if present
-        $baseUrl = rtrim($domain, '/');
+        // Use main domain with path prefix instead of subdomain
+        $mainDomain = 'https://mobilekishop.net';
+
+        if ($countryCode === 'pk') {
+            $baseUrl = $mainDomain;
+        } else {
+            $baseUrl = "{$mainDomain}/{$countryCode}";
+        }
 
         // Directory to store sitemaps for this country
         $sitemapDir = "{$this->baseSitemapPath}/{$countryCode}";

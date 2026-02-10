@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateSitemapsJob;
 use App\Models\Country;
 use App\Services\SitemapService;
 use Illuminate\Http\Request;
@@ -80,7 +81,7 @@ class SitemapController extends Controller
     }
 
     /**
-     * Regenerate sitemaps for a specific country (AJAX).
+     * Regenerate sitemaps for a specific country (AJAX, queued).
      */
     public function generate(Request $request)
     {
@@ -88,52 +89,26 @@ class SitemapController extends Controller
 
         $country = Country::findOrFail($request->country_id);
 
-        try {
-            $this->sitemapService->generateSitemapsForCountry($country);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => "Sitemaps regenerated for {$country->country_name}.",
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => "Failed for {$country->country_name}: {$e->getMessage()}",
-            ], 500);
-        }
-    }
-
-    /**
-     * Regenerate sitemaps for all active countries (AJAX).
-     */
-    public function generateAll()
-    {
-        $countries = Country::where('is_active', 1)->get();
-        $success = [];
-        $failed = [];
-
-        foreach ($countries as $country) {
-            try {
-                $this->sitemapService->generateSitemapsForCountry($country);
-                $success[] = $country->country_name;
-            } catch (\Throwable $e) {
-                $failed[] = "{$country->country_name}: {$e->getMessage()}";
-            }
-        }
-
-        if (!empty($failed)) {
-            return response()->json([
-                'status' => 'warning',
-                'message' => 'Some failed: ' . implode(', ', $failed),
-                'success' => $success,
-                'failed' => $failed,
-            ], 207);
-        }
+        GenerateSitemapsJob::dispatch($country->id);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'All sitemaps regenerated: ' . implode(', ', $success) . '.',
-            'success' => $success,
+            'message' => "Sitemap generation queued for {$country->country_name}. It will complete in the background.",
+        ]);
+    }
+
+    /**
+     * Regenerate sitemaps for all active countries (AJAX, queued).
+     */
+    public function generateAll()
+    {
+        GenerateSitemapsJob::dispatch(null);
+
+        $count = Country::where('is_active', 1)->count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Sitemap generation queued for all {$count} countries. It will complete in the background. Check logs for progress.",
         ]);
     }
 
