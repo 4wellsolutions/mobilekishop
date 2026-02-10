@@ -19,6 +19,7 @@
     @endphp
     <meta name="description" content="@yield('description', 'The ultimate destination for mobile tech enthusiasts.')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Preconnect to external domains for faster loading --}}
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
@@ -520,9 +521,20 @@
                 try {
                     const res = await fetch(loginForm.dataset.url, {
                         method: 'POST',
-                        headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': loginForm.querySelector('[name=_token]').value, 'X-Requested-With':'XMLHttpRequest', 'Accept':'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json' 
+                        },
                         body: JSON.stringify({ login_email: loginForm.login_email.value, login_password: loginForm.login_password.value, remember: loginForm.remember?.checked ? 1 : 0 })
                     });
+                    
+                    if (res.status === 419) {
+                        window.location.reload();
+                        return;
+                    }
+
                     const data = await res.json();
                     if (data.auth) { window.location.reload(); }
                     else { showError(data.message || 'Invalid email or password.'); btn.disabled = false; btn.textContent = 'Log in'; }
@@ -539,9 +551,19 @@
                     const fd = new FormData(regForm);
                     const res = await fetch(regForm.dataset.url, {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': regForm.querySelector('[name=_token]').value, 'X-Requested-With':'XMLHttpRequest', 'Accept':'application/json' },
+                        headers: { 
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest', 
+                            'Accept': 'application/json' 
+                        },
                         body: fd
                     });
+
+                    if (res.status === 419) {
+                        window.location.reload();
+                        return;
+                    }
+
                     const data = await res.json();
                     if (data.success) { window.location.reload(); }
                     else {

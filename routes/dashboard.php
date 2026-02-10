@@ -191,6 +191,13 @@ Route::prefix('dashboard')
 		Route::post('cache/clear', [\App\Http\Controllers\Dashboard\CacheController::class, 'clear'])->name('cache.clear');
 		Route::post('cache/clear-all', [\App\Http\Controllers\Dashboard\CacheController::class, 'clearAll'])->name('cache.clear-all');
 
+		// Sitemap Management
+		Route::get('sitemap', [\App\Http\Controllers\Dashboard\SitemapController::class, 'index'])->name('sitemap.index');
+		Route::post('sitemap/generate', [\App\Http\Controllers\Dashboard\SitemapController::class, 'generate'])->name('sitemap.generate');
+		Route::post('sitemap/generate-all', [\App\Http\Controllers\Dashboard\SitemapController::class, 'generateAll'])->name('sitemap.generate-all');
+		Route::post('sitemap/create-index', [\App\Http\Controllers\Dashboard\SitemapController::class, 'createIndex'])->name('sitemap.create-index');
+		Route::delete('sitemap/destroy', [\App\Http\Controllers\Dashboard\SitemapController::class, 'destroy'])->name('sitemap.destroy');
+
 		Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
 		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
 

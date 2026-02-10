@@ -249,17 +249,35 @@ PROMPT;
         if ($response === null)
             return null;
 
-        // Clean up response
+        // Clean up response — handle various formats
         $response = trim($response);
-        $response = preg_replace('/^```json\s*/i', '', $response);
-        $response = preg_replace('/^```\s*/i', '', $response);
-        $response = preg_replace('/\s*```$/', '', $response);
+
+        // Remove markdown code blocks if present
+        if (preg_match('/```(?:json)?\s*([\s\S]*?)\s*```/', $response, $matches)) {
+            $response = $matches[1];
+        }
+
+        // Try to extract JSON object from response if there's extra text
+        if (!str_starts_with($response, '{')) {
+            $jsonStart = strpos($response, '{');
+            if ($jsonStart !== false) {
+                $response = substr($response, $jsonStart);
+            }
+        }
+
+        // Find the last closing brace
+        $lastBrace = strrpos($response, '}');
+        if ($lastBrace !== false) {
+            $response = substr($response, 0, $lastBrace + 1);
+        }
 
         $parsed = json_decode($response, true);
         if (!is_array($parsed)) {
-            $this->warn(' [JSON parse failed, skipping batch]');
+            $this->warn(' [JSON parse failed: ' . json_last_error_msg() . ']');
+            $this->line(' [Raw response (first 500 chars): ' . mb_substr($response, 0, 500) . ']');
             return null;
         }
+
 
         $result = [];
         foreach ($productList as $id => $info) {

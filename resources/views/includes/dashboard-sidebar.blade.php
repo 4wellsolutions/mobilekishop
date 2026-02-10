@@ -315,6 +315,12 @@
           </a>
         </li>
         <li class="sidebar-item">
+          <a class="sidebar-link waves-effect waves-dark {{ \Request::routeIs('dashboard.sitemap.*') ? 'active' : '' }}"
+            href="{{ route('dashboard.sitemap.index') }}" aria-expanded="false">
+            <i class="mdi mdi-sitemap"></i><span class="hide-menu">Sitemap</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
           <a class="sidebar-link waves-effect waves-dark" href="{{ route('dashboard.settings.index') }}"
             aria-expanded="false">
             <i class="mdi mdi-settings"></i><span class="hide-menu">Settings</span>

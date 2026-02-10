@@ -306,6 +306,35 @@ class SitemapService
         File::put($filePath, $sitemapIndex->render());
     }
 
+    /**
+     * Build one master sitemap index at public/sitemap.xml
+     * that references every country's sitemap.xml.
+     *
+     * @return array List of country sitemaps included
+     */
+    public function buildMasterIndex(): array
+    {
+        $countries = \App\Models\Country::where('is_active', 1)->get();
+        $sitemapIndex = SitemapIndex::create();
+        $included = [];
+
+        foreach ($countries as $country) {
+            $dir = "{$this->baseSitemapPath}/{$country->country_code}";
+            $indexFile = "{$dir}/sitemap.xml";
+
+            if (File::exists($indexFile)) {
+                $baseUrl = rtrim($country->domain, '/');
+                $sitemapIndex->add("{$baseUrl}/sitemaps/{$country->country_code}/sitemap.xml", now());
+                $included[] = $country->country_name;
+            }
+        }
+
+        // Write to public/sitemap.xml
+        File::put(public_path('sitemap.xml'), $sitemapIndex->render());
+
+        return $included;
+    }
+
 
     /**
      * Ping Search Engines to notify about the updated sitemap.
