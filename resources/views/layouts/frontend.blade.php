@@ -255,10 +255,10 @@
                     <span class="material-symbols-outlined text-[24px]">account_circle</span>
                     </a>
             @else
-                    <a href="{{ route('login') }}"
+                    <button type="button" onclick="document.getElementById('authModal').classList.replace('hidden','flex')"
                         class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
                         <span class="material-symbols-outlined text-[24px]">login</span>
-                    </a>
+                    </button>
                 @endauth
             </div>
         </div>
@@ -374,6 +374,97 @@
             </div>
         </div>
     </footer>
+    {{-- ========== Login / Register Modal ========== --}}
+    @guest
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm" id="authModal">
+        <div class="bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-modal-in">
+            {{-- Close --}}
+            <div class="flex items-center justify-end p-3 pb-0">
+                <button type="button" id="authModalClose"
+                    class="p-1.5 rounded-full hover:bg-slate-100 transition">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            {{-- Tabs --}}
+            <div class="flex border-b border-slate-200 mx-6" id="authTabs">
+                <button type="button" data-tab="login"
+                    class="flex-1 pb-3 text-sm font-semibold text-primary border-b-2 border-primary transition">Login</button>
+                <button type="button" data-tab="register"
+                    class="flex-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-600 transition">Register</button>
+            </div>
+
+            {{-- Error area --}}
+            <div class="px-6 pt-4 hidden" id="authError">
+                <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3" id="authErrorText"></div>
+            </div>
+
+            {{-- Login form --}}
+            <form id="modalLoginForm" class="px-6 pt-5 pb-6 space-y-4" data-url="{{ url('auth/login') }}">
+                @csrf
+                <div>
+                    <label for="ml-email" class="block text-sm font-medium text-slate-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="login_email" id="ml-email" required autocomplete="email"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <div>
+                    <label for="ml-pass" class="block text-sm font-medium text-slate-700 mb-1">Password <span class="text-red-500">*</span></label>
+                    <input type="password" name="login_password" id="ml-pass" required autocomplete="current-password"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="remember" class="size-4 rounded border-slate-300 text-primary focus:ring-primary">
+                    <span class="text-sm text-slate-500">Remember me</span>
+                </label>
+                <button type="submit"
+                    class="w-full py-2.5 bg-gradient-to-r from-primary to-primary/90 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all">Log in</button>
+                <div class="flex items-center gap-3">
+                    <span class="flex-1 h-px bg-slate-200"></span>
+                    <span class="text-xs text-slate-400">or</span>
+                    <span class="flex-1 h-px bg-slate-200"></span>
+                </div>
+                <a href="{{ URL::to('/google/redirect') }}"
+                    class="flex items-center justify-center gap-2 w-full py-2.5 border border-slate-300 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                    <svg class="size-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Sign in with Google
+                </a>
+                <a href="{{ url('password/reset') }}" class="block text-center text-xs text-slate-400 hover:text-primary transition">Forgot your password?</a>
+            </form>
+
+            {{-- Register form --}}
+            <form id="modalRegisterForm" class="px-6 pt-5 pb-6 space-y-4 hidden" data-url="{{ url('auth/register') }}">
+                @csrf
+                <div>
+                    <label for="mr-name" class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" id="mr-name" required autocomplete="name"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <div>
+                    <label for="mr-phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+                    <input type="text" name="phone_number" id="mr-phone" required autocomplete="tel"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <div>
+                    <label for="mr-email" class="block text-sm font-medium text-slate-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" id="mr-email" required autocomplete="email"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <div>
+                    <label for="mr-pass" class="block text-sm font-medium text-slate-700 mb-1">Password <span class="text-red-500">*</span></label>
+                    <input type="password" name="password" id="mr-pass" required minlength="8" autocomplete="new-password"
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition" />
+                </div>
+                <button type="submit"
+                    class="w-full py-2.5 bg-gradient-to-r from-primary to-primary/90 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all">Create Account</button>
+            </form>
+        </div>
+    </div>
+    <style>
+        @keyframes modal-in { from { opacity:0; transform:scale(.95) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        .animate-modal-in { animation: modal-in .2s ease-out; }
+    </style>
+    @endguest
+
     @yield('script')
     <script>
         // Close country dropdown on outside click
@@ -383,6 +474,82 @@
                 dd.classList.remove('open');
             }
         });
+
+        // ========== Auth Modal Logic ==========
+        (function() {
+            const modal = document.getElementById('authModal');
+            if (!modal) return; // Guest-only
+
+            const close     = document.getElementById('authModalClose');
+            const tabs      = document.querySelectorAll('#authTabs button');
+            const loginForm = document.getElementById('modalLoginForm');
+            const regForm   = document.getElementById('modalRegisterForm');
+            const errBox    = document.getElementById('authError');
+            const errText   = document.getElementById('authErrorText');
+
+            // Close modal
+            close.addEventListener('click', () => modal.classList.replace('flex','hidden'));
+            modal.addEventListener('click', e => { if (e.target === modal) modal.classList.replace('flex','hidden'); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.replace('flex','hidden'); });
+
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const t = tab.dataset.tab;
+                    tabs.forEach(b => { b.classList.toggle('text-primary', b.dataset.tab === t); b.classList.toggle('border-primary', b.dataset.tab === t); b.classList.toggle('text-slate-400', b.dataset.tab !== t); b.classList.toggle('border-transparent', b.dataset.tab !== t); });
+                    loginForm.classList.toggle('hidden', t !== 'login');
+                    regForm.classList.toggle('hidden', t !== 'register');
+                    errBox.classList.add('hidden');
+                });
+            });
+
+            function showError(msg) {
+                errText.innerHTML = msg;
+                errBox.classList.remove('hidden');
+            }
+
+            // Login
+            loginForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                errBox.classList.add('hidden');
+                const btn = loginForm.querySelector('button[type=submit]');
+                btn.disabled = true; btn.textContent = 'Logging in…';
+                try {
+                    const res = await fetch(loginForm.dataset.url, {
+                        method: 'POST',
+                        headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': loginForm.querySelector('[name=_token]').value, 'X-Requested-With':'XMLHttpRequest', 'Accept':'application/json' },
+                        body: JSON.stringify({ login_email: loginForm.login_email.value, login_password: loginForm.login_password.value, remember: loginForm.remember?.checked ? 1 : 0 })
+                    });
+                    const data = await res.json();
+                    if (data.auth) { window.location.reload(); }
+                    else { showError(data.message || 'Invalid email or password.'); btn.disabled = false; btn.textContent = 'Log in'; }
+                } catch { showError('Something went wrong. Please try again.'); btn.disabled = false; btn.textContent = 'Log in'; }
+            });
+
+            // Register
+            regForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                errBox.classList.add('hidden');
+                const btn = regForm.querySelector('button[type=submit]');
+                btn.disabled = true; btn.textContent = 'Creating account…';
+                try {
+                    const fd = new FormData(regForm);
+                    const res = await fetch(regForm.dataset.url, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': regForm.querySelector('[name=_token]').value, 'X-Requested-With':'XMLHttpRequest', 'Accept':'application/json' },
+                        body: fd
+                    });
+                    const data = await res.json();
+                    if (data.success) { window.location.reload(); }
+                    else {
+                        let msgs = '';
+                        if (data.errors) { for (const k in data.errors) { msgs += data.errors[k].join('<br>') + '<br>'; } }
+                        showError(msgs || data.message || 'Registration failed.');
+                        btn.disabled = false; btn.textContent = 'Create Account';
+                    }
+                } catch { showError('Something went wrong. Please try again.'); btn.disabled = false; btn.textContent = 'Create Account'; }
+            });
+        })();
     </script>
     @php try {
             echo \App\Models\SiteSetting::get('body_end_code');
