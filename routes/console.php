@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,7 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+// Run AI review seeder every hour — processes as many products as API quota allows,
+// then auto-resumes from where it left off on the next hourly run.
+Schedule::command('reviews:seed')->hourly()->withoutOverlapping()->appendOutputTo(storage_path('logs/review-seeder.log'));

@@ -73,11 +73,7 @@
         <!-- LEFT SIDEBAR: FILTERS -->
         <aside class="hidden lg:block w-full shrink-0 lg:w-72">
             <div class="sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar pr-2 pb-10">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Filters</h3>
-                    <a href="{{ request()->url() }}" class="text-sm font-medium text-primary hover:text-blue-700">Clear
-                        All</a>
-                </div>
+
                 @include("includes.sidebar-unified", ['category' => $category])
             </div>
         </aside>
@@ -300,31 +296,30 @@
     </script>
 
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org/",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                   "name": "Home",
-                   "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-                 },
-                @if($category)
                     {
-                      "@type": "ListItem",
-                      "position": 2,
-                       "name": "{{ Str::title($category->category_name) }}",
-                       "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
-                     },
-                @endif
-                {
-                  "@type": "ListItem",
-                  "position": {{ (isset($category) && $category) ? 3 : 2 }},
-                  "name": "{{ Str::title($brand->name ?? 'Brand') }}",
-                  "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . ($brand->slug ?? '') . ((isset($category) && $category) ? '/' . $category->slug : '/all')) }}"
-                }
-              ]
-            }
-            </script>
+                      "@@context": "https://schema.org/",
+                      "@@type": "BreadcrumbList",
+                      "itemListElement": [
+                        {
+                          "@@type": "ListItem",
+                          "position": 1,
+                           "name": "Home",
+                           "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
+                         },
+                        @if($category)
+                            {
+                              "@@type": "ListItem",
+                              "position": 2,
+                               "name": "{{ Str::title($category->category_name) }}",
+                               "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                             },
+                        @endif
+                        {
+                          "@@type": "ListItem",
+                          "position": {{ (isset($category) && $category) ? 3 : 2 }},
+                          "name": "{{ Str::title($brand->name ?? 'Brand') }}"
+                        }
+                      ]
+                    }
+                    </script>
 @endsection

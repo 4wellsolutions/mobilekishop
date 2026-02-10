@@ -32,30 +32,40 @@
 
 {{-- Brands --}}
 @if(isset($category) && $category)
-    <div class="bg-surface-card rounded-xl p-4 mb-3">
-        <div class="flex justify-between items-center mb-3 cursor-pointer"
-            onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
-            <h5 class="text-sm font-semibold text-text-main m-0">Brands</h5>
-            <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
-        </div>
-        <div class="max-h-[250px] overflow-y-auto">
-            <ul class="space-y-1.5 list-none p-0 m-0">
-                @foreach($category->brands as $brand)
-                    <li>
-                        <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
-                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
-                            {{ $brand->name }}
-                        </a>
+    @php
+        $sidebarBrands = $category->brands;
+        if ($sidebarBrands->isEmpty()) {
+            $sidebarBrands = \App\Models\Brand::whereHas('products', function ($q) use ($category) {
+                $q->where('category_id', $category->id);
+            })->orderBy('name')->get();
+        }
+    @endphp
+    @if($sidebarBrands->isNotEmpty())
+        <div class="bg-surface-card rounded-xl p-4 mb-3">
+            <div class="flex justify-between items-center mb-3 cursor-pointer"
+                onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
+                <h5 class="text-sm font-semibold text-text-main m-0">Brands</h5>
+                <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
+            </div>
+            <div class="max-h-[250px] overflow-y-auto">
+                <ul class="space-y-1.5 list-none p-0 m-0">
+                    @foreach($sidebarBrands as $brand)
+                        <li>
+                            <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
+                                class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
+                                {{ $brand->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                    <li class="mt-2">
+                        <a href="{{ route('brands.by.category', $category->slug) }}"
+                            class="text-sm font-semibold text-text-main hover:text-primary no-underline transition-colors">View
+                            All Brands</a>
                     </li>
-                @endforeach
-                <li class="mt-2">
-                    <a href="{{ route('brands.by.category', $category->slug) }}"
-                        class="text-sm font-semibold text-text-main hover:text-primary no-underline transition-colors">View
-                        All Brands</a>
-                </li>
-            </ul>
+                </ul>
+            </div>
         </div>
-    </div>
+    @endif
 @endif
 
 {{-- ================================================================== --}}

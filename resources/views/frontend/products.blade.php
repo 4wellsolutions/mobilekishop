@@ -31,7 +31,7 @@
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-medium text-text-main whitespace-nowrap">Sort By:</label>
                             <select name="orderby" id="sort_filter" class="select-filter px-3 py-1.5 border border-border-light rounded-lg text-sm
-                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                                           focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
                                 <option value="" {{ (Request::get('orderby') == 0) ? "selected" : '' }}>Default sorting
                                 </option>
                                 <option value="new" {{ (Request::get('orderby') == "new") ? "selected" : '' }}>Sort by Latest
@@ -55,7 +55,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-text-main mb-1">Year</label>
                                 <select class="select-filter w-full px-3 py-1.5 border border-border-light rounded-lg text-sm
-                                               focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                                   focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                     name="year">
                                     <option value="">Select Year</option>
                                     @for($y = 2025; $y >= 2019; $y--)
@@ -67,8 +67,9 @@
                             @if(!isset($brand))
                                 <div>
                                     <label class="block text-sm font-medium text-text-main mb-1">Brand</label>
-                                    <select class="select-filter w-full px-3 py-1.5 border border-border-light rounded-lg text-sm
-                                                       focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    <select
+                                        class="select-filter w-full px-3 py-1.5 border border-border-light rounded-lg text-sm
+                                                               focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                         name="brand_id">
                                         <option value="">Select Brand</option>
                                         @if($brands = App\Models\Brand::limit(20)->get())
@@ -118,20 +119,19 @@
         });
     </script>
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org/", 
-      "@type": "BreadcrumbList", 
-      "itemListElement": [{
-        "@type": "ListItem", 
-        "position": 1, 
-        "name": "Home",
-        "item": "{{url('/')}}/"  
-      },{
-        "@type": "ListItem", 
-        "position": 2, 
-        "name": "{{$metas->name}}",
-        "item": "{{$metas->canonical}}"  
-      }]
-    }
-    </script>
+        {
+          "@@context": "https://schema.org/", 
+          "@@type": "BreadcrumbList", 
+          "itemListElement": [{
+            "@@type": "ListItem", 
+            "position": 1, 
+            "name": "Home",
+            "item": "{{url('/')}}/"  
+          },{
+            "@@type": "ListItem", 
+            "position": 2, 
+            "name": "{{$metas->name}}"
+          }]
+        }
+        </script>
 @endsection

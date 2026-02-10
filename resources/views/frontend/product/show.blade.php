@@ -331,38 +331,6 @@
                           }
                       </script>
     @endif
-    <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org/",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "{{ $product->category->category_name }}",
-                    "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $product->category->slug) }}"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "{{ $product->brand->name }}",
-                    "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brand/' . $product->brand->slug . '/' . $product->category->slug) }}"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 4,
-                    "name": "{{ Str::title($product->name) }}",
-                    "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/product/' . $product->slug) }}"
-                }
-            ]
-        }
-    </script>
     @endsection
 
     <div class="w-full max-w-[1280px] px-4 lg:px-10 py-8 mx-auto">
@@ -372,9 +340,6 @@
             <span class="text-text-muted">/</span>
             <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'category.show', ($country->country_code == 'pk' ? $product->category->slug : ['country_code' => $country->country_code, 'category' => $product->category->slug])) }}"
                 class="text-text-muted hover:text-primary font-medium hover:underline">{{ $product->category->category_name }}</a>
-            <span class="text-text-muted">/</span>
-            <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'brand.show', ($country->country_code == 'pk' ? ['brand' => $product->brand->slug, 'categorySlug' => $product->category->slug] : ['country_code' => $country->country_code, 'brand' => $product->brand->slug, 'categorySlug' => $product->category->slug])) }}"
-                class="text-text-muted hover:text-primary font-medium hover:underline">{{ $product->brand->name }}</a>
             <span class="text-text-muted">/</span>
             <span class="text-text-main font-semibold">{{ $product->name }}</span>
         </div>
@@ -773,12 +738,10 @@
         $prefix = $isPk ? '' : 'country.';
         $params = $isPk ? [] : ['country_code' => $country->country_code];
         $categoryUrl = $product->category ? route($prefix . 'category.show', array_merge($params, ['category' => $product->category->slug])) : url('/');
-        $brandUrl = $product->brand ? route($prefix . 'brand.show', array_merge($params, ['brand' => $product->brand->slug, 'categorySlug' => $product->category ? $product->category->slug : 'mobile-phones'])) : url('/');
     @endphp
     @include('includes.breadcrumb-schema', ['breadcrumbs' => [
         ['name' => 'Home', 'url' => url('/')],
         ['name' => $product->category ? $product->category->name : 'Products', 'url' => $categoryUrl],
-        ['name' => $product->brand ? $product->brand->name : '', 'url' => $brandUrl],
         ['name' => $product->name, 'url' => url()->current()]
     ]])
 @endsection
