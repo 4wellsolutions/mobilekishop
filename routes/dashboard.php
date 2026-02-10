@@ -186,6 +186,11 @@ Route::prefix('dashboard')
 		Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
 		Route::post('settings', [SiteSettingController::class, 'update'])->name('settings.update');
 
+		// Cache Management
+		Route::get('cache', [\App\Http\Controllers\Dashboard\CacheController::class, 'index'])->name('cache.index');
+		Route::post('cache/clear', [\App\Http\Controllers\Dashboard\CacheController::class, 'clear'])->name('cache.clear');
+		Route::post('cache/clear-all', [\App\Http\Controllers\Dashboard\CacheController::class, 'clearAll'])->name('cache.clear-all');
+
 		Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
 		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
 
