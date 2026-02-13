@@ -33,6 +33,11 @@ class CachePage
             return $next($request);
         }
 
+        // Skip caching for search queries to prevent cache explosion
+        if ($request->has('query') || $request->routeIs('search') || $request->routeIs('search.*')) {
+            return $next($request);
+        }
+
         // Skip if there are flash/session messages (validation errors, notices)
         if ($request->session()->has('errors') || $request->session()->has('status')) {
             return $next($request);
@@ -73,10 +78,38 @@ class CachePage
     }
 
     /**
-     * Build a unique cache key from the full URL (includes query strings).
+     * Build a unique cache key from the URL with sorted query params and tracking params removed.
      */
     private function cacheKey(Request $request): string
     {
-        return self::PREFIX . md5($request->fullUrl());
+        $queryParams = $request->query();
+
+        // 1. Remove common tracking parameters
+        $trackingParams = [
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_term',
+            'utm_content',
+            'fbclid',
+            'gclid',
+            'ref',
+            '_ga',
+            'gclsrc'
+        ];
+
+        foreach ($trackingParams as $param) {
+            unset($queryParams[$param]);
+        }
+
+        // 2. Sort parameters by key to ensure ?a=1&b=2 and ?b=2&a=1 generate the same key
+        ksort($queryParams);
+
+        // 3. Rebuild the URL
+        $path = $request->path();
+        $queryString = http_build_query($queryParams);
+        $fullUrl = $request->getSchemeAndHttpHost() . '/' . trim($path, '/') . ($queryString ? '?' . $queryString : '');
+
+        return self::PREFIX . md5($fullUrl);
     }
 }

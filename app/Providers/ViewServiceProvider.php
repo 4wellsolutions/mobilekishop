@@ -84,11 +84,11 @@ class ViewServiceProvider extends ServiceProvider
             $filtersCacheKey = 'filters_sidebar_' . md5(Request::url());
             $priceRangesCacheKey = "prices_sidebar_{$country->id}_{$category->id}";
 
-            $categories = Cache::remember($categoriesCacheKey, 3600, function () {
+            $categories = Cache::remember($categoriesCacheKey, now()->addDay(), function () {
                 return Category::has('products')->where("is_active", 1)->get();
             });
 
-            $brands = Cache::remember($brandsCacheKey, 3600, function () use ($category, $country) {
+            $brands = Cache::remember($brandsCacheKey, now()->addDay(), function () use ($category, $country) {
                 return Brand::whereHas('products', function ($query) use ($category, $country) {
                     $query->where('category_id', $category->id)
                         ->whereHas('variants', function ($query) use ($country) {
@@ -98,11 +98,11 @@ class ViewServiceProvider extends ServiceProvider
                 })->get();
             });
 
-            $filters = Cache::remember($filtersCacheKey, 3600, function () {
+            $filters = Cache::remember($filtersCacheKey, now()->addDay(), function () {
                 return Filter::where("page_url", Request::url())->get();
             });
 
-            $priceRanges = Cache::remember($priceRangesCacheKey, 3600, function () use ($country, $category) {
+            $priceRanges = Cache::remember($priceRangesCacheKey, now()->addDay(), function () use ($country, $category) {
                 if (!\Illuminate\Support\Facades\Schema::hasTable('category_price_ranges')) {
                     return [15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000, 80000, 90000, 100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000];
                 }

@@ -88,8 +88,8 @@ class SeedProductReviews extends Command
             $query->limit((int) $limit);
         }
 
-        $products = $query->get();
-        $totalProducts = $products->count();
+        // Count total products efficiently without loading them all
+        $totalProducts = $query->count();
 
         if ($totalProducts === 0) {
             $this->info('No products left to process. All done!');
@@ -102,23 +102,31 @@ class SeedProductReviews extends Command
         $bar = $this->output->createProgressBar($totalProducts);
         $bar->start();
 
-        $chunks = $products->chunk($batchSize);
-        $totalReviews = 0;
-        $processedCount = 0;
+        // Efficiently process products in chunks to save memory
+        $query->chunkById($batchSize, function ($products) use (&$totalReviews, &$processedCount, &$processedIds, $stateFile, $bar, $limit) {
+            foreach ($products as $product) {
+                // Check if we hit the limit (if set)
+                if ($limit && $processedCount >= $limit) {
+                    return false; // Stop chunking
+                }
+            }
 
-        foreach ($chunks as $chunk) {
+            // We need to pass a collection to generateReviewsForProducts, which chunkById provides.
+            // But verify if we need to check slot exhaustion inside the chunk loop.
+
             if ($this->currentSlotIndex >= count($this->slots)) {
                 $this->newLine();
                 $this->warn('All API slots exhausted. Will continue on next run.');
-                break;
+                return false; // Stop chunking
             }
 
-            $reviews = $this->generateReviewsForProducts($chunk);
+            $reviews = $this->generateReviewsForProducts($products);
 
             if ($reviews === null || empty($reviews)) {
                 $this->line(' [no reviews returned for batch, skipping]');
-                $bar->advance($chunk->count());
-                continue;
+                $bar->advance($products->count());
+                $processedCount += $products->count(); // Count as processed even if skipped
+                return; // Continue to next chunk
             }
 
             // Insert reviews
@@ -148,8 +156,8 @@ class SeedProductReviews extends Command
                 }
             }
 
-            $processedCount += $chunk->count();
-            $bar->advance($chunk->count());
+            $processedCount += $products->count();
+            $bar->advance($products->count());
 
             // Save progress
             file_put_contents($stateFile, json_encode([
@@ -160,7 +168,9 @@ class SeedProductReviews extends Command
 
             // Rate limit: 5 RPM = 12s minimum between calls, use 13s to be safe
             sleep(13);
-        }
+        });
+
+
 
         $bar->finish();
         $this->newLine(2);
