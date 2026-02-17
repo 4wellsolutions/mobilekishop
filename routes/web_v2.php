@@ -37,10 +37,8 @@ Route::bind('category', function ($value) {
 Route::bind('brand', function ($value) {
     if ($value instanceof \App\Models\Brand)
         return $value;
-    \Log::info("Attempting to bind brand with slug: " . $value);
     $brand = \App\Models\Brand::whereSlug($value)->first();
     if (!$brand) {
-        \Log::error("Brand binding failed for slug: " . $value);
         return $value; // Return the slug itself so the controller can handle it or fall through
     }
     return $brand;

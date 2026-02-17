@@ -25,7 +25,7 @@ class SearchController extends Controller
     {
         $country = $request->attributes->get('country');
 
-        if (!$request->has('query')) {
+        if (!$request->filled('query')) {
             return redirect()->back()->with('fail', 'Please try again with different query!');
         }
 

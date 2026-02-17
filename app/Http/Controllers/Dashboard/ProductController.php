@@ -18,6 +18,7 @@ use App\Models\Country;
 use App\Specification;
 use App\Models\Variant;
 use App\Models\ProductColor;
+use App\Models\ExpertRating;
 use Carbon\Carbon;
 use Str;
 use Auth;
@@ -245,6 +246,9 @@ class ProductController extends Controller
 		$colors = Color::all();
 		$category = $product->category;
 
+		// Load expert rating
+		$expertRating = $product->expertRating ?? new ExpertRating();
+
 		// Fetch all pivot entries for product-variant-country combinations
 		$productVariants = DB::table('product_variants')
 			->where('product_id', $product->id)
@@ -264,7 +268,8 @@ class ProductController extends Controller
 			"colors",
 			"category",
 			"product",
-			"variantPrices"
+			"variantPrices",
+			"expertRating"
 		));
 	}
 
@@ -361,7 +366,16 @@ class ProductController extends Controller
 				'body',
 				'thumbnail',
 				'images',
-				'_token'
+				'_token',
+				'_method',
+				'expert_design',
+				'expert_display',
+				'expert_performance',
+				'expert_camera',
+				'expert_battery',
+				'expert_value_for_money',
+				'expert_verdict',
+				'expert_rated_by',
 			];
 			$attributes = $request->except($excludedKeys);
 
@@ -412,6 +426,25 @@ class ProductController extends Controller
 			//     $product->thumbnail = $firstColorImage;
 			//     $product->save();
 			// }
+
+			// Save Expert Rating if any criteria provided
+			if ($request->filled('expert_design') || $request->filled('expert_display') || $request->filled('expert_performance') || $request->filled('expert_camera') || $request->filled('expert_battery') || $request->filled('expert_value_for_money')) {
+				$rating = ExpertRating::updateOrCreate(
+					['product_id' => $product->id],
+					[
+						'design' => $request->expert_design ?? 0,
+						'display' => $request->expert_display ?? 0,
+						'performance' => $request->expert_performance ?? 0,
+						'camera' => $request->expert_camera ?? 0,
+						'battery' => $request->expert_battery ?? 0,
+						'value_for_money' => $request->expert_value_for_money ?? 0,
+						'verdict' => $request->expert_verdict,
+						'rated_by' => $request->expert_rated_by,
+					]
+				);
+				$rating->overall = $rating->calculateOverall();
+				$rating->save();
+			}
 
 			// Commit the transaction
 			DB::commit();

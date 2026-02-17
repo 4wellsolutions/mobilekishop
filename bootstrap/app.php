@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
 
+
         using: function () {
-            file_put_contents(__DIR__ . '/../storage/logs/route_debug.txt', "Loading routes at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 
             // Dashboard routes first — must load before catch-all web routes
             Route::middleware('web')
