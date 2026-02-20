@@ -14,6 +14,15 @@
 					<span class="material-symbols-outlined text-[18px]">rate_review</span> Reviews
 				</a>
 			</li>
+			<li class="border-t border-slate-200 dark:border-slate-700 pt-1 mt-1">
+				<form method="POST" action="{{ route('logout') }}">
+					@csrf
+					<button type="submit"
+						class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+						<span class="material-symbols-outlined text-[18px]">logout</span> Logout
+					</button>
+				</form>
+			</li>
 		</ul>
 	</div>
 </aside>

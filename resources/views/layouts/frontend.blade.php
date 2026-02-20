@@ -254,11 +254,34 @@
                 </div>
                 </div>
             @auth
-                <a href="{{ route('user.index') }}"
-                    class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
-                    <span class="material-symbols-outlined text-[24px]">account_circle</span>
-                    </a>
-            @else
+                <div class="relative group" id="userDropdown">
+                    <button onclick="document.getElementById('userDropdown').classList.toggle('open')"
+                        class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
+                        <span class="material-symbols-outlined text-[24px]">account_circle</span>
+                    </button>
+                    <div class="absolute top-full right-0 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-[.open]:opacity-100 group-[.open]:visible transition-all duration-200 z-50">
+                        <div class="bg-white rounded-xl border border-border-light shadow-lg shadow-black/8 py-2 min-w-[180px]">
+                            <div class="px-4 py-2 border-b border-slate-100">
+                                <p class="text-sm font-bold text-text-main truncate">{{ Auth::user()->name }}</p>
+                                <p class="text-xs text-text-muted truncate">{{ Auth::user()->email }}</p>
+                            </div>
+                            <a href="{{ route('user.index') }}"
+                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-primary hover:bg-slate-50 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">person</span>
+                                My Account
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-text-muted hover:text-red-600 hover:bg-red-50 transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @else
                     <button type="button" onclick="document.getElementById('authModal').classList.replace('hidden','flex')"
                         class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 transition-colors text-text-muted hover:text-text-main">
                         <span class="material-symbols-outlined text-[24px]">login</span>
@@ -471,11 +494,15 @@
 
     @yield('script')
     <script>
-        // Close country dropdown on outside click
+        // Close dropdowns on outside click
         document.addEventListener('click', function (e) {
             const dd = document.getElementById('countryDropdown');
             if (dd && !dd.contains(e.target)) {
                 dd.classList.remove('open');
+            }
+            const ud = document.getElementById('userDropdown');
+            if (ud && !ud.contains(e.target)) {
+                ud.classList.remove('open');
             }
         });
 

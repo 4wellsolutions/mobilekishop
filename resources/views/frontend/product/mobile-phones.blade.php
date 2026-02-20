@@ -424,7 +424,7 @@
 
 
             <!-- Store Prices Widget -->
-            <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
+            <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="stores">
                 <h3 class="text-lg font-bold text-text-main mb-4">Store Prices</h3>
                 <div class="space-y-3">
                     @php
@@ -621,4 +621,20 @@
             }
         }
     </script>
+
+    {{-- Sticky Mobile Bottom Bar --}}
+    <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-light shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-3" id="mobileBottomBarMp">
+        <div class="flex items-center justify-between gap-3 max-w-[600px] mx-auto">
+            <div class="flex flex-col min-w-0">
+                <span class="text-xs text-text-muted font-medium">Best Price</span>
+                <span class="text-xl font-bold text-text-main truncate">{{ $country->currency }} {{ $price_in_pkr ? number_format($price_in_pkr) : 'N/A' }}</span>
+            </div>
+            <a href="#stores"
+                class="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-primary to-blue-600 hover:from-primary-hover hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-95 decoration-0">
+                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Check Prices
+            </a>
+        </div>
+    </div>
+    <div class="h-20 lg:hidden"></div>
 @endsection

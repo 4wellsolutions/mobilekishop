@@ -38,7 +38,7 @@
         $os = $getAttribute('os');
         $video = $getAttribute('video');
         $charging = $getAttribute('extra') ?? $getAttribute('charging');
-        
+
         // SEO / Schema Attributes
         $g4_band = $getAttribute('4g_band');
         $g5_band = $getAttribute('5g_band');
@@ -87,251 +87,251 @@
     @endphp
 
     @section('script')
-    <script type="application/ld+json">
-    {
-          "@@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": 
-          [
+        <script type="application/ld+json">
             {
-              "@type": "Question",
-              "name": "What is the Release Date of {{Str::title($product->name)}}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "{{Str::title($product->name)}} was released on {{$release_date->format('M-Y')}}."
-              }
-            },{
-              "@type": "Question",
-              "name": "What is the Price of {{Str::title($product->name)}} in {$country->country_name}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "This phone comes with plenty of options at price range of Rs.{{$price_in_pkr}}."
-              }
-            },{
-              "@type": "Question",
-              "name": "Is {{Str::title($product->name)}} Have 5G Network Connectivity?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "{{Str::title($product->name)}} comes with {{isset($g4_band) ? '4G LTE' : ''}} {{isset($g5_band) ? 'and 5G' : ''}} high speed network to enjoy fast internet anywhere in {$country->country_name}."
-              }
-            },{
-              "@type": "Question",
-              "name": "How Much Ram and Storage does a {{Str::title($product->name)}} have?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "{{Str::title($product->name)}} has {{$ram}}GB RAM and {{$rom}}GB storage."
-              }
-            },{
-              "@type": "Question",
-              "name": "What Processor Is in {{Str::title($product->name)}}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "{{Str::title($product->name)}} is powered by Android 11 OS partner with CPU {{trim($cpu)}} and {{$chipset}} Chipset."
+                  "@@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": 
+                  [
+                    {
+                      "@type": "Question",
+                      "name": "What is the Release Date of {{Str::title($product->name)}}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "{{Str::title($product->name)}} was released on {{$release_date->format('M-Y')}}."
+                      }
+                    },{
+                      "@type": "Question",
+                      "name": "What is the Price of {{Str::title($product->name)}} in {$country->country_name}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "This phone comes with plenty of options at price range of Rs.{{$price_in_pkr}}."
+                      }
+                    },{
+                      "@type": "Question",
+                      "name": "Is {{Str::title($product->name)}} Have 5G Network Connectivity?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "{{Str::title($product->name)}} comes with {{isset($g4_band) ? '4G LTE' : ''}} {{isset($g5_band) ? 'and 5G' : ''}} high speed network to enjoy fast internet anywhere in {$country->country_name}."
+                      }
+                    },{
+                      "@type": "Question",
+                      "name": "How Much Ram and Storage does a {{Str::title($product->name)}} have?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "{{Str::title($product->name)}} has {{$ram}}GB RAM and {{$rom}}GB storage."
+                      }
+                    },{
+                      "@type": "Question",
+                      "name": "What Processor Is in {{Str::title($product->name)}}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "{{Str::title($product->name)}} is powered by Android 11 OS partner with CPU {{trim($cpu)}} and {{$chipset}} Chipset."
+                        }
+                      },{
+                      "@type": "Question",
+                      "name": "What is the Screen Size of {{Str::title($product->name)}}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "The {{Str::title($product->name)}} has a screen size of approximately {{$screen_size}} inches and a resolution of {{$resolution}} pixels."
+                        }
+                      },{
+                      "@type": "Question",
+                      "name": "What is the Camera of {{Str::title($product->name)}}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "The {{Str::title($product->name)}} features {{$main_camera}} main and {{$front_camera}} selfie cameras"
+                        }
+                      },{
+                      "@type": "Question",
+                      "name": "What is the Battery of {{Str::title($product->name)}}?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "The {{Str::title($product->name)}} is equipped with a battery capacity of around {{$battery}} mAh."
+                      }
+                    }
+                  ]
                 }
-              },{
-              "@type": "Question",
-              "name": "What is the Screen Size of {{Str::title($product->name)}}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The {{Str::title($product->name)}} has a screen size of approximately {{$screen_size}} inches and a resolution of {{$resolution}} pixels."
-                }
-              },{
-              "@type": "Question",
-              "name": "What is the Camera of {{Str::title($product->name)}}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The {{Str::title($product->name)}} features {{$main_camera}} main and {{$front_camera}} selfie cameras"
-                }
-              },{
-              "@type": "Question",
-              "name": "What is the Battery of {{Str::title($product->name)}}?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The {{Str::title($product->name)}} is equipped with a battery capacity of around {{$battery}} mAh."
-              }
-            }
-          ]
-        }
-    </script>
+            </script>
 
-    @if($product->reviews->isEmpty())
-      <script type="application/ld+json">
-                          {
-                              "@@context": "https://schema.org/",
-                              "@type": "Product",
-                              "name": "{{Str::title($product->name)}}",
-                              "image": [
-                              "{{$product->thumbnail}}"
-                              ],
-                              "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
-                              "sku": "{{$product->id}}",
-                              "mpn": "{{$product->id}}",
-                              "color": "{{ explode(',', $colors)[0] }}",
-                              "material": "N/A",
-                              "pattern": "N/A",
-                              "brand": {
-                                  "@type": "Brand",
-                                  "name": "{{$product->brand->name}}"
-                              },
-                              "review": {
-                                  "@type": "Review",
-                                  "reviewRating": {
-                                      "@type": "Rating",
-                                      "ratingValue": "{{$rating}}",
-                                      "bestRating": "5"
-                                  },
-                                  "author": {
-                                      "@type": "Person",
-                                      "name": "{{$reviewer}}"
-                                  }
-                              },
-                              "aggregateRating": {
-                                  "@type": "AggregateRating",
-                                  "ratingValue": "{{$rating}}",
-                                  "reviewCount": "{{$review_count}}"
-                              },
-                              "offers": {
-                                  "@type": "Offer",
-                                  "url": "#",
-                                  "priceCurrency": "{{$country->iso_currency}}",
-                                  "price": "{{ Str::replace(',', '', $price_in_pkr) }}",
-                                  "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                                  "itemCondition": "https://schema.org/NewCondition",
-                                  "availability": "https://schema.org/InStock",
-                                  "seller": {
-                                      "@type": "Organization",
-                                      "name": "MKS"
-                                  },
-                                  "hasMerchantReturnPolicy": {
-                                    "@type": "MerchantReturnPolicy",
-                                    "applicableCountry": "CH",
-                                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                                    "merchantReturnDays": 60,
-                                    "returnMethod": "https://schema.org/ReturnByMail",
-                                    "returnFees": "https://schema.org/FreeReturn"
-                                  },
-                                  "shippingDetails": {
-                                    "@type": "OfferShippingDetails",
-                                    "shippingRate": {
-                                      "@type": "MonetaryAmount",
-                                      "value": "0",
-                                      "currency": "{{$country->iso_currency}}"
-                                    },
-                                    "shippingDestination": 
+        @if($product->reviews->isEmpty())
+            <script type="application/ld+json">
                                       {
-                                        "@type": "DefinedRegion",
-                                        "addressCountry": "{{$country->country_code}}"
-                                      },
-                                      "deliveryTime": {
-                                          "@type": "ShippingDeliveryTime",
-                                          "handlingTime": {
-                                            "@type": "QuantitativeValue",
-                                            "minValue": 0,
-                                            "maxValue": 1,
-                                            "unitCode": "DAY"
+                                          "@@context": "https://schema.org/",
+                                          "@type": "Product",
+                                          "name": "{{Str::title($product->name)}}",
+                                          "image": [
+                                          "{{$product->thumbnail}}"
+                                          ],
+                                          "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
+                                          "sku": "{{$product->id}}",
+                                          "mpn": "{{$product->id}}",
+                                          "color": "{{ explode(',', $colors)[0] }}",
+                                          "material": "N/A",
+                                          "pattern": "N/A",
+                                          "brand": {
+                                              "@type": "Brand",
+                                              "name": "{{$product->brand->name}}"
                                           },
-                                          "transitTime": {
-                                            "@type": "QuantitativeValue",
-                                            "minValue": 1,
-                                            "maxValue": 5,
-                                            "unitCode": "DAY"
+                                          "review": {
+                                              "@type": "Review",
+                                              "reviewRating": {
+                                                  "@type": "Rating",
+                                                  "ratingValue": "{{$rating}}",
+                                                  "bestRating": "5"
+                                              },
+                                              "author": {
+                                                  "@type": "Person",
+                                                  "name": "{{$reviewer}}"
+                                              }
+                                          },
+                                          "aggregateRating": {
+                                              "@type": "AggregateRating",
+                                              "ratingValue": "{{$rating}}",
+                                              "reviewCount": "{{$review_count}}"
+                                          },
+                                          "offers": {
+                                              "@type": "Offer",
+                                              "url": "#",
+                                              "priceCurrency": "{{$country->iso_currency}}",
+                                              "price": "{{ Str::replace(',', '', $price_in_pkr) }}",
+                                              "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                                              "itemCondition": "https://schema.org/NewCondition",
+                                              "availability": "https://schema.org/InStock",
+                                              "seller": {
+                                                  "@type": "Organization",
+                                                  "name": "MKS"
+                                              },
+                                              "hasMerchantReturnPolicy": {
+                                                "@type": "MerchantReturnPolicy",
+                                                "applicableCountry": "CH",
+                                                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                                                "merchantReturnDays": 60,
+                                                "returnMethod": "https://schema.org/ReturnByMail",
+                                                "returnFees": "https://schema.org/FreeReturn"
+                                              },
+                                              "shippingDetails": {
+                                                "@type": "OfferShippingDetails",
+                                                "shippingRate": {
+                                                  "@type": "MonetaryAmount",
+                                                  "value": "0",
+                                                  "currency": "{{$country->iso_currency}}"
+                                                },
+                                                "shippingDestination": 
+                                                  {
+                                                    "@type": "DefinedRegion",
+                                                    "addressCountry": "{{$country->country_code}}"
+                                                  },
+                                                  "deliveryTime": {
+                                                      "@type": "ShippingDeliveryTime",
+                                                      "handlingTime": {
+                                                        "@type": "QuantitativeValue",
+                                                        "minValue": 0,
+                                                        "maxValue": 1,
+                                                        "unitCode": "DAY"
+                                                      },
+                                                      "transitTime": {
+                                                        "@type": "QuantitativeValue",
+                                                        "minValue": 1,
+                                                        "maxValue": 5,
+                                                        "unitCode": "DAY"
+                                                      }
+                                                  }
+                                              }
                                           }
                                       }
-                                  }
-                              }
-                          }
-                      </script>
-    @else
-      <script type="application/ld+json">
-                          {
-                              "@@context": "https://schema.org/",
-                              "@type": "Product",
-                              "name": "{{Str::title($product->name)}}",
-                              "image": [
-                              "{{$product->thumbnail}}"
-                              ],
-                              "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
-                              "sku": "{{$product->id}}",
-                              "mpn": "{{$product->id}}",
-                              "color": "{{str_replace(',', '', $colors)}}",
-                              "material": "N/A",
-                              "pattern": "N/A",
-                              "brand": {
-                                  "@type": "Brand",
-                                  "name": "{{$product->brand->name}}"
-                              },
-                                  @foreach($product->reviews as $review)
-                                    {
-                                        "@type": "Review",
-                                        "reviewRating": {
-                                            "@type": "Rating",
-                                            "ratingValue": "{{ $review->stars }}",
-                                            "bestRating": "5"
-                                        },
-                                        "author": {
-                                            "@type": "Person",
-                                            "name": "{{ $review->name }}"
-                                        }
-                                    }@if(!$loop->last),@endif
-                                  @endforeach
-                                  ],
-                              "aggregateRating": {
-                                  "@type": "AggregateRating",
-                                  "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
-                                  "reviewCount": "{{ $product->reviews->count() }}"
-                              },
-                              "offers": {
-                                  "@type": "Offer",
-                                  "url": "#",
-                                  "priceCurrency": "{{$country->iso_currency}}",
-                                  "price": "{{$price_in_pkr}}",
-                                  "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                                  "itemCondition": "https://schema.org/NewCondition",
-                                  "availability": "https://schema.org/InStock",
-                                  "seller": {
-                                      "@type": "Organization",
-                                      "name": "MKS"
-                                  },
-                                  "hasMerchantReturnPolicy": {
-                                    "@type": "MerchantReturnPolicy",
-                                    "applicableCountry": "{{$country->country_code}}",
-                                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                                    "merchantReturnDays": 60,
-                                    "returnMethod": "https://schema.org/ReturnByMail",
-                                    "returnFees": "https://schema.org/FreeReturn"
-                                  },
-                                  "shippingDetails": {
-                                    "@type": "OfferShippingDetails",
-                                    "shippingRate": {
-                                      "@type": "MonetaryAmount",
-                                      "value": "0",
-                                      "currency": "{{$country->iso_currency}}"
-                                    },
-                                    "shippingDestination": 
+                                  </script>
+        @else
+            <script type="application/ld+json">
                                       {
-                                        "@type": "DefinedRegion",
-                                        "addressCountry": "{{$country->country_code}}"
-                                      },
-                                      "deliveryTime": {
-                                          "@type": "ShippingDeliveryTime",
-                                          "handlingTime": {
-                                            "@type": "QuantitativeValue",
-                                            "minValue": 0,
-                                            "maxValue": 1,
-                                            "unitCode": "DAY"
+                                          "@@context": "https://schema.org/",
+                                          "@type": "Product",
+                                          "name": "{{Str::title($product->name)}}",
+                                          "image": [
+                                          "{{$product->thumbnail}}"
+                                          ],
+                                          "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
+                                          "sku": "{{$product->id}}",
+                                          "mpn": "{{$product->id}}",
+                                          "color": "{{str_replace(',', '', $colors)}}",
+                                          "material": "N/A",
+                                          "pattern": "N/A",
+                                          "brand": {
+                                              "@type": "Brand",
+                                              "name": "{{$product->brand->name}}"
                                           },
-                                          "transitTime": {
-                                            "@type": "QuantitativeValue",
-                                            "minValue": 1,
-                                            "maxValue": 5,
-                                            "unitCode": "DAY"
+                                              @foreach($product->reviews as $review)
+                                                {
+                                                    "@type": "Review",
+                                                    "reviewRating": {
+                                                        "@type": "Rating",
+                                                        "ratingValue": "{{ $review->stars }}",
+                                                        "bestRating": "5"
+                                                    },
+                                                    "author": {
+                                                        "@type": "Person",
+                                                        "name": "{{ $review->name }}"
+                                                    }
+                                                }@if(!$loop->last),@endif
+                                              @endforeach
+                                              ],
+                                          "aggregateRating": {
+                                              "@type": "AggregateRating",
+                                              "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
+                                              "reviewCount": "{{ $product->reviews->count() }}"
+                                          },
+                                          "offers": {
+                                              "@type": "Offer",
+                                              "url": "#",
+                                              "priceCurrency": "{{$country->iso_currency}}",
+                                              "price": "{{$price_in_pkr}}",
+                                              "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                                              "itemCondition": "https://schema.org/NewCondition",
+                                              "availability": "https://schema.org/InStock",
+                                              "seller": {
+                                                  "@type": "Organization",
+                                                  "name": "MKS"
+                                              },
+                                              "hasMerchantReturnPolicy": {
+                                                "@type": "MerchantReturnPolicy",
+                                                "applicableCountry": "{{$country->country_code}}",
+                                                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                                                "merchantReturnDays": 60,
+                                                "returnMethod": "https://schema.org/ReturnByMail",
+                                                "returnFees": "https://schema.org/FreeReturn"
+                                              },
+                                              "shippingDetails": {
+                                                "@type": "OfferShippingDetails",
+                                                "shippingRate": {
+                                                  "@type": "MonetaryAmount",
+                                                  "value": "0",
+                                                  "currency": "{{$country->iso_currency}}"
+                                                },
+                                                "shippingDestination": 
+                                                  {
+                                                    "@type": "DefinedRegion",
+                                                    "addressCountry": "{{$country->country_code}}"
+                                                  },
+                                                  "deliveryTime": {
+                                                      "@type": "ShippingDeliveryTime",
+                                                      "handlingTime": {
+                                                        "@type": "QuantitativeValue",
+                                                        "minValue": 0,
+                                                        "maxValue": 1,
+                                                        "unitCode": "DAY"
+                                                      },
+                                                      "transitTime": {
+                                                        "@type": "QuantitativeValue",
+                                                        "minValue": 1,
+                                                        "maxValue": 5,
+                                                        "unitCode": "DAY"
+                                                      }
+                                                  }
+                                              }
                                           }
                                       }
-                                  }
-                              }
-                          }
-                      </script>
-    @endif
+                                  </script>
+        @endif
     @endsection
 
     <div class="w-full max-w-[1280px] px-4 lg:px-10 py-8 mx-auto">
@@ -379,7 +379,8 @@
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
                         <div>
                             <h1 class="text-4xl md:text-5xl font-bold text-text-main mb-3 tracking-tight">
-                                {{ $product->name }}</h1>
+                                {{ $product->name }}
+                            </h1>
                             <div class="flex items-center gap-4 text-sm text-text-muted">
                                 <span class="flex items-center gap-1"><span
                                         class="material-symbols-outlined text-[16px]">calendar_today</span> Released
@@ -523,7 +524,8 @@
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
                                         <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
-                                            {{ $attr->label }}</div>
+                                            {{ $attr->label }}
+                                        </div>
                                         <div class="px-6 py-3 text-sm text-text-main">{{ $attr->pivot->value }}</div>
                                     </div>
                                 @endforeach
@@ -531,7 +533,7 @@
                         </div>
                     @endif
                 @endforeach
-                
+
                 <!-- Fallback to basic attributes if groups not present (or as redundancy) -->
                 @if($groupedAttributes->isEmpty() && $product->attributes->isNotEmpty())
                     <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card">
@@ -544,7 +546,8 @@
                                 <div
                                     class="grid grid-cols-1 md:grid-cols-[160px_1fr] border-b border-border-light last:border-0 hover:bg-gray-50/50 transition-colors">
                                     <div class="px-6 py-3 text-sm text-text-muted font-medium md:border-r border-border-light">
-                                        {{ $attr->label }}</div>
+                                        {{ $attr->label }}
+                                    </div>
                                     <div class="px-6 py-3 text-sm text-text-main">{{ $attr->pivot->value }}</div>
                                 </div>
                             @endforeach
@@ -555,141 +558,147 @@
             </div>
 
             <!-- Sidebar / Additional Info -->
-            <div class="lg:col-span-4 flex flex-col gap-8">
-                <!-- Stores Section (Mock) -->
-                <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="stores">
-                    <h3 class="text-lg font-bold text-text-main mb-4">Current Deals</h3>
-                    <div class="space-y-3">
-                        @foreach($stores as $store)
-                            @if($store['price'] > 0)
-                                <a href="{{ $store['link'] }}" target="{{ $store['target'] ?? '_self' }}"
-                                    class="flex items-center justify-between p-3 rounded-lg bg-page-bg border border-border-light hover:border-primary hover:shadow-sm transition-all group decoration-0">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-full {{ $store['logo_bg'] }} border border-gray-100 flex items-center justify-center p-1 shadow-sm">
-                                            <span
-                                                class="material-symbols-outlined {{ $store['logo_text'] }} text-[22px]">{{ $store['icon'] }}</span>
+            <div class="lg:col-span-4">
+                <div class="flex flex-col gap-8 lg:sticky lg:top-[120px]">
+                    <!-- Stores Section (Mock) -->
+                    <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="stores">
+                        <h3 class="text-lg font-bold text-text-main mb-4">Current Deals</h3>
+                        <div class="space-y-3">
+                            @foreach($stores as $store)
+                                @if($store['price'] > 0)
+                                    <a href="{{ $store['link'] }}" target="{{ $store['target'] ?? '_self' }}"
+                                        class="flex items-center justify-between p-3 rounded-lg bg-page-bg border border-border-light hover:border-primary hover:shadow-sm transition-all group decoration-0">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-full {{ $store['logo_bg'] }} border border-gray-100 flex items-center justify-center p-1 shadow-sm">
+                                                <span
+                                                    class="material-symbols-outlined {{ $store['logo_text'] }} text-[22px]">{{ $store['icon'] }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="text-sm font-bold text-text-main group-hover:text-primary transition-colors">{{ $store['name'] }}</span>
+                                                <span class="text-xs text-text-muted">{{ $store['shipping'] }}</span>
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-sm font-bold text-text-main">{{ $country->currency }}
+                                                {{ number_format($store['price']) }}</span>
                                             <span
-                                                class="text-sm font-bold text-text-main group-hover:text-primary transition-colors">{{ $store['name'] }}</span>
-                                            <span class="text-xs text-text-muted">{{ $store['shipping'] }}</span>
+                                                class="text-xs bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded border border-green-200">{{ $store['stock'] }}</span>
+                                        </div>
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                        <button
+                            class="w-full mt-5 py-2.5 text-sm text-primary border border-primary/30 rounded-lg hover:bg-primary hover:text-white transition-all font-bold shadow-sm">
+                            View all prices
+                        </button>
+                        @if($country && !empty($country->amazon_url) && !empty($country->amazon_tag))
+                            <p class="text-xs text-slate-400 mt-2 px-1">
+                                Disclosure: As an Amazon Associate, I earn from qualifying purchases.
+                            </p>
+                        @endif
+                    </div>
+
+                    {{-- Expert Rating Card --}}
+                    @if($product->expertRating)
+                        @php $er = $product->expertRating; @endphp
+                        <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card"
+                            id="expert-rating">
+                            <div
+                                class="bg-gradient-to-r from-primary to-indigo-600 px-6 py-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-white text-2xl">stars</span>
+                                    <h3 class="text-lg font-bold text-white">Expert Rating</h3>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <span class="text-3xl font-black text-white leading-none">{{ $er->overall }}</span>
+                                    <span class="text-xs text-white/80 font-medium">/ 10</span>
+                                </div>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                @php
+                                    $criteria = [
+                                        ['key' => 'design', 'label' => 'Design & Build', 'icon' => 'palette'],
+                                        ['key' => 'display', 'label' => 'Display', 'icon' => 'smartphone'],
+                                        ['key' => 'performance', 'label' => 'Performance', 'icon' => 'memory'],
+                                        ['key' => 'camera', 'label' => 'Camera', 'icon' => 'photo_camera'],
+                                        ['key' => 'battery', 'label' => 'Battery', 'icon' => 'battery_full'],
+                                        ['key' => 'value_for_money', 'label' => 'Value for Money', 'icon' => 'sell'],
+                                    ];
+                                @endphp
+
+                                @foreach($criteria as $c)
+                                    @php
+                                        $score = $er->{$c['key']};
+                                        $pct = $score * 10;
+                                        $color = $score >= 8 ? 'bg-emerald-500' : ($score >= 6 ? 'bg-blue-500' : ($score >= 4 ? 'bg-yellow-500' : 'bg-red-500'));
+                                    @endphp
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2 text-sm text-text-muted">
+                                                <span class="material-symbols-outlined text-[16px]">{{ $c['icon'] }}</span>
+                                                {{ $c['label'] }}
+                                            </div>
+                                            <span class="text-sm font-bold text-text-main">{{ $score }}</span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 rounded-full h-2">
+                                            <div class="{{ $color }} h-2 rounded-full transition-all duration-500"
+                                                style="width: {{ $pct }}%"></div>
                                         </div>
                                     </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="text-sm font-bold text-text-main">{{ $country->currency }}
-                                            {{ number_format($store['price']) }}</span>
-                                        <span
-                                            class="text-xs bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded border border-green-200">{{ $store['stock'] }}</span>
+                                @endforeach
+
+                                {{-- Verdict --}}
+                                @if($er->verdict)
+                                    <div class="mt-4 pt-4 border-t border-border-light">
+                                        <p class="text-sm font-bold text-text-main mb-1">Verdict</p>
+                                        <p class="text-sm text-text-muted leading-relaxed">{{ $er->verdict }}</p>
+                                    </div>
+                                @endif
+
+                                {{-- Rated By --}}
+                                @if($er->rated_by)
+                                    <div class="flex items-center gap-2 text-xs text-text-muted mt-2">
+                                        <span class="material-symbols-outlined text-[14px]">person</span>
+                                        Rated by {{ $er->rated_by }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Description -->
+                    <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-text-main">Expert Review</h3>
+                        </div>
+                        <div class="prose prose-sm max-w-none text-text-muted">
+                            {!! $product->body !!}
+                        </div>
+                    </div>
+
+                    <!-- Related Devices -->
+                    <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="compare">
+                        <h3 class="text-lg font-bold text-text-main mb-4">Compare With</h3>
+                        <div class="space-y-4">
+                            @foreach($products as $related)
+                                <a href="{{ route('product.show', $related->slug) }}"
+                                    class="flex items-center gap-3 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 transition-colors decoration-0">
+                                    <img src="{{ $related->thumbnail }}" alt="{{ $related->name }}"
+                                        class="w-12 h-16 object-contain bg-white border border-gray-100 rounded-md p-1 shadow-sm">
+                                    <div>
+                                        <h4 class="text-sm font-bold text-text-main group-hover:text-primary transition-colors">
+                                            {{ $related->name }}
+                                        </h4>
                                     </div>
                                 </a>
-                            @endif
-                        @endforeach
-                    </div>
-                    <button
-                        class="w-full mt-5 py-2.5 text-sm text-primary border border-primary/30 rounded-lg hover:bg-primary hover:text-white transition-all font-bold shadow-sm">
-                        View all prices
-                    </button>
-                    @if($country && !empty($country->amazon_url) && !empty($country->amazon_tag))
-                        <p class="text-xs text-slate-400 mt-2 px-1">
-                            Disclosure: As an Amazon Associate, I earn from qualifying purchases.
-                        </p>
-                    @endif
-                </div>
-
-                {{-- Expert Rating Card --}}
-                @if($product->expertRating)
-                @php $er = $product->expertRating; @endphp
-                <div class="bg-white border border-border-light rounded-xl overflow-hidden shadow-card" id="expert-rating">
-                    <div class="bg-gradient-to-r from-primary to-indigo-600 px-6 py-4 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-white text-2xl">stars</span>
-                            <h3 class="text-lg font-bold text-white">Expert Rating</h3>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-3xl font-black text-white leading-none">{{ $er->overall }}</span>
-                            <span class="text-xs text-white/80 font-medium">/ 10</span>
+                            @endforeach
                         </div>
                     </div>
-                    <div class="p-6 space-y-4">
-                        @php
-                            $criteria = [
-                                ['key' => 'design', 'label' => 'Design & Build', 'icon' => 'palette'],
-                                ['key' => 'display', 'label' => 'Display', 'icon' => 'smartphone'],
-                                ['key' => 'performance', 'label' => 'Performance', 'icon' => 'memory'],
-                                ['key' => 'camera', 'label' => 'Camera', 'icon' => 'photo_camera'],
-                                ['key' => 'battery', 'label' => 'Battery', 'icon' => 'battery_full'],
-                                ['key' => 'value_for_money', 'label' => 'Value for Money', 'icon' => 'sell'],
-                            ];
-                        @endphp
 
-                        @foreach($criteria as $c)
-                            @php
-                                $score = $er->{$c['key']};
-                                $pct = $score * 10;
-                                $color = $score >= 8 ? 'bg-emerald-500' : ($score >= 6 ? 'bg-blue-500' : ($score >= 4 ? 'bg-yellow-500' : 'bg-red-500'));
-                            @endphp
-                            <div>
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center gap-2 text-sm text-text-muted">
-                                        <span class="material-symbols-outlined text-[16px]">{{ $c['icon'] }}</span>
-                                        {{ $c['label'] }}
-                                    </div>
-                                    <span class="text-sm font-bold text-text-main">{{ $score }}</span>
-                                </div>
-                                <div class="w-full bg-gray-100 rounded-full h-2">
-                                    <div class="{{ $color }} h-2 rounded-full transition-all duration-500" style="width: {{ $pct }}%"></div>
-                                </div>
-                            </div>
-                        @endforeach
-
-                        {{-- Verdict --}}
-                        @if($er->verdict)
-                            <div class="mt-4 pt-4 border-t border-border-light">
-                                <p class="text-sm font-bold text-text-main mb-1">Verdict</p>
-                                <p class="text-sm text-text-muted leading-relaxed">{{ $er->verdict }}</p>
-                            </div>
-                        @endif
-
-                        {{-- Rated By --}}
-                        @if($er->rated_by)
-                            <div class="flex items-center gap-2 text-xs text-text-muted mt-2">
-                                <span class="material-symbols-outlined text-[14px]">person</span>
-                                Rated by {{ $er->rated_by }}
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
-
-                <!-- Description -->
-                <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-text-main">Expert Review</h3>
-                    </div>
-                    <div class="prose prose-sm max-w-none text-text-muted">
-                        {!! $product->body !!}
-                    </div>
-                </div>
-
-                <!-- Related Devices -->
-                <div class="bg-white border border-border-light rounded-xl p-6 shadow-card" id="compare">
-                    <h3 class="text-lg font-bold text-text-main mb-4">Compare With</h3>
-                    <div class="space-y-4">
-                        @foreach($products as $related)
-                            <a href="{{ route('product.show', $related->slug) }}"
-                                class="flex items-center gap-3 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 transition-colors decoration-0">
-                                <img src="{{ $related->thumbnail }}" alt="{{ $related->name }}"
-                                    class="w-12 h-16 object-contain bg-white border border-gray-100 rounded-md p-1 shadow-sm">
-                                <div>
-                                    <h4 class="text-sm font-bold text-text-main group-hover:text-primary transition-colors">
-                                        {{ $related->name }}</h4>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-
+                </div>{{-- end sticky wrapper --}}
             </div>
         </div>
 
@@ -745,9 +754,28 @@
         $params = $isPk ? [] : ['country_code' => $country->country_code];
         $categoryUrl = $product->category ? route($prefix . 'category.show', array_merge($params, ['category' => $product->category->slug])) : url('/');
     @endphp
-    @include('includes.breadcrumb-schema', ['breadcrumbs' => [
-        ['name' => 'Home', 'url' => url('/')],
-        ['name' => $product->category ? $product->category->name : 'Products', 'url' => $categoryUrl],
-        ['name' => $product->name, 'url' => url()->current()]
-    ]])
+    @include('includes.breadcrumb-schema', [
+        'breadcrumbs' => [
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => $product->category ? $product->category->name : 'Products', 'url' => $categoryUrl],
+            ['name' => $product->name, 'url' => url()->current()]
+        ]
+    ])\r
+    {{-- Sticky Mobile Bottom Bar --}}
+    <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-lig
+                   ht shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-3" id="mobileBottomBar">
+        <div class="flex items-center justify-between gap-3 max-w-[600px] mx-auto">
+            <div class="flex flex-col min-w-0">
+                <span class="text-xs text-text-muted font-medium">Best Price</span>
+                <span class="text-xl font-bold text-text-main truncate">{{ $country->currency }} {{ $price_in_pkr ? number_format($price_in_pkr) : 'N/A' }}</span>
+            </div>
+            <a href="#stores"
+                class="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-primary to-blue-600 hover:from-primary-hover hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-95 decoration-0">
+                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Check Prices
+            </a>
+            </div>
+        </div>
+        {{-- Bottom padding to prevent content being hidden behind sticky bar --}}
+        <div class="h-20 lg:hidden"></div>
 @endsection
