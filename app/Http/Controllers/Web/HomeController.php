@@ -126,7 +126,7 @@ class HomeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'stars' => 'required',
-            'review' => 'required',
+            'review' => 'nullable',
             'product_id' => 'required',
         ]);
 

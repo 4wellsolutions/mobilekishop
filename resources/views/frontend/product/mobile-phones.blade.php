@@ -552,7 +552,7 @@
 
             <!-- Write Review Button -->
             <div class="pt-8 pb-4">
-                <button class="w-full max-w-md mx-auto py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-colors shadow-md shadow-blue-500/20 flex items-center justify-center gap-2">
+                <button onclick="openReviewModal()" class="w-full max-w-md mx-auto py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-colors shadow-md shadow-blue-500/20 flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-[20px]">edit</span>
                     Write a Review
                 </button>
@@ -621,6 +621,8 @@
             }
         }
     </script>
+
+    @include('includes.review-modal')
 
     {{-- Sticky Mobile Bottom Bar --}}
     <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-light shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-3" id="mobileBottomBarMp">

@@ -88,249 +88,249 @@
 
     @section('script')
         <script type="application/ld+json">
-            {
-                  "@@context": "https://schema.org",
-                  "@type": "FAQPage",
-                  "mainEntity": 
-                  [
                     {
-                      "@type": "Question",
-                      "name": "What is the Release Date of {{Str::title($product->name)}}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "{{Str::title($product->name)}} was released on {{$release_date->format('M-Y')}}."
-                      }
-                    },{
-                      "@type": "Question",
-                      "name": "What is the Price of {{Str::title($product->name)}} in {$country->country_name}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "This phone comes with plenty of options at price range of Rs.{{$price_in_pkr}}."
-                      }
-                    },{
-                      "@type": "Question",
-                      "name": "Is {{Str::title($product->name)}} Have 5G Network Connectivity?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "{{Str::title($product->name)}} comes with {{isset($g4_band) ? '4G LTE' : ''}} {{isset($g5_band) ? 'and 5G' : ''}} high speed network to enjoy fast internet anywhere in {$country->country_name}."
-                      }
-                    },{
-                      "@type": "Question",
-                      "name": "How Much Ram and Storage does a {{Str::title($product->name)}} have?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "{{Str::title($product->name)}} has {{$ram}}GB RAM and {{$rom}}GB storage."
-                      }
-                    },{
-                      "@type": "Question",
-                      "name": "What Processor Is in {{Str::title($product->name)}}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "{{Str::title($product->name)}} is powered by Android 11 OS partner with CPU {{trim($cpu)}} and {{$chipset}} Chipset."
+                          "@@context": "https://schema.org",
+                          "@type": "FAQPage",
+                          "mainEntity": 
+                          [
+                            {
+                              "@type": "Question",
+                              "name": "What is the Release Date of {{Str::title($product->name)}}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "{{Str::title($product->name)}} was released on {{$release_date->format('M-Y')}}."
+                              }
+                            },{
+                              "@type": "Question",
+                              "name": "What is the Price of {{Str::title($product->name)}} in {$country->country_name}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "This phone comes with plenty of options at price range of Rs.{{$price_in_pkr}}."
+                              }
+                            },{
+                              "@type": "Question",
+                              "name": "Is {{Str::title($product->name)}} Have 5G Network Connectivity?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "{{Str::title($product->name)}} comes with {{isset($g4_band) ? '4G LTE' : ''}} {{isset($g5_band) ? 'and 5G' : ''}} high speed network to enjoy fast internet anywhere in {$country->country_name}."
+                              }
+                            },{
+                              "@type": "Question",
+                              "name": "How Much Ram and Storage does a {{Str::title($product->name)}} have?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "{{Str::title($product->name)}} has {{$ram}}GB RAM and {{$rom}}GB storage."
+                              }
+                            },{
+                              "@type": "Question",
+                              "name": "What Processor Is in {{Str::title($product->name)}}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "{{Str::title($product->name)}} is powered by Android 11 OS partner with CPU {{trim($cpu)}} and {{$chipset}} Chipset."
+                                }
+                              },{
+                              "@type": "Question",
+                              "name": "What is the Screen Size of {{Str::title($product->name)}}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "The {{Str::title($product->name)}} has a screen size of approximately {{$screen_size}} inches and a resolution of {{$resolution}} pixels."
+                                }
+                              },{
+                              "@type": "Question",
+                              "name": "What is the Camera of {{Str::title($product->name)}}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "The {{Str::title($product->name)}} features {{$main_camera}} main and {{$front_camera}} selfie cameras"
+                                }
+                              },{
+                              "@type": "Question",
+                              "name": "What is the Battery of {{Str::title($product->name)}}?",
+                              "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "The {{Str::title($product->name)}} is equipped with a battery capacity of around {{$battery}} mAh."
+                              }
+                            }
+                          ]
                         }
-                      },{
-                      "@type": "Question",
-                      "name": "What is the Screen Size of {{Str::title($product->name)}}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "The {{Str::title($product->name)}} has a screen size of approximately {{$screen_size}} inches and a resolution of {{$resolution}} pixels."
-                        }
-                      },{
-                      "@type": "Question",
-                      "name": "What is the Camera of {{Str::title($product->name)}}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "The {{Str::title($product->name)}} features {{$main_camera}} main and {{$front_camera}} selfie cameras"
-                        }
-                      },{
-                      "@type": "Question",
-                      "name": "What is the Battery of {{Str::title($product->name)}}?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "The {{Str::title($product->name)}} is equipped with a battery capacity of around {{$battery}} mAh."
-                      }
-                    }
-                  ]
-                }
-            </script>
+                    </script>
 
         @if($product->reviews->isEmpty())
             <script type="application/ld+json">
-                                      {
-                                          "@@context": "https://schema.org/",
-                                          "@type": "Product",
-                                          "name": "{{Str::title($product->name)}}",
-                                          "image": [
-                                          "{{$product->thumbnail}}"
-                                          ],
-                                          "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
-                                          "sku": "{{$product->id}}",
-                                          "mpn": "{{$product->id}}",
-                                          "color": "{{ explode(',', $colors)[0] }}",
-                                          "material": "N/A",
-                                          "pattern": "N/A",
-                                          "brand": {
-                                              "@type": "Brand",
-                                              "name": "{{$product->brand->name}}"
-                                          },
-                                          "review": {
-                                              "@type": "Review",
-                                              "reviewRating": {
-                                                  "@type": "Rating",
-                                                  "ratingValue": "{{$rating}}",
-                                                  "bestRating": "5"
-                                              },
-                                              "author": {
-                                                  "@type": "Person",
-                                                  "name": "{{$reviewer}}"
-                                              }
-                                          },
-                                          "aggregateRating": {
-                                              "@type": "AggregateRating",
-                                              "ratingValue": "{{$rating}}",
-                                              "reviewCount": "{{$review_count}}"
-                                          },
-                                          "offers": {
-                                              "@type": "Offer",
-                                              "url": "#",
-                                              "priceCurrency": "{{$country->iso_currency}}",
-                                              "price": "{{ Str::replace(',', '', $price_in_pkr) }}",
-                                              "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                                              "itemCondition": "https://schema.org/NewCondition",
-                                              "availability": "https://schema.org/InStock",
-                                              "seller": {
-                                                  "@type": "Organization",
-                                                  "name": "MKS"
-                                              },
-                                              "hasMerchantReturnPolicy": {
-                                                "@type": "MerchantReturnPolicy",
-                                                "applicableCountry": "CH",
-                                                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                                                "merchantReturnDays": 60,
-                                                "returnMethod": "https://schema.org/ReturnByMail",
-                                                "returnFees": "https://schema.org/FreeReturn"
-                                              },
-                                              "shippingDetails": {
-                                                "@type": "OfferShippingDetails",
-                                                "shippingRate": {
-                                                  "@type": "MonetaryAmount",
-                                                  "value": "0",
-                                                  "currency": "{{$country->iso_currency}}"
-                                                },
-                                                "shippingDestination": 
                                                   {
-                                                    "@type": "DefinedRegion",
-                                                    "addressCountry": "{{$country->country_code}}"
-                                                  },
-                                                  "deliveryTime": {
-                                                      "@type": "ShippingDeliveryTime",
-                                                      "handlingTime": {
-                                                        "@type": "QuantitativeValue",
-                                                        "minValue": 0,
-                                                        "maxValue": 1,
-                                                        "unitCode": "DAY"
+                                                      "@@context": "https://schema.org/",
+                                                      "@type": "Product",
+                                                      "name": "{{Str::title($product->name)}}",
+                                                      "image": [
+                                                      "{{$product->thumbnail}}"
+                                                      ],
+                                                      "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the mks.com.pk in {$country->country_name}.",
+                                                      "sku": "{{$product->id}}",
+                                                      "mpn": "{{$product->id}}",
+                                                      "color": "{{ explode(',', $colors)[0] }}",
+                                                      "material": "N/A",
+                                                      "pattern": "N/A",
+                                                      "brand": {
+                                                          "@type": "Brand",
+                                                          "name": "{{$product->brand->name}}"
                                                       },
-                                                      "transitTime": {
-                                                        "@type": "QuantitativeValue",
-                                                        "minValue": 1,
-                                                        "maxValue": 5,
-                                                        "unitCode": "DAY"
+                                                      "review": {
+                                                          "@type": "Review",
+                                                          "reviewRating": {
+                                                              "@type": "Rating",
+                                                              "ratingValue": "{{$rating}}",
+                                                              "bestRating": "5"
+                                                          },
+                                                          "author": {
+                                                              "@type": "Person",
+                                                              "name": "{{$reviewer}}"
+                                                          }
+                                                      },
+                                                      "aggregateRating": {
+                                                          "@type": "AggregateRating",
+                                                          "ratingValue": "{{$rating}}",
+                                                          "reviewCount": "{{$review_count}}"
+                                                      },
+                                                      "offers": {
+                                                          "@type": "Offer",
+                                                          "url": "#",
+                                                          "priceCurrency": "{{$country->iso_currency}}",
+                                                          "price": "{{ Str::replace(',', '', $price_in_pkr) }}",
+                                                          "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                                                          "itemCondition": "https://schema.org/NewCondition",
+                                                          "availability": "https://schema.org/InStock",
+                                                          "seller": {
+                                                              "@type": "Organization",
+                                                              "name": "MKS"
+                                                          },
+                                                          "hasMerchantReturnPolicy": {
+                                                            "@type": "MerchantReturnPolicy",
+                                                            "applicableCountry": "CH",
+                                                            "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                                                            "merchantReturnDays": 60,
+                                                            "returnMethod": "https://schema.org/ReturnByMail",
+                                                            "returnFees": "https://schema.org/FreeReturn"
+                                                          },
+                                                          "shippingDetails": {
+                                                            "@type": "OfferShippingDetails",
+                                                            "shippingRate": {
+                                                              "@type": "MonetaryAmount",
+                                                              "value": "0",
+                                                              "currency": "{{$country->iso_currency}}"
+                                                            },
+                                                            "shippingDestination": 
+                                                              {
+                                                                "@type": "DefinedRegion",
+                                                                "addressCountry": "{{$country->country_code}}"
+                                                              },
+                                                              "deliveryTime": {
+                                                                  "@type": "ShippingDeliveryTime",
+                                                                  "handlingTime": {
+                                                                    "@type": "QuantitativeValue",
+                                                                    "minValue": 0,
+                                                                    "maxValue": 1,
+                                                                    "unitCode": "DAY"
+                                                                  },
+                                                                  "transitTime": {
+                                                                    "@type": "QuantitativeValue",
+                                                                    "minValue": 1,
+                                                                    "maxValue": 5,
+                                                                    "unitCode": "DAY"
+                                                                  }
+                                                              }
+                                                          }
                                                       }
                                                   }
-                                              }
-                                          }
-                                      }
-                                  </script>
+                                              </script>
         @else
             <script type="application/ld+json">
-                                      {
-                                          "@@context": "https://schema.org/",
-                                          "@type": "Product",
-                                          "name": "{{Str::title($product->name)}}",
-                                          "image": [
-                                          "{{$product->thumbnail}}"
-                                          ],
-                                          "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
-                                          "sku": "{{$product->id}}",
-                                          "mpn": "{{$product->id}}",
-                                          "color": "{{str_replace(',', '', $colors)}}",
-                                          "material": "N/A",
-                                          "pattern": "N/A",
-                                          "brand": {
-                                              "@type": "Brand",
-                                              "name": "{{$product->brand->name}}"
-                                          },
-                                              @foreach($product->reviews as $review)
-                                                {
-                                                    "@type": "Review",
-                                                    "reviewRating": {
-                                                        "@type": "Rating",
-                                                        "ratingValue": "{{ $review->stars }}",
-                                                        "bestRating": "5"
-                                                    },
-                                                    "author": {
-                                                        "@type": "Person",
-                                                        "name": "{{ $review->name }}"
-                                                    }
-                                                }@if(!$loop->last),@endif
-                                              @endforeach
-                                              ],
-                                          "aggregateRating": {
-                                              "@type": "AggregateRating",
-                                              "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
-                                              "reviewCount": "{{ $product->reviews->count() }}"
-                                          },
-                                          "offers": {
-                                              "@type": "Offer",
-                                              "url": "#",
-                                              "priceCurrency": "{{$country->iso_currency}}",
-                                              "price": "{{$price_in_pkr}}",
-                                              "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
-                                              "itemCondition": "https://schema.org/NewCondition",
-                                              "availability": "https://schema.org/InStock",
-                                              "seller": {
-                                                  "@type": "Organization",
-                                                  "name": "MKS"
-                                              },
-                                              "hasMerchantReturnPolicy": {
-                                                "@type": "MerchantReturnPolicy",
-                                                "applicableCountry": "{{$country->country_code}}",
-                                                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                                                "merchantReturnDays": 60,
-                                                "returnMethod": "https://schema.org/ReturnByMail",
-                                                "returnFees": "https://schema.org/FreeReturn"
-                                              },
-                                              "shippingDetails": {
-                                                "@type": "OfferShippingDetails",
-                                                "shippingRate": {
-                                                  "@type": "MonetaryAmount",
-                                                  "value": "0",
-                                                  "currency": "{{$country->iso_currency}}"
-                                                },
-                                                "shippingDestination": 
                                                   {
-                                                    "@type": "DefinedRegion",
-                                                    "addressCountry": "{{$country->country_code}}"
-                                                  },
-                                                  "deliveryTime": {
-                                                      "@type": "ShippingDeliveryTime",
-                                                      "handlingTime": {
-                                                        "@type": "QuantitativeValue",
-                                                        "minValue": 0,
-                                                        "maxValue": 1,
-                                                        "unitCode": "DAY"
+                                                      "@@context": "https://schema.org/",
+                                                      "@type": "Product",
+                                                      "name": "{{Str::title($product->name)}}",
+                                                      "image": [
+                                                      "{{$product->thumbnail}}"
+                                                      ],
+                                                      "description": "Get all the specifications, features, reviews, comparison, and price of {{Str::title($product->name)}} on the Mobilekishop in {{$country->country_name}}.",
+                                                      "sku": "{{$product->id}}",
+                                                      "mpn": "{{$product->id}}",
+                                                      "color": "{{str_replace(',', '', $colors)}}",
+                                                      "material": "N/A",
+                                                      "pattern": "N/A",
+                                                      "brand": {
+                                                          "@type": "Brand",
+                                                          "name": "{{$product->brand->name}}"
                                                       },
-                                                      "transitTime": {
-                                                        "@type": "QuantitativeValue",
-                                                        "minValue": 1,
-                                                        "maxValue": 5,
-                                                        "unitCode": "DAY"
+                                                          @foreach($product->reviews as $review)
+                                                            {
+                                                                "@type": "Review",
+                                                                "reviewRating": {
+                                                                    "@type": "Rating",
+                                                                    "ratingValue": "{{ $review->stars }}",
+                                                                    "bestRating": "5"
+                                                                },
+                                                                "author": {
+                                                                    "@type": "Person",
+                                                                    "name": "{{ $review->name }}"
+                                                                }
+                                                            }@if(!$loop->last),@endif
+                                                          @endforeach
+                                                          ],
+                                                      "aggregateRating": {
+                                                          "@type": "AggregateRating",
+                                                          "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
+                                                          "reviewCount": "{{ $product->reviews->count() }}"
+                                                      },
+                                                      "offers": {
+                                                          "@type": "Offer",
+                                                          "url": "#",
+                                                          "priceCurrency": "{{$country->iso_currency}}",
+                                                          "price": "{{$price_in_pkr}}",
+                                                          "priceValidUntil": "{{Carbon\Carbon::now()->addMonths(6)->format('d-m-Y')}}",
+                                                          "itemCondition": "https://schema.org/NewCondition",
+                                                          "availability": "https://schema.org/InStock",
+                                                          "seller": {
+                                                              "@type": "Organization",
+                                                              "name": "MKS"
+                                                          },
+                                                          "hasMerchantReturnPolicy": {
+                                                            "@type": "MerchantReturnPolicy",
+                                                            "applicableCountry": "{{$country->country_code}}",
+                                                            "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                                                            "merchantReturnDays": 60,
+                                                            "returnMethod": "https://schema.org/ReturnByMail",
+                                                            "returnFees": "https://schema.org/FreeReturn"
+                                                          },
+                                                          "shippingDetails": {
+                                                            "@type": "OfferShippingDetails",
+                                                            "shippingRate": {
+                                                              "@type": "MonetaryAmount",
+                                                              "value": "0",
+                                                              "currency": "{{$country->iso_currency}}"
+                                                            },
+                                                            "shippingDestination": 
+                                                              {
+                                                                "@type": "DefinedRegion",
+                                                                "addressCountry": "{{$country->country_code}}"
+                                                              },
+                                                              "deliveryTime": {
+                                                                  "@type": "ShippingDeliveryTime",
+                                                                  "handlingTime": {
+                                                                    "@type": "QuantitativeValue",
+                                                                    "minValue": 0,
+                                                                    "maxValue": 1,
+                                                                    "unitCode": "DAY"
+                                                                  },
+                                                                  "transitTime": {
+                                                                    "@type": "QuantitativeValue",
+                                                                    "minValue": 1,
+                                                                    "maxValue": 5,
+                                                                    "unitCode": "DAY"
+                                                                  }
+                                                              }
+                                                          }
                                                       }
                                                   }
-                                              }
-                                          }
-                                      }
-                                  </script>
+                                              </script>
         @endif
     @endsection
 
@@ -709,7 +709,7 @@
                 @if($product->reviews->isEmpty())
                     <div class="text-center py-8">
                         <p class="text-text-muted mb-4">No reviews yet. Be the first to review this product!</p>
-                        <button
+                        <button onclick="openReviewModal()"
                             class="px-6 py-2 bg-primary text-white rounded-lg font-bold shadow-sm hover:bg-primary-hover transition-colors">Write
                             a Review</button>
                     </div>
@@ -743,6 +743,8 @@
             </div>
         </div>
 
+        @include('includes.review-modal')
+
     </div>
 @endsection
 
@@ -762,20 +764,21 @@
         ]
     ])\r
     {{-- Sticky Mobile Bottom Bar --}}
-    <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-lig
+
+                   <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-lig
                    ht shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-3" id="mobileBottomBar">
         <div class="flex items-center justify-between gap-3 max-w-[600px] mx-auto">
             <div class="flex flex-col min-w-0">
                 <span class="text-xs text-text-muted font-medium">Best Price</span>
                 <span class="text-xl font-bold text-text-main truncate">{{ $country->currency }} {{ $price_in_pkr ? number_format($price_in_pkr) : 'N/A' }}</span>
-            </div>
-            <a href="#stores"
-                class="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-primary to-blue-600 hover:from-primary-hover hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-95 decoration-0">
-                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                Check Prices
-            </a>
-            </div>
         </div>
-        {{-- Bottom padding to prevent content being hidden behind sticky bar --}}
-        <div class="h-20 lg:hidden"></div>
+        <a href="#stores"
+            class="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-primary to-blue-600 hover:from-primary-hover hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-95 decoration-0">
+            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                    Check Prices
+                </a>
+                </div>
+            </div>
+            {{-- Bottom padding to prevent content being hidden behind sticky bar --}}
+            <div class="h-20 lg:hidden"></div>
 @endsection
