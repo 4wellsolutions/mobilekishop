@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogApiController;
+use App\Http\Controllers\Api\BlogCategoryApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,5 +43,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{slug}', [BlogApiController::class, 'show']);
         Route::put('/{slug}', [BlogApiController::class, 'update']);
         Route::delete('/{slug}', [BlogApiController::class, 'destroy']);
+    });
+
+    Route::prefix('blog-categories')->group(function () {
+        Route::get('/', [BlogCategoryApiController::class, 'index']);
+        Route::post('/', [BlogCategoryApiController::class, 'store']);
+        Route::get('/{slug}', [BlogCategoryApiController::class, 'show']);
+        Route::put('/{slug}', [BlogCategoryApiController::class, 'update']);
+        Route::delete('/{slug}', [BlogCategoryApiController::class, 'destroy']);
     });
 });

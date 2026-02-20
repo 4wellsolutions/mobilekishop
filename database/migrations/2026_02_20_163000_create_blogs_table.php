@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('blog_category_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -17,10 +17,14 @@ class BlogApiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Blog::query()->orderBy('created_at', 'desc');
+        $query = Blog::with('category')->orderBy('created_at', 'desc');
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->has('category')) {
+            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
 
         if ($request->has('search')) {
@@ -38,7 +42,7 @@ class BlogApiController extends Controller
      */
     public function show(string $slug)
     {
-        $blog = Blog::where('slug', $slug)->first();
+        $blog = Blog::with('category')->where('slug', $slug)->first();
 
         if (!$blog) {
             return response()->json(['error' => 'Blog not found.'], 404);
@@ -63,6 +67,7 @@ class BlogApiController extends Controller
             'meta_description' => 'nullable|string|max:500',
             'status' => 'nullable|in:draft,published',
             'published_at' => 'nullable|date',
+            'blog_category_id' => 'nullable|exists:blog_categories,id',
         ]);
 
         if ($validator->fails()) {
@@ -114,6 +119,7 @@ class BlogApiController extends Controller
             'meta_description' => 'nullable|string|max:500',
             'status' => 'nullable|in:draft,published',
             'published_at' => 'nullable|date',
+            'blog_category_id' => 'nullable|exists:blog_categories,id',
         ]);
 
         if ($validator->fails()) {
