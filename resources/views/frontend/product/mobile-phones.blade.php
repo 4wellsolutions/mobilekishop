@@ -430,9 +430,11 @@
                     @php
                         $basePrice = $price_in_pkr ?? 0;
                         $stores = [
-                            ['name' => 'Amazon', 'price' => $basePrice * 1.02, 'stock' => 'In Stock', 'icon' => 'shopping_cart'],
-                            ['name' => 'eBay', 'price' => $basePrice * 0.98, 'stock' => 'Limited Stock', 'icon' => 'sell'],
-                            ['name' => 'Walmart', 'price' => $basePrice, 'stock' => 'In Stock', 'icon' => 'storefront'],
+                            ['name' => 'Amazon', 'price' => $basePrice * 1.02, 'stock' => 'In Stock', 'icon' => 'shopping_cart',
+                             'link' => ($country->amazon_url && $country->amazon_tag) ? $country->amazon_url . 's?k=' . urlencode($product->name) . '&tag=' . $country->amazon_tag : '#',
+                             'target' => ($country->amazon_url && $country->amazon_tag) ? '_blank' : '_self'],
+                            ['name' => 'eBay', 'price' => $basePrice * 0.98, 'stock' => 'Limited Stock', 'icon' => 'sell', 'link' => '#', 'target' => '_self'],
+                            ['name' => 'Walmart', 'price' => $basePrice, 'stock' => 'In Stock', 'icon' => 'storefront', 'link' => '#', 'target' => '_self'],
                         ];
                     @endphp
                     @foreach($stores as $store)
@@ -448,11 +450,16 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-lg font-bold text-primary">{{ $country->currency }} {{ number_format($store['price']) }}</p>
-                                <a href="#" class="text-xs text-text-muted hover:text-primary underline decoration-border-light hover:decoration-primary transition-all">View Deal</a>
+                                <a href="{{ $store['link'] ?? '#' }}" target="{{ $store['target'] ?? '_self' }}" class="text-xs text-text-muted hover:text-primary underline decoration-border-light hover:decoration-primary transition-all">View Deal</a>
                             </div>
                         </div>
                     @endforeach
                 </div>
+                @if($country && !empty($country->amazon_url) && !empty($country->amazon_tag))
+                    <p class="text-xs text-slate-400 mt-3 px-1">
+                        Disclosure: As an Amazon Associate, I earn from qualifying purchases.
+                    </p>
+                @endif
             </div>
 
             <!-- Compare With Widget -->

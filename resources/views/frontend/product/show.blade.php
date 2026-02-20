@@ -62,10 +62,11 @@
             // Add some dummy stores for visual comparison if price > 0
             [
                 'name' => 'Amazon',
-                'price' => $price_in_pkr * 1.05, // slightly higher
+                'price' => $price_in_pkr * 1.05,
                 'shipping' => 'Calculated at checkout',
                 'stock' => 'In Stock',
-                'link' => '#',
+                'link' => ($country->amazon_url && $country->amazon_tag) ? $country->amazon_url . 's?k=' . urlencode($product->name) . '&tag=' . $country->amazon_tag : '#',
+                'target' => ($country->amazon_url && $country->amazon_tag) ? '_blank' : '_self',
                 'logo_bg' => 'bg-white',
                 'logo_text' => 'text-black',
                 'icon' => 'shopping_bag'
@@ -561,7 +562,7 @@
                     <div class="space-y-3">
                         @foreach($stores as $store)
                             @if($store['price'] > 0)
-                                <a href="{{ $store['link'] }}"
+                                <a href="{{ $store['link'] }}" target="{{ $store['target'] ?? '_self' }}"
                                     class="flex items-center justify-between p-3 rounded-lg bg-page-bg border border-border-light hover:border-primary hover:shadow-sm transition-all group decoration-0">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -589,6 +590,11 @@
                         class="w-full mt-5 py-2.5 text-sm text-primary border border-primary/30 rounded-lg hover:bg-primary hover:text-white transition-all font-bold shadow-sm">
                         View all prices
                     </button>
+                    @if($country && !empty($country->amazon_url) && !empty($country->amazon_tag))
+                        <p class="text-xs text-slate-400 mt-2 px-1">
+                            Disclosure: As an Amazon Associate, I earn from qualifying purchases.
+                        </p>
+                    @endif
                 </div>
 
                 {{-- Expert Rating Card --}}

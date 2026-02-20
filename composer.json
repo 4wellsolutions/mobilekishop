@@ -13,6 +13,7 @@
         "intervention/image": "^3.0",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^12.48",
+        "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.10",
         "laravel/ui": "^4.5",
