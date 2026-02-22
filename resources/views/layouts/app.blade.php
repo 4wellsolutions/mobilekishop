@@ -65,7 +65,7 @@
                                 </li>
                                 <li class="menu-item narrow"><a href="{{route('dashboard.brands.index')}}">Brands</a></li>
 
-                                <li class="menu-item narrow"><a href="{{url('/blog')}}">Blog</a></li>
+                                <li class="menu-item narrow"><a href="{{url('/blogs')}}">Blog</a></li>
 
                                 @if(Auth::check())
                                     <li class="menu-item narrow"><a href="{{route('user.review')}}">Reviews</a></li>
@@ -238,7 +238,7 @@
                                 <li><a href="{{route('filter.upcoming')}}">Coming Soon</a></li>
                                 <li><a href="{{route('package.index')}}">Packages <span
                                             class="badge badge-danger">New</span></a></li>
-                                <li><a href="{{url('/blog')}}">Blog</a></li>
+                                <li><a href="{{url('/blogs')}}">Blog</a></li>
                                 <li><a
                                         href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
                                         Us</a></li>
@@ -362,7 +362,7 @@
                         <a
                             href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brands/all')}}">Brands</a>
                     </li>
-                    <li><a href="{{url('/blog')}}">Blog</a></li>
+                    <li><a href="{{url('/blogs')}}">Blog</a></li>
                     <li><a href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
                             Us</a></li>
                 </ul>

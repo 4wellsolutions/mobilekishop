@@ -269,16 +269,16 @@ $webRoutes = function () {
     // =========================================================================
     // Blog Routes
     // =========================================================================
-    Route::get('blog', [\App\Http\Controllers\Web\BlogController::class, 'index'])->name('blog.index');
-    Route::get('blog/category/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'category'])->name('blog.category');
-    Route::get('blog/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'show'])->name('blog.show');
+    Route::get('blogs', [\App\Http\Controllers\Web\BlogController::class, 'index'])->name('blog.index');
+    Route::get('blogs/category/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'category'])->name('blog.category');
+    Route::get('blogs/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'show'])->name('blog.show');
 
     // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
     // We add a regex to ensure it doesn't match routes like 'category/xxx', 'product/xxx', etc.
     Route::get('{brand}/{product}', [ProductController::class, 'show'])
         ->name('product.show.legacy')
         ->where([
-            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blog)).*'
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blogs)).*'
         ]);
 };
 

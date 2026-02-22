@@ -21,7 +21,8 @@ class ImportWordPressFromDB extends Command
                             {--user-id=1 : The user_id to assign as the author}
                             {--download-images : Download and store featured images locally}
                             {--dry-run : Preview what would be imported without saving}
-                            {--post-status=publish : WordPress post status to import (publish, draft, or all)}';
+                            {--post-status=publish : WordPress post status to import (publish, draft, or all)}
+                            {--limit=0 : Limit number of posts to import (0 = all)}';
 
     protected $description = 'Import blog posts directly from a WordPress MySQL database (one-time)';
 
@@ -29,6 +30,7 @@ class ImportWordPressFromDB extends Command
     private int $skipped = 0;
     private int $errors = 0;
     private array $categoryMap = [];
+    private array $userMap = [];
 
     public function handle(): int
     {
@@ -80,12 +82,17 @@ class ImportWordPressFromDB extends Command
         }
 
 
-        // Step 1: Import categories
+        // Step 1: Import authors
+        $this->info('👤 Importing authors...');
+        $this->importAuthors($wpDb, $prefix);
+        $this->info('');
+
+        // Step 2: Import categories
         $this->info('📁 Importing categories...');
         $this->importCategories($wpDb, $prefix);
         $this->info('');
 
-        // Step 2: Query posts
+        // Step 3: Query posts
         $postStatus = $this->option('post-status');
         $query = $wpDb->table('posts')
             ->where('post_type', 'post')
@@ -95,8 +102,13 @@ class ImportWordPressFromDB extends Command
             $query->where('post_status', $postStatus);
         }
 
+        $limit = (int) $this->option('limit');
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+
         $posts = $query->orderBy('post_date', 'asc')->get();
-        $this->info("📝 Found {$posts->count()} blog posts to import.");
+        $this->info("📝 Found {$posts->count()} blog posts to import." . ($limit > 0 ? " (limited to {$limit})" : ''));
         $this->info('');
 
         if ($posts->isEmpty()) {
@@ -104,7 +116,7 @@ class ImportWordPressFromDB extends Command
             return 0;
         }
 
-        // Step 3: Import posts
+        // Step 4: Import posts
         $bar = $this->output->createProgressBar($posts->count());
         $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %message%');
         $bar->start();
@@ -135,6 +147,44 @@ class ImportWordPressFromDB extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * Import WordPress authors → Laravel User.
+     */
+    private function importAuthors($wpDb, string $prefix): void
+    {
+        $authors = $wpDb->table('users')
+            ->select('ID', 'user_login', 'user_email', 'display_name')
+            ->get();
+
+        $count = 0;
+        foreach ($authors as $wpUser) {
+            if ($this->option('dry-run')) {
+                $this->userMap[$wpUser->ID] = null;
+                $count++;
+                continue;
+            }
+
+            // Try to find existing Laravel user by email
+            $user = \App\Models\User::where('email', $wpUser->user_email)->first();
+
+            if (!$user) {
+                $user = \App\Models\User::create([
+                    'name' => $wpUser->display_name ?: $wpUser->user_login,
+                    'email' => $wpUser->user_email,
+                    'password' => bcrypt(Str::random(16)), // random password, user can reset
+                ]);
+                $this->info("  + Created user: {$user->name} ({$user->email})");
+            } else {
+                $this->info("  ✓ Matched user: {$user->name} ({$user->email})");
+            }
+
+            $this->userMap[$wpUser->ID] = $user->id;
+            $count++;
+        }
+
+        $this->info("  → {$count} authors processed.");
     }
 
     /**
@@ -210,6 +260,9 @@ class ImportWordPressFromDB extends Command
                 $publishedAt = \Carbon\Carbon::parse($wpPost->post_date);
             }
 
+            // Author: map WP post_author → Laravel user
+            $userId = $this->userMap[$wpPost->post_author] ?? (int) $this->option('user-id');
+
             // Category: find via term_relationships
             $categoryId = $this->getPostCategory($wpDb, $prefix, $wpPost->ID);
 
@@ -239,7 +292,7 @@ class ImportWordPressFromDB extends Command
                 'meta_description' => $metaFields['meta_description'],
                 'status' => $status,
                 'published_at' => $publishedAt,
-                'user_id' => (int) $this->option('user-id'),
+                'user_id' => $userId,
                 'blog_category_id' => $categoryId,
             ]);
 

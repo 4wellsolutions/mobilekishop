@@ -210,7 +210,7 @@
                         href="{{ $comparisonRoute }}">Compare</a>
                     <!-- Blog -->
                     <a class="text-sm font-medium text-text-muted hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
-                    href="{{ url('/blog') }}">Blog</a>
+                    href="{{ url('/blogs') }}">Blog</a>
             </nav>
                 <div class="h-6 w-px bg-border-light hidden md:block"></div>
 
@@ -355,7 +355,7 @@
                     <a class="text-slate-400 hover:text-white text-sm transition-colors"
                         href="{{ $comparisonRoute }}">Comparisons</a>
                     <a class="text-slate-400 hover:text-white text-sm transition-colors"
-                        href="{{ url('/blog') }}">Blog</a>
+                        href="{{ url('/blogs') }}">Blog</a>
                 </div>
 
                 <!-- Top Brands -->
