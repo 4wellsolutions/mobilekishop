@@ -44,7 +44,7 @@
                                         @endif
                                         <div>
                                             <div style="font-weight:600;">{{ Str::limit($blog->title, 50) }}</div>
-                                            <div style="font-size:12px; color:var(--admin-text-muted);">/blog/{{ $blog->slug }}
+                                            <div style="font-size:12px; color:var(--admin-text-muted);">/blogs/{{ $blog->slug }}
                                             </div>
                                         </div>
                                     </div>
@@ -71,7 +71,7 @@
                                 </td>
                                 <td>
                                     <div style="display:flex; gap:8px;">
-                                        <a href="{{ url('/blog/' . $blog->slug) }}" target="_blank" class="btn-admin-sm"
+                                        <a href="{{ url('/blogs/' . $blog->slug) }}" target="_blank" class="btn-admin-sm"
                                             title="View on frontend" style="color:var(--admin-accent);">
                                             <i class="fas fa-eye"></i>
                                         </a>

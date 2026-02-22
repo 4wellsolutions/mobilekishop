@@ -37,6 +37,14 @@ Route::prefix('dashboard')
 		Route::put('blogs/{blog}', [\App\Http\Controllers\Dashboard\BlogController::class, 'update'])->name('blogs.update');
 		Route::delete('blogs/{blog}', [\App\Http\Controllers\Dashboard\BlogController::class, 'destroy'])->name('blogs.destroy');
 
+		// Blog Category Routes
+		Route::get('blog-categories', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'index'])->name('blog-categories.index');
+		Route::get('blog-categories/create', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'create'])->name('blog-categories.create');
+		Route::post('blog-categories', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'store'])->name('blog-categories.store');
+		Route::get('blog-categories/{blog_category}/edit', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'edit'])->name('blog-categories.edit');
+		Route::put('blog-categories/{blog_category}', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'update'])->name('blog-categories.update');
+		Route::delete('blog-categories/{blog_category}', [\App\Http\Controllers\Dashboard\BlogCategoryController::class, 'destroy'])->name('blog-categories.destroy');
+
 		// Media Library Routes
 		Route::get('media', [\App\Http\Controllers\Dashboard\MediaController::class, 'index'])->name('media.index');
 		Route::get('media/api', [\App\Http\Controllers\Dashboard\MediaController::class, 'apiIndex'])->name('media.api');

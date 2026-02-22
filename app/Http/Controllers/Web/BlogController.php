@@ -23,7 +23,7 @@ class BlogController extends Controller
             'blogs' => function ($q) {
                 $q->where('status', 'published');
             }
-        ])->orderBy('name')->get();
+        ])->orderBy('id')->get();
 
         return view('frontend.blog.index', compact('blogs', 'categories'));
     }
@@ -50,7 +50,7 @@ class BlogController extends Controller
             'blogs' => function ($q) {
                 $q->where('status', 'published');
             }
-        ])->orderBy('name')->get();
+        ])->orderBy('id')->get();
 
         return view('frontend.blog.show', compact('blog', 'relatedBlogs', 'categories'));
     }
@@ -71,7 +71,7 @@ class BlogController extends Controller
             'blogs' => function ($q) {
                 $q->where('status', 'published');
             }
-        ])->orderBy('name')->get();
+        ])->orderBy('id')->get();
 
         return view('frontend.blog.index', compact('blogs', 'categories', 'category'));
     }

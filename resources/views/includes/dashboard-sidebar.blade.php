@@ -155,11 +155,12 @@
           {{-- Blog --}}
           <li class="sidebar-nav-item">
             <a href="javascript:void(0)"
-              class="sidebar-nav-link has-sub {{ Request::routeIs('dashboard.blogs.*') ? 'open' : '' }}">
+              class="sidebar-nav-link has-sub {{ Request::routeIs('dashboard.blogs.*') || Request::routeIs('dashboard.blog-categories.*') ? 'open' : '' }}">
               <i class="fas fa-blog"></i>
               <span>Blog</span>
             </a>
-            <ul class="sidebar-sub-list {{ Request::routeIs('dashboard.blogs.*') ? 'open' : '' }}">
+            <ul
+              class="sidebar-sub-list {{ Request::routeIs('dashboard.blogs.*') || Request::routeIs('dashboard.blog-categories.*') ? 'open' : '' }}">
               <li class="sidebar-nav-item">
                 <a href="{{ route('dashboard.blogs.index') }}"
                   class="sidebar-nav-link {{ Request::routeIs('dashboard.blogs.index') ? 'active' : '' }}">
@@ -170,6 +171,18 @@
                 <a href="{{ route('dashboard.blogs.create') }}"
                   class="sidebar-nav-link {{ Request::routeIs('dashboard.blogs.create') ? 'active' : '' }}">
                   Add Post
+                </a>
+              </li>
+              <li class="sidebar-nav-item">
+                <a href="{{ route('dashboard.blog-categories.index') }}"
+                  class="sidebar-nav-link {{ Request::routeIs('dashboard.blog-categories.index') || Request::routeIs('dashboard.blog-categories.edit') ? 'active' : '' }}">
+                  Categories
+                </a>
+              </li>
+              <li class="sidebar-nav-item">
+                <a href="{{ route('dashboard.blog-categories.create') }}"
+                  class="sidebar-nav-link {{ Request::routeIs('dashboard.blog-categories.create') ? 'active' : '' }}">
+                  Add Category
                 </a>
               </li>
             </ul>
