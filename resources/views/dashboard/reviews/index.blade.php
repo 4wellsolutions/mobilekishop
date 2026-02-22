@@ -69,7 +69,7 @@
         </table>
       </div>
       @if($reviews->hasPages())
-        <div class="admin-pagination-wrap">{{ $reviews->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $reviews->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

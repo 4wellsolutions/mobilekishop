@@ -83,7 +83,7 @@
 
     @if($categories->hasPages())
         <div style="margin-top:20px; display:flex; justify-content:center;">
-            {{ $categories->links() }}
+            {{ $categories->links('pagination::bootstrap-5') }}
         </div>
     @endif
 @endsection

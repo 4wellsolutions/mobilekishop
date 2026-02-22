@@ -75,7 +75,7 @@
         </table>
       </div>
       @if($compares->hasPages())
-        <div class="admin-pagination-wrap">{{ $compares->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $compares->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

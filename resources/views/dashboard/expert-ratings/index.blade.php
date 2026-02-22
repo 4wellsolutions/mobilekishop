@@ -107,7 +107,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3">{{ $products->appends(request()->query())->links() }}</div>
+                <div class="mt-3">{{ $products->appends(request()->query())->links('pagination::bootstrap-5') }}</div>
             </div>
         </div>
     </div>

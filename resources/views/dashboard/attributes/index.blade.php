@@ -32,7 +32,8 @@
             @if($categories = App\Models\Category::all())
               @foreach($categories as $category)
                 <option value="{{ $category->id }}" {{ Request::get('category_id') == $category->id ? 'selected' : '' }}>
-                  {{ $category->category_name }}</option>
+                  {{ $category->category_name }}
+                </option>
               @endforeach
             @endif
           </select>
@@ -99,7 +100,7 @@
         </table>
       </div>
       @if($attributes->hasPages())
-        <div class="admin-pagination-wrap">{{ $attributes->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $attributes->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

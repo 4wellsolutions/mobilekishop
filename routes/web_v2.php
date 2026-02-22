@@ -266,12 +266,7 @@ $webRoutes = function () {
         ->name('filter.cable.type')
         ->where('slug', '[a-z0-9-]+');
 
-    // =========================================================================
-    // Blog Routes
-    // =========================================================================
-    Route::get('blogs', [\App\Http\Controllers\Web\BlogController::class, 'index'])->name('blog.index');
-    Route::get('blogs/category/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'category'])->name('blog.category');
-    Route::get('blogs/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'show'])->name('blog.show');
+
 
     // Legacy/Alternative Product Path: {brand}/{product} - Catch-all for two segments
     // We add a regex to ensure it doesn't match routes like 'category/xxx', 'product/xxx', etc.
@@ -293,3 +288,12 @@ Route::group([
 // 2. Default Country Routes (No Prefix) - Matches 'domain.com/path'
 Route::middleware(['default.country', 'cache.page'])
     ->group($webRoutes);
+
+// =========================================================================
+// Blog Routes (Main Domain Only - Not country-prefixed)
+// =========================================================================
+Route::middleware(['default.country', 'cache.page'])->group(function () {
+    Route::get('blogs', [\App\Http\Controllers\Web\BlogController::class, 'index'])->name('blog.index');
+    Route::get('blogs/category/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'category'])->name('blog.category');
+    Route::get('blogs/{slug}', [\App\Http\Controllers\Web\BlogController::class, 'show'])->name('blog.show');
+});

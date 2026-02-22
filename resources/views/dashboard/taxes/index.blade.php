@@ -82,7 +82,7 @@
         </table>
       </div>
       @if($taxes->hasPages())
-        <div class="admin-pagination-wrap">{{ $taxes->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $taxes->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

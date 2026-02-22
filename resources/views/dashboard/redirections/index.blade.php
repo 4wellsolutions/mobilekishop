@@ -100,7 +100,7 @@
         </table>
       </div>
       @if($redirections->hasPages())
-        <div class="admin-pagination-wrap">{{ $redirections->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $redirections->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

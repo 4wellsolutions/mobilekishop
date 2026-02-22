@@ -43,9 +43,10 @@
         $basePath = preg_replace('/^[a-z]{2}(\/|$)/', '', $currentPath);
     @endphp
     <link rel="alternate" hreflang="x-default" href="{{ url($basePath) }}" />
+    @php $isBlogPath = str_starts_with(ltrim($basePath, '/'), 'blogs'); @endphp
     @foreach($allCountries as $c)
         <link rel="alternate" hreflang="{{ $c->locale ?? 'en-' . $c->country_code }}"
-            href="{{ url($c->country_code == 'pk' ? $basePath : $c->country_code . '/' . $basePath) }}" />
+            href="{{ url(($c->country_code == 'pk' || $isBlogPath) ? $basePath : $c->country_code . '/' . $basePath) }}" />
     @endforeach
 
     {{-- Open Graph Meta Tags --}}
@@ -234,10 +235,12 @@
                         @foreach($menuCountries as $mc)
                             @php
                                 $isActive = $mc->country_code === $currentCountryCode;
-                                // Auth pages (login, register, etc.) are global — link to country homepage instead
+                                // Auth pages and blog pages are global — no country prefix
                                 $isAuthPage = in_array(ltrim($basePath, '/'), ['login', 'register', 'password/reset', '']);
+                                $isBlogPage = str_starts_with(ltrim($basePath, '/'), 'blogs');
+                                // Auth pages → redirect to country homepage; Blog pages → keep same URL
                                 $switchPath = ($isAuthPage && $basePath !== '') ? '' : $basePath;
-                                $countryUrl = $mc->country_code === 'pk'
+                                $countryUrl = ($mc->country_code === 'pk' || $isBlogPage)
                                     ? url($switchPath)
                                     : url($mc->country_code . '/' . $switchPath);
                             @endphp

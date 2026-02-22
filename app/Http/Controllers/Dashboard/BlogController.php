@@ -11,10 +11,45 @@ use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $blogs = Blog::with('category')->latest()->paginate(20);
-        return view('dashboard.blogs.index', compact('blogs'));
+        $blogs = Blog::with('category');
+
+        // Search by title or slug
+        if ($request->get('search')) {
+            $blogs = $blogs->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->get('search') . '%')
+                    ->orWhere('slug', 'like', '%' . $request->get('search') . '%');
+            });
+        }
+
+        // Filter by status
+        if ($request->get('status')) {
+            $blogs = $blogs->where('status', $request->get('status'));
+        }
+
+        // Filter by category
+        if ($request->get('category_id')) {
+            $blogs = $blogs->where('blog_category_id', $request->get('category_id'));
+        }
+
+        // Date range filter
+        if ($request->get('date_filter')) {
+            $blogs = $blogs->whereDate($request->get('date_filter'), '>=', $request->get('date1'))
+                ->whereDate($request->get('date_filter'), '<=', $request->get('date2'));
+        }
+
+        // Sort
+        if ($request->get('sort_by')) {
+            $blogs = $blogs->orderBy($request->get('sort_by'), $request->get('sort_order', 'DESC'));
+        } else {
+            $blogs = $blogs->latest();
+        }
+
+        $blogs = $blogs->paginate(20);
+        $categories = BlogCategory::orderBy('name')->get();
+
+        return view('dashboard.blogs.index', compact('blogs', 'categories'));
     }
 
     public function create()

@@ -65,7 +65,7 @@
         </table>
       </div>
       @if($errorLogs->hasPages())
-        <div class="admin-pagination-wrap">{{ $errorLogs->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $errorLogs->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>

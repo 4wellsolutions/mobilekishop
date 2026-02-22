@@ -18,6 +18,84 @@
 
     @include('includes.info-bar')
 
+    {{-- Filter Panel --}}
+    <div class="admin-filter-panel">
+        <form action="{{ route('dashboard.blogs.index') }}" method="get">
+            <div class="admin-filter-grid">
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Search</label>
+                    <input type="text" name="search" class="admin-form-control" placeholder="Search by title or slug..."
+                        value="{{ Request::get('search') }}">
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Status</label>
+                    <select class="admin-form-control" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="published" {{ Request::get('status') == 'published' ? 'selected' : '' }}>Published</option>
+                        <option value="draft" {{ Request::get('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                    </select>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Category</label>
+                    <select class="admin-form-control" name="category_id">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ Request::get('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Date Filter</label>
+                    <select class="admin-form-control" name="date_filter">
+                        <option value="">Select Filter</option>
+                        <option value="published_at" {{ Request::get('date_filter') == 'published_at' ? 'selected' : '' }}>Published Date</option>
+                        <option value="created_at" {{ Request::get('date_filter') == 'created_at' ? 'selected' : '' }}>Created Date</option>
+                        <option value="updated_at" {{ Request::get('date_filter') == 'updated_at' ? 'selected' : '' }}>Updated Date</option>
+                    </select>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">From</label>
+                    <input type="date" name="date1" class="admin-form-control"
+                        value="{{ Request::get('date1', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">To</label>
+                    <input type="date" name="date2" class="admin-form-control"
+                        value="{{ Request::get('date2', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Sort By</label>
+                    <select class="admin-form-control" name="sort_by">
+                        <option value="">Default</option>
+                        <option value="id" {{ Request::get('sort_by') == 'id' ? 'selected' : '' }}>ID</option>
+                        <option value="title" {{ Request::get('sort_by') == 'title' ? 'selected' : '' }}>Title</option>
+                        <option value="published_at" {{ Request::get('sort_by') == 'published_at' ? 'selected' : '' }}>Published Date</option>
+                        <option value="created_at" {{ Request::get('sort_by') == 'created_at' ? 'selected' : '' }}>Created Date</option>
+                        <option value="updated_at" {{ Request::get('sort_by') == 'updated_at' ? 'selected' : '' }}>Updated Date</option>
+                    </select>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                    <label class="admin-form-label">Order</label>
+                    <select class="admin-form-control" name="sort_order">
+                        <option value="">Default</option>
+                        <option value="ASC" {{ Request::get('sort_order') == 'ASC' ? 'selected' : '' }}>Ascending</option>
+                        <option value="DESC" {{ Request::get('sort_order') == 'DESC' ? 'selected' : '' }}>Descending</option>
+                    </select>
+                </div>
+                <div class="admin-filter-actions">
+                    <button class="btn-admin-primary" type="submit">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                    <a href="{{ route('dashboard.blogs.index') }}" class="btn-admin-secondary">
+                        <i class="fas fa-times"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="admin-card">
         <div class="admin-card-body" style="padding:0;">
             <div class="table-responsive">
@@ -94,8 +172,7 @@
                                 <td colspan="6" style="text-align:center; padding:40px; color:var(--admin-text-muted);">
                                     <i class="fas fa-blog"
                                         style="font-size:32px; margin-bottom:12px; display:block; opacity:0.3;"></i>
-                                    No blog posts yet. <a href="{{ route('dashboard.blogs.create') }}">Create your first
-                                        post</a>.
+                                    No blog posts found. Try adjusting your filters or <a href="{{ route('dashboard.blogs.create') }}">create a new post</a>.
                                 </td>
                             </tr>
                         @endforelse
@@ -107,7 +184,7 @@
 
     @if($blogs->hasPages())
         <div style="margin-top:20px; display:flex; justify-content:center;">
-            {{ $blogs->links() }}
+            {{ $blogs->withQueryString()->links('pagination::bootstrap-5') }}
         </div>
     @endif
 @endsection

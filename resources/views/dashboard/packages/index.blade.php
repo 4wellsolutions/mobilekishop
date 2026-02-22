@@ -143,7 +143,7 @@
         </table>
       </div>
       @if($packages->hasPages())
-        <div class="admin-pagination-wrap">{{ $packages->links() }}</div>
+        <div class="admin-pagination-wrap">{{ $packages->links('pagination::bootstrap-5') }}</div>
       @endif
     </div>
   </div>
