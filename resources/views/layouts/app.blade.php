@@ -61,10 +61,11 @@
                             </div>
                             <span class="separator d-sm-inline-block"></span>
                             <ul class="top-links mega-menu show-arrow mt-0 mb-0">
-                                <li class="menu-item narrow"><a href="{{route('dashboard.mobile.index')}}">Mobiles</a></li>
-                                <li class="menu-item narrow"><a href="{{route('dashboard.brand.index')}}">Brands</a></li>
+                                <li class="menu-item narrow"><a href="{{route('dashboard.products.index')}}">Mobiles</a>
+                                </li>
+                                <li class="menu-item narrow"><a href="{{route('dashboard.brands.index')}}">Brands</a></li>
 
-                                <li class="menu-item narrow"><a href="{{URL::to('/blogs/')}}/">Blog</a></li>
+                                <li class="menu-item narrow"><a href="{{url('/blog')}}">Blog</a></li>
 
                                 @if(Auth::check())
                                     <li class="menu-item narrow"><a href="{{route('user.review')}}">Reviews</a></li>
@@ -234,12 +235,10 @@
                                     <a
                                         href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brands/all')}}">Brands</a>
                                 </li>
-                                <li><a href="{{route('up.coming.mobiles')}}">Coming Soon</a></li>
-                                <li><a href="{{route('ad.index')}}">Ads <span class="badge badge-danger">New</span></a>
-                                </li>
+                                <li><a href="{{route('filter.upcoming')}}">Coming Soon</a></li>
                                 <li><a href="{{route('package.index')}}">Packages <span
                                             class="badge badge-danger">New</span></a></li>
-                                <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
+                                <li><a href="{{url('/blog')}}">Blog</a></li>
                                 <li><a
                                         href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
                                         Us</a></li>
@@ -363,9 +362,7 @@
                         <a
                             href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/brands/all')}}">Brands</a>
                     </li>
-                    <li><a href="{{URL::to('/blog/')}}/">Blog</a></li>
-                    <li><a href="{{route('ad.index')}}" class="font-weight-bold">Ads <span
-                                class="badge badge-danger">New</span></a></li>
+                    <li><a href="{{url('/blog')}}">Blog</a></li>
                     <li><a href="{{url(($country->country_code === 'pk' ? '' : $country->country_code) . '/contact')}}">Contact
                             Us</a></li>
                 </ul>

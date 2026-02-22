@@ -1,233 +1,215 @@
-@extends("layouts.dashboard")
-
-@section("content")
-  <div class="page-wrapper">
-    <!-- ============================================================== -->
-    <!-- Bread crumb and right sidebar toggle -->
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">Add What Mobile URL</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Library
-                </li>
-              </ol>
-            </nav>
-          </div>
+@extends('layouts.dashboard')
+@section('title', 'Add Mobile')
+@section('content')
+    <div class="admin-page-header">
+        <div>
+            <h1>Add Mobile</h1>
+            <div class="breadcrumb-nav"><a href="{{ route('dashboard.index') }}">Dashboard</a><span
+                    class="separator">/</span><a href="{{ route('dashboard.mobile.index') }}">Mobiles</a><span
+                    class="separator">/</span>Create</div>
         </div>
-      </div>
     </div>
-    
-    <div class="container">
-      @include("includes.info-bar")
-                <form action="{{ route("admin.mobile.fetch") }}" method="post" >
-                    @csrf
-                    <div class="row">
-                        <div class="form-group col-sm-11">
-                        <!-- <input type="url" name="url" value="" class="form-control" placeholder="Enter url" required> -->
-                        <input name="url" class="form-control">
-                    </div>
+    @include('includes.info-bar')
 
-                        <div class="form-group col-sm-1">
-                            <div class="input-group-append">
-                                <button class="btn btn-success">Fetch</button>
-                            </div>
+    {{-- Fetch URL Form --}}
+    <div class="admin-card" style="margin-bottom:24px;">
+        <div class="admin-card-header">
+            <h2><i class="fas fa-link" style="margin-right:8px;opacity:0.5;"></i>Fetch from URL</h2>
+        </div>
+        <div class="admin-card-body">
+            <form action="{{ route('admin.mobile.fetch') }}" method="post">
+                @csrf
+                <div style="display:flex;gap:12px;align-items:flex-end;">
+                    <div class="admin-form-group" style="flex:1;margin-bottom:0;">
+                        <input name="url" class="admin-form-control" placeholder="Enter WhatMobile URL...">
+                    </div>
+                    <button class="btn-admin-primary" type="submit"><i class="fas fa-download"></i> Fetch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(isset($data))
+        <form id="form_validation" action="{{ route('dashboard.mobile.store') }}" method="post" class="needs-validation"
+            novalidate enctype="multipart/form-data">
+            @csrf
+
+            {{-- Basic Info Card --}}
+            <div class="admin-card" style="margin-bottom:24px;">
+                <div class="admin-card-header">
+                    <h2>Basic Information</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-form-grid">
+                        <div class="admin-form-group"><label class="admin-form-label">Brand</label>
+                            <input type="text" name="brand" value="{{ $brand }}" class="admin-form-control" required>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">Model</label>
+                            <input type="text" name="model" value="{{ $name }}" class="admin-form-control" required>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">Price in PKR</label>
+                            <input type="text" name="price_in_pkr" value="{{ Str_replace(',', '', $price_in_pkr) }}"
+                                class="admin-form-control" required>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">Price in Dollar</label>
+                            <input type="text" name="price_in_dollar" value="{{ $price_in_dollar }}" class="admin-form-control"
+                                required>
                         </div>
                     </div>
-                </form>
+                </div>
+            </div>
 
-                @if(isset($data))
-                    <form  id="form_validation"  action="{{ route("dashboard.mobile.store") }}" method="post"  class="needs-validation" novalidate enctype="multipart/form-data">
-                        @csrf
-                        <div class="row">
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="">Brand</label>
-                                <input type="text" name="brand" value="{{ $brand }}" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="">Model</label>
-                                <input type="text" name="model" value="{{ $name }}" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="">Price in PKR</label>
-                                <input type="text" name="price_in_pkr" value="{{ Str_replace(",", "",$price_in_pkr) }}" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="">Price in Dollar</label>
-                                <input type="text" name="price_in_dollar" value="{{ $price_in_dollar }}" class="form-control" required>
-                            </div>
-                        </div>
+            {{-- Fetched Specs Card --}}
+            <div class="admin-card" style="margin-bottom:24px;">
+                <div class="admin-card-header">
+                    <h2>Fetched Specifications</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-form-grid">
                         @foreach($data as $d)
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="">{{ $d[0] }}</label>
-                                <input type="text" name="{{ \Illuminate\Support\Str::slug($d[0], "_") }}" value="{{ $d[1] }}" class="form-control" required>
+                            <div class="admin-form-group"><label class="admin-form-label">{{ $d[0] }}</label>
+                                <input type="text" name="{{ \Illuminate\Support\Str::slug($d[0], '_') }}" value="{{ $d[1] }}"
+                                    class="admin-form-control" required>
                             </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Additional Details Card --}}
+            <div class="admin-card" style="margin-bottom:24px;">
+                <div class="admin-card-header">
+                    <h2>Additional Details</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-form-grid">
+                        <div class="admin-form-group"><label class="admin-form-label">Release Date</label>
+                            <input type="date" name="release_date" class="admin-form-control" required>
                         </div>
-                            @endforeach
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="release_date">Release Date</label>
-                                <input type="date" name="release_date" class="form-control" required>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="pixels">Camera Pixels</label>
-                                <select name="pixels" id="pixels" class="form-control" required>
-                                    <option value="">Select Pixels</option>
-                                    @foreach(\App\MobilePixel::orderBy("pixels", "asc")->get() as $pixel)
-                                        <option value="{{ $pixel->pixels }}" {{(old('pixels') == $pixel->pixels) ? "selected" : ""}}>{{ $pixel->pixels . " px"}} </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">No of Cameras</label>
-                                <select name="no_of_cameras" id="no_of_cameras" class="form-control" required>
-                                    <option value="">Select Number</option>
-                                    <option value="1" {{(old('no_of_cameras') == 1) ? "selected" : ""}}>1</option>
-                                    <option value="2" {{(old('no_of_cameras') == 2) ? "selected" : ""}}>2</option>
-                                    <option value="3" {{(old('no_of_cameras') == 3) ? "selected" : ""}}>3</option>
-                                    <option value="4" {{(old('no_of_cameras') == 4) ? "selected" : ""}}>4</option>
-                                    <option value="5" {{(old('no_of_cameras') == 5) ? "selected" : ""}}>5</option>
-                                    <option value="6" {{(old('no_of_cameras') == 6) ? "selected" : ""}}>6</option>
-                                    <option value="7" {{(old('no_of_cameras') == 7) ? "selected" : ""}}>7</option>
-                                    <option value="8" {{(old('no_of_cameras') == 8) ? "selected" : ""}}>8</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">Screen Size</label>
-                                <input type="text" value="{{old('screen_size') ? old('screen_size') : ""}}"  name="screen_size" class="form-control" autocomplete="off" required>
-                                <small class="text-danger">Only numbers without inches</small>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">Ram in GB</label>
-                                <select name="ram_in_gb" id="ram_in_gb" class="form-control" required>
+                        <div class="admin-form-group"><label class="admin-form-label">Camera Pixels</label>
+                            <select name="pixels" class="admin-form-control" required>
+                                <option value="">Select Pixels</option>
+                                @foreach(\App\MobilePixel::orderBy('pixels', 'asc')->get() as $pixel)
+                                    <option value="{{ $pixel->pixels }}" {{ old('pixels') == $pixel->pixels ? 'selected' : '' }}>
+                                        {{ $pixel->pixels }} px</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">No of Cameras</label>
+                            <select name="no_of_cameras" class="admin-form-control" required>
+                                <option value="">Select Number</option>
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}" {{ old('no_of_cameras') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">Screen Size</label>
+                            <input type="text" name="screen_size" value="{{ old('screen_size') }}" class="admin-form-control"
+                                required>
+                            <small style="color:var(--admin-text-secondary);">Only numbers without inches</small>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">RAM</label>
+                            <select name="ram_in_gb" class="admin-form-control" required>
                                 <option value="">Select GB</option>
                                 <option value="256">256 MB</option>
                                 <option value="512">512 MB</option>
-                                <option value="1">1 GB<option>
-                                <option value="1.5">1.5 GB<option>
+                                <option value="1">1 GB</option>
+                                <option value="1.5">1.5 GB</option>
                                 <option value="3">3 GB</option>
-                                    @for($i=2; $i <= 24; $i = $i + 2)
-                                        <option value="{{ $i }}" {{old('ram_in_gb') == $i ? 'selected' : ''}}>{{ $i . " GB"}} </option>
-                                    @endfor
-                                </select>
-                            </div>
+                                @for($i = 2; $i <= 24; $i += 2)
+                                    <option value="{{ $i }}" {{ old('ram_in_gb') == $i ? 'selected' : '' }}>{{ $i }} GB</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">ROM</label>
+                            <select name="rom_in_gb" class="admin-form-control" required>
+                                <option value="">Select GB</option>
+                                @for($i = 4; $i <= 512; $i *= 2)
+                                    <option value="{{ $i }}" {{ old('rom_in_gb') == $i ? 'selected' : '' }}>{{ $i }} GB</option>
+                                @endfor
+                                <option value="1024" {{ old('rom_in_gb') == 1024 ? 'selected' : '' }}>1024 GB</option>
+                                <option value="2048" {{ old('rom_in_gb') == 2048 ? 'selected' : '' }}>2048 GB</option>
+                                <option value="3072" {{ old('rom_in_gb') == 3072 ? 'selected' : '' }}>3072 GB</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">Operating System</label>
+                            <select name="operating_system" class="admin-form-control" required>
+                                <option value="">Select OS</option>
+                                <option value="android">Android</option>
+                                <option value="symbian">Symbian</option>
+                                <option value="ios">iOS</option>
+                                <option value="windows">Windows</option>
+                                <option value="blackberry">Blackberry</option>
+                                <option value="huawei">Huawei</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group"><label class="admin-form-label">No of SIMs</label>
+                            <select name="no_of_sims" class="admin-form-control" required>
+                                <option value="">Select SIM</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">Rom in GB</label>
-                                <select name="rom_in_gb" id="rom_in_gb" class="form-control" required>
-                                    <option value="">Select GB</option>
-                                    @for($i=4; $i <= 512; $i = $i * 2)
-                                        <option value="{{ $i }}" {{old('ram_in_gb') == $i ? 'selected' : ''}}>{{ $i . " GB"}} </option>
-                                    @endfor
-                                    <option value="1024" {{old('ram_in_gb') == 1024 ? 'selected' : ''}}>1024 GB</option>
-                                    <option value="2048" {{old('ram_in_gb') == 2048 ? 'selected' : ''}}>2048 GB</option>
-                                    <option value="3072" {{old('ram_in_gb') == 3072 ? 'selected' : ''}}>3072 GB</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">Operating System</label>
-                                <select name="operating_system" class="form-control" id="operating_system" required>
-                                    <option value="">Select OS</option>
-                                    <option value="android">Android</option>
-                                    <option value="symbian">Symbian</option>
-                                    <option value="ios">IOS</option>
-                                    <option value="windows">Windows</option>
-                                    <option value="blackberry">Blackberry</option>
-                                    <option value="huawei">Huawei</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group col-12 col-md-6">
-                                <label for="">No of SIM</label>
-                                <select name="no_of_sims" id="no_of_sims" class="form-control" required>
-                                    <option value="">Select SIM</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="3">4</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="">Body</label>
-                                    <textarea class="form-control" name="body" id="ckeditor" rows="5" required>{!! old('body') ? old('body') : ''!!} </textarea>
-                                </div>
-                            </div>
-                            <div class="col-12 bg-white mb-0 pt-2">
-                                <div class="form-group">
-                                    <label for="">Featured</label>
-                                    <input type="checkbox" name="is_featured" id="is_featured">
-                                </div>
-                            </div>
-                            <div class="col-12 bg-white mb-0 pt-2">
-                                <div class="form-group">
-                                    <label for="">New</label>
-                                    <input type="checkbox" name="is_new" id="is_new">
-                                </div>
-                            </div>
-                            <div class="col-12 bg-white mb-0 pt-2">
-                                <div class="form-group">
-                                    <label for="">Hot</label>
-                                    <input type="checkbox" name="is_hot" id="is_hot">
-                                </div>
-                            </div>
-                            <div class="col-12 bg-white p-2">
-                                <div class="form-group">
-                                    <label for="">Thumbnail</label>
-                                    <input type="file" name="thumbnail" id="thumbnail" required>
-                                </div>
-                            </div>
-                            <div class="images bg-white py-4">
-                              <h3>Other Images</h3>
-                              <a  class="btn btn-primary plusSign m-0 py-1 px-2 pt-2"><i class="fas fa-plus-square fa-2x "></i></a>
-                              <div>
-                                <div class="col-12 p-2 bigImages">
-                                  <div class="form-group">
-                                      <label for="">Image</label>
-                                      <input type="file" name="image[]" id="image" required>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                        <div class="col-12 bg-white py-2 my-2">
-                            <div class="form-group">
-                               <button class="btn btn-success btn-block">Submit</button>
+            {{-- Body & Media Card --}}
+            <div class="admin-card" style="margin-bottom:24px;">
+                <div class="admin-card-header">
+                    <h2>Content & Media</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-form-group" style="margin-bottom:16px;"><label class="admin-form-label">Body</label>
+                        <textarea class="admin-form-control" name="body" id="editor" rows="5">{!! old('body', '') !!}</textarea>
+                    </div>
+                    <div class="admin-form-grid" style="grid-template-columns:repeat(3,auto);justify-content:start;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" name="is_featured" style="width:18px;height:18px;"> Featured
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" name="is_new" style="width:18px;height:18px;"> New
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" name="is_hot" style="width:18px;height:18px;"> Hot
+                        </label>
+                    </div>
+                    <div class="admin-form-group" style="margin-top:16px;"><label class="admin-form-label">Thumbnail</label>
+                        <input type="file" name="thumbnail" class="admin-form-control" required>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <label class="admin-form-label">Other Images</label>
+                        <div class="images">
+                            <a class="btn-admin-sm plusSign" style="cursor:pointer;margin-bottom:12px;display:inline-block;"><i
+                                    class="fas fa-plus"></i> Add Image</a>
+                            <div class="bigImages" style="margin-bottom:8px;">
+                                <input type="file" name="image[]" class="admin-form-control" required>
                             </div>
                         </div>
                     </div>
-                    </form>
-                @endif
+                    <div style="margin-top:24px;"><button type="submit" class="btn-admin-primary"><i class="fas fa-save"></i>
+                            Create Mobile</button></div>
+                </div>
             </div>
-  </div>
-</br></br></br></br></br>
-@stop
+        </form>
+    @endif
+@endsection
 
 @section('scripts')
-    <script src="{{ URL::to("admin/js/pages/forms/editors.js") }}"></script>
-    <script type="text/javascript">
-      $(".plusSign").click(function(){
-        console.log("Asdf");
-        $(".images").append($(".bigImages:first").clone().val(""));
-      });
+    <script src="https://cdn.ckeditor.com/ckeditor5/31.1.0/classic/ckeditor.js"></script>
+    <script>
+        $(".plusSign").click(function () { $(".images").append($(".bigImages:first").clone().val("")); });
+        if (document.querySelector('#editor')) {
+            ClassicEditor.create(document.querySelector('#editor')).then(e => console.log(e)).catch(e => console.error(e));
+        }
     </script>
-@stop
+@endsection
+@section('styles')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 200px;
+        }
+    </style>
+@endsection

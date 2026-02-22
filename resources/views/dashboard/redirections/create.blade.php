@@ -1,66 +1,32 @@
-@extends("layouts.dashboard")
-@section("title", "Redirections - MKS")
-@section("content")
-  <div class="page-wrapper">
-    <!-- ============================================================== -->
-    <!-- Bread crumb and right sidebar toggle -->
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">Redirect Management</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Redirection Management
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
+@extends('layouts.dashboard')
+@section('title', 'Add Redirection')
+@section('content')
+  <div class="admin-page-header">
+    <div>
+      <h1>Add Redirection</h1>
+      <div class="breadcrumb-nav"><a href="{{ route('dashboard.index') }}">Dashboard</a><span class="separator">/</span><a
+          href="{{ route('dashboard.redirections.index') }}">Redirections</a><span class="separator">/</span>Create</div>
     </div>
-    <div class="row justify-content-center bg-white">
-        <div class="col-12 col-md-10">
-          <h1>Add Redirection</h1>
-              @include("includes.info-bar")
-          <form class="pageForm" method="post" action="{{route('dashboard.redirections.store')}}" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-              <label>From URL</label>
-            <input type="text" class="form-control" placeholder="From URL" name="from_url" id="from_url">
-          </div>
-          <div class="form-group">
-              <label>To URL</label>
-            <input type="text" class="form-control" placeholder="To URL" name="to_url" id="to_url">
-          </div>
-          <div class="form-group my-3">
-              <button class="btn btn-dark formButton">Submit</button>
-          </div>
-          </form>
-        </div>
-      </div>
-
   </div>
-@stop
-
-@section('styles')
-<style type="text/css">
-  .twitter-typeahead{
-    width: 100% !important;
-  }
-  .tt-menu{
-    width: inherit !important;
-    position: inherit !important;
-  }.table td, .table th {
-    padding: 0.5rem !important;
-  }
-</style>
-@stop
-
-@section('scripts')
-
-
-@stop
+  @include('includes.info-bar')
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>Redirection Details</h2>
+    </div>
+    <div class="admin-card-body">
+      <form method="post" action="{{ route('dashboard.redirections.store') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="admin-form-grid" style="grid-template-columns:1fr;">
+          <div class="admin-form-group"><label class="admin-form-label">From URL</label>
+            <input type="text" name="from_url" class="admin-form-control" placeholder="/old-path">
+          </div>
+          <div class="admin-form-group"><label class="admin-form-label">To URL</label>
+            <input type="text" name="to_url" class="admin-form-control" placeholder="/new-path">
+          </div>
+        </div>
+        <div style="margin-top:24px;"><button type="submit" class="btn-admin-primary"><i class="fas fa-save"></i> Create
+            Redirection</button></div>
+      </form>
+    </div>
+  </div>
+@endsection

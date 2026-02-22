@@ -1,75 +1,65 @@
 @extends('layouts.dashboard')
+@section('title', 'Settings')
 
 @section('content')
-    <div class="page-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-                        <h4 class="page-title">Site Settings</h4>
-                    </div>
-
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('dashboard.settings.update') }}" method="POST">
-                        @csrf
-
-                        {{-- Head Code --}}
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Head Code</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small mb-2">
-                                    Code placed just before <code>&lt;/head&gt;</code>. Use for Google Analytics, AdSense
-                                    verification, meta tags, custom CSS.
-                                </p>
-                                <textarea name="head_code" class="form-control font-monospace" rows="8"
-                                    placeholder="<!-- Google Analytics -->&#10;<script async src='https://www.googletagmanager.com/gtag/js?id=G-XXXXX'></script>">{{ $settings['head_code'] }}</textarea>
-                            </div>
-                        </div>
-
-                        {{-- Body Start Code --}}
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Body Start Code</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small mb-2">
-                                    Code placed right after <code>&lt;body&gt;</code>. Use for Google Tag Manager noscript,
-                                    cookie banners.
-                                </p>
-                                <textarea name="body_start_code" class="form-control font-monospace" rows="6"
-                                    placeholder="<!-- Google Tag Manager (noscript) -->">{{ $settings['body_start_code'] }}</textarea>
-                            </div>
-                        </div>
-
-                        {{-- Body End Code --}}
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Body End Code</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small mb-2">
-                                    Code placed just before <code>&lt;/body&gt;</code>. Use for AdSense auto ads, chat
-                                    widgets, custom scripts.
-                                </p>
-                                <textarea name="body_end_code" class="form-control font-monospace" rows="6"
-                                    placeholder="<!-- AdSense Auto Ads -->">{{ $settings['body_end_code'] }}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-end mb-4">
-                            <button type="submit" class="btn btn-primary px-5">Save Settings</button>
-                        </div>
-                    </form>
-                </div>
+    <div class="admin-page-header">
+        <div>
+            <h1>Settings</h1>
+            <div class="breadcrumb-nav">
+                <a href="{{ route('dashboard.index') }}">Dashboard</a>
+                <span class="separator">/</span>
+                Settings
             </div>
         </div>
     </div>
+
+    @include('includes.info-bar')
+
+    <form action="{{ route('dashboard.settings.update') }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="admin-card" style="margin-bottom:24px;">
+            <div class="admin-card-header">
+                <h2><i class="fas fa-code" style="margin-right:8px; opacity:0.5;"></i>Head Code</h2>
+            </div>
+            <div class="admin-card-body">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Code Snippets (inserted in &lt;head&gt;)</label>
+                    <textarea name="head_code" class="admin-form-control" rows="6"
+                        style="font-family:monospace; font-size:13px;">{{ $settings->head_code ?? '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom:24px;">
+            <div class="admin-card-header">
+                <h2><i class="fas fa-play" style="margin-right:8px; opacity:0.5;"></i>Body Start Code</h2>
+            </div>
+            <div class="admin-card-body">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Code Snippets (after &lt;body&gt; open tag)</label>
+                    <textarea name="body_start_code" class="admin-form-control" rows="6"
+                        style="font-family:monospace; font-size:13px;">{{ $settings->body_start_code ?? '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom:24px;">
+            <div class="admin-card-header">
+                <h2><i class="fas fa-stop" style="margin-right:8px; opacity:0.5;"></i>Body End Code</h2>
+            </div>
+            <div class="admin-card-body">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Code Snippets (before &lt;/body&gt; close tag)</label>
+                    <textarea name="body_end_code" class="admin-form-control" rows="6"
+                        style="font-family:monospace; font-size:13px;">{{ $settings->body_end_code ?? '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-admin-primary">
+            <i class="fas fa-save"></i> Save Settings
+        </button>
+    </form>
 @endsection

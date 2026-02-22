@@ -24,6 +24,25 @@ Route::prefix('dashboard')
 		// Dashboard Home
 		Route::get('/', [DashboardController::class, 'index'])->name('index');
 
+		// Profile Routes
+		Route::get('profile', [\App\Http\Controllers\Dashboard\ProfileController::class, 'index'])->name('profile.index');
+		Route::put('profile', [\App\Http\Controllers\Dashboard\ProfileController::class, 'update'])->name('profile.update');
+		Route::put('profile/password', [\App\Http\Controllers\Dashboard\ProfileController::class, 'updatePassword'])->name('profile.password');
+
+		// Blog Routes
+		Route::get('blogs', [\App\Http\Controllers\Dashboard\BlogController::class, 'index'])->name('blogs.index');
+		Route::get('blogs/create', [\App\Http\Controllers\Dashboard\BlogController::class, 'create'])->name('blogs.create');
+		Route::post('blogs', [\App\Http\Controllers\Dashboard\BlogController::class, 'store'])->name('blogs.store');
+		Route::get('blogs/{blog}/edit', [\App\Http\Controllers\Dashboard\BlogController::class, 'edit'])->name('blogs.edit');
+		Route::put('blogs/{blog}', [\App\Http\Controllers\Dashboard\BlogController::class, 'update'])->name('blogs.update');
+		Route::delete('blogs/{blog}', [\App\Http\Controllers\Dashboard\BlogController::class, 'destroy'])->name('blogs.destroy');
+
+		// Media Library Routes
+		Route::get('media', [\App\Http\Controllers\Dashboard\MediaController::class, 'index'])->name('media.index');
+		Route::get('media/api', [\App\Http\Controllers\Dashboard\MediaController::class, 'apiIndex'])->name('media.api');
+		Route::post('media/upload', [\App\Http\Controllers\Dashboard\MediaController::class, 'upload'])->name('media.upload');
+		Route::delete('media', [\App\Http\Controllers\Dashboard\MediaController::class, 'destroy'])->name('media.destroy');
+
 
 		// Product Routes
 		Route::get('products/scrap', [ProductController::class, 'scrap'])->name('products.scrap');

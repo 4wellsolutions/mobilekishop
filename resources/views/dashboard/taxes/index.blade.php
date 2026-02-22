@@ -1,101 +1,89 @@
-@extends("layouts.dashboard")
-@section("title","PTA Taxes")
-@section("content")
-  <div class="page-wrapper">
-    <!-- ============================================================== -->
-    <!-- Bread crumb and right sidebar toggle -->
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">PTA Taxes</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb pt-sm-1">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  PTA Taxes
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    @if(!$taxes->isEmpty())
-        <div class="row bg-white py-3">
-          <div class="px-5">
-        <form action="{{\Request::fullUrl()}}" method="get">
-          <div class="row">
-            <div class="col-9 col-md-9 col-lg-6">
-              <label>Search</label>
-              <input type="text" name="search" id="search" class="form-control" required>
-            </div>
-            <div class="col-3 col-md-3 mt-auto">
-              <button class="btn btn-primary" type="submit">Submit</button>
-            </div>
-          </div>
-        </form>
-      </div>
-        </div>
-        <div class="row bg-white pt-5">
-          <div class="col-12">
-            @include("includes.info-bar")
-            <div class="mx-3">
-              <h1>PTA Taxes</h1>
-              <div class="table-responsive">
-                <table class="table table-bordered">
-                  <thead>
-                      <tr>
-                          <th>Brand</th>
-                          <th>Product</th>
-                          <th>Variant</th>
-                          <th>Tax on Passport</th>
-                          <th>Tax on CNIC</th>
-                          <th>Action</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      @foreach($taxes as $tax)
-                          <tr>
-                              <td>{{ $tax->brand->name ?? 'N/A' }}</td> {{-- Assuming brand relationship --}}
-                              <td>{{ $tax->product->name ?? 'N/A' }}</td> {{-- Assuming product relationship --}}
-                              <td>{{ $tax->variant }}</td>
-                              <td>{{ $tax->tax_on_passport }}</td>
-                              <td>{{ $tax->tax_on_cnic }}</td>
-                              <td>
-                                <a href="{{route('dashboard.taxes.edit',$tax->id)}}" class="btn btn-success text-white btn-sm">Edit</a>
-                                <a href="{{route('dashboard.taxes.destroy',$tax->id)}}" class="btn btn-danger text-white btn-sm" onclick="return confirm('Are you sure!')">Del</a>
-                              </td>
-                          </tr>
-                      @endforeach
-                  </tbody>
-              </table>
-              </div>
-              {{$taxes->links()}}
-            </div>
-          </div>
-        </div> 
-    @else
-    <div class="container">
-      <div class="row bg-white pt-5">
-        <h3 class="">No record found</h3>
-      </div>
-    </div>
-    @endif
+@extends('layouts.dashboard')
+@section('title', 'PTA Taxes')
 
+@section('content')
+  <div class="admin-page-header">
+    <div>
+      <h1>PTA Taxes</h1>
+      <div class="breadcrumb-nav">
+        <a href="{{ route('dashboard.index') }}">Dashboard</a>
+        <span class="separator">/</span>
+        PTA Taxes
+      </div>
+    </div>
+    <a href="{{ route('dashboard.taxes.create') }}" class="btn-admin-primary">
+      <i class="fas fa-plus"></i> Add Tax
+    </a>
   </div>
-@stop
 
-@section('styles')
-<style type="text/css">
-  .twitter-typeahead{
-    width: 100% !important;
-  }
-  .tt-menu{
-    width: inherit !important;
-    position: inherit !important;
-  }
-</style>
-@stop
+  {{-- Search --}}
+  <div class="admin-filter-panel">
+    <form action="{{ Request::fullUrl() }}" method="get">
+      <div style="display:flex; gap:10px; max-width:500px;">
+        <input type="text" name="search" class="admin-form-control" placeholder="Search by product name..." required>
+        <button class="btn-admin-primary" type="submit"><i class="fas fa-search"></i> Search</button>
+      </div>
+    </form>
+  </div>
+
+  @include('includes.info-bar')
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>All PTA Taxes</h2>
+    </div>
+    <div class="admin-card-body no-padding">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Product</th>
+              <th>Variant</th>
+              <th>Tax on Passport</th>
+              <th>Tax on CNIC</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($taxes as $tax)
+              <tr>
+                <td>{{ $tax->brand->name ?? 'N/A' }}</td>
+                <td class="td-title">{{ $tax->product->name ?? 'N/A' }}</td>
+                <td>{{ $tax->variant }}</td>
+                <td><span class="admin-badge badge-warning">{{ $tax->tax_on_passport }}</span></td>
+                <td><span class="admin-badge badge-info">{{ $tax->tax_on_cnic }}</span></td>
+                <td>
+                  <div class="admin-action-group">
+                    <a href="{{ route('dashboard.taxes.edit', $tax->id) }}" class="btn-admin-icon btn-edit" title="Edit">
+                      <i class="fas fa-pen"></i>
+                    </a>
+                    <form action="{{ route('dashboard.taxes.destroy', $tax->id) }}" method="POST" style="display:inline;"
+                      onsubmit="return confirm('Are you sure?')">
+                      @csrf @method('DELETE')
+                      <button type="submit" class="btn-admin-icon btn-delete" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="6">
+                  <div class="admin-empty-state">
+                    <i class="fas fa-calculator"></i>
+                    <h3>No tax records found</h3>
+                  </div>
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+      @if($taxes->hasPages())
+        <div class="admin-pagination-wrap">{{ $taxes->links() }}</div>
+      @endif
+    </div>
+  </div>
+@endsection

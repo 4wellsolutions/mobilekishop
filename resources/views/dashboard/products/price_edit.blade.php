@@ -1,69 +1,37 @@
-@extends("layouts.dashboard")
-@section('title',"Edit Product Prices - Dashboard")
-@section("content")
-
-  <div class="page-wrapper bg-white">
-    <!-- ============================================================== -->
-    <!-- Bread crumb and right sidebar toggle -->
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">Update Product Prices</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Products
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="container bg-white my-2">
-    @include("includes.info-bar")
-        
-        <form action="{{ route('dashboard.products.price.store', $product->id) }}" method="post">
-        @csrf
-        <h1>{{$product->name}}</h1>
-        @if($countries = App\Models\Country::all())
-        @foreach($countries as $country)
-            @php
-                $price = $product->prices()->where('country_id', $country->id)->first();
-            @endphp
-
-            <div class="row">
-                <div class="form-group col-12 col-md-6 col-lg-6">
-                    <label>Country</label>
-                    <input type="text" value="{{ $country->country_name }}" class="form-control" readonly>
-                    <input type="hidden" name="country_id[]" value="{{ $country->id }}">
-                </div>
-                <div class="form-group col-12 col-md-6 col-lg-6">
-                    <label>Price {{ $country->currency }}</label>
-                    <input type="number" name="price[]" value="{{ $price ? $price->price : '' }}" class="form-control">
-                </div>
-            </div>
-        @endforeach
-        @endif
-        <button type="submit" class="btn btn-primary">Update Prices</button>
-    </form>
-
+@extends('layouts.dashboard')
+@section('title', 'Edit Product Prices')
+@section('content')
+  <div class="admin-page-header">
+    <div>
+      <h1>Edit Product Prices</h1>
+      <div class="breadcrumb-nav"><a href="{{ route('dashboard.index') }}">Dashboard</a><span class="separator">/</span><a
+          href="{{ route('dashboard.products.index') }}">Products</a><span class="separator">/</span>Prices</div>
     </div>
   </div>
-@stop
-
-@section('scripts')
-
-@stop
-
-@section('styles')
-<style type="text/css">
-    .ck-editor__editable_inline {
-        min-height: 200px;
-    }
-</style>
-@stop
+  @include('includes.info-bar')
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>{{ $product->name }}</h2>
+    </div>
+    <div class="admin-card-body">
+      <form action="{{ route('dashboard.products.price.store', $product->id) }}" method="post">
+        @csrf
+        @if($countries = App\Models\Country::all())
+          <div class="admin-form-grid">
+            @foreach($countries as $country)
+              @php $price = $product->prices()->where('country_id', $country->id)->first(); @endphp
+              <div class="admin-form-group">
+                <label class="admin-form-label">{{ $country->country_name }} ({{ $country->currency }})</label>
+                <input type="hidden" name="country_id[]" value="{{ $country->id }}">
+                <input type="number" name="price[]" value="{{ $price ? $price->price : '' }}" class="admin-form-control"
+                  placeholder="0">
+              </div>
+            @endforeach
+          </div>
+        @endif
+        <div style="margin-top:24px;"><button type="submit" class="btn-admin-primary"><i class="fas fa-save"></i> Update
+            Prices</button></div>
+      </form>
+    </div>
+  </div>
+@endsection

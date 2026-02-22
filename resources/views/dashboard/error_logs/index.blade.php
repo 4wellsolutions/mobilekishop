@@ -1,62 +1,72 @@
-@extends("layouts.dashboard")
-@section("title","Error Logs")
-@section("content")
-  <div class="page-wrapper">
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">Error Logs</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Error Logs
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
+@extends('layouts.dashboard')
+@section('title', 'Error Logs')
 
-    <div class="">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Error Logs</h5>
-          @include("includes.info-bar")
-          <table class="table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>URL</th>
-                <th>Error Code</th>
-                <th>Message</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($errorLogs as $errorLog)
-                <tr>
-                  <td>{{ $loop->iteration }}</td>
-                  <td>{{ $errorLog->url }}</td>
-                  <td>{{ $errorLog->error_code }}</td>
-                  <td>{{ $errorLog->message }}</td>
-                  <td>
-                    <form action="{{ route('dashboard.error_logs.destroy', $errorLog->id) }}" method="POST" style="display:inline;">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this error log?')">Delete</button>
-                    </form>
-
-                  </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-          {{ $errorLogs->links("pagination::bootstrap-4") }}
-        </div>
+@section('content')
+  <div class="admin-page-header">
+    <div>
+      <h1>Error Logs</h1>
+      <div class="breadcrumb-nav">
+        <a href="{{ route('dashboard.index') }}">Dashboard</a>
+        <span class="separator">/</span>
+        Error Logs
       </div>
     </div>
   </div>
-@stop
+
+  @include('includes.info-bar')
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>All Error Logs</h2>
+    </div>
+    <div class="admin-card-body no-padding">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>URL</th>
+              <th>Error Code</th>
+              <th>Message</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($errorLogs as $errorLog)
+              <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td><code style="color:var(--admin-accent); font-size:12px;">{{ $errorLog->url }}</code></td>
+                <td><span class="admin-badge badge-danger">{{ $errorLog->error_code }}</span></td>
+                <td>{{ Str::limit($errorLog->message, 80) }}</td>
+                <td>
+                  <div class="admin-action-group">
+                    <form action="{{ route('dashboard.error_logs.destroy', $errorLog->id) }}" method="POST"
+                      style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                      @csrf @method('DELETE')
+                      <button type="submit" class="btn-admin-icon btn-delete" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="5">
+                  <div class="admin-empty-state">
+                    <i class="fas fa-check-circle" style="color:var(--admin-success);"></i>
+                    <h3>No errors logged</h3>
+                    <p>Everything is running smoothly!</p>
+                  </div>
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+      @if($errorLogs->hasPages())
+        <div class="admin-pagination-wrap">{{ $errorLogs->links() }}</div>
+      @endif
+    </div>
+  </div>
+@endsection

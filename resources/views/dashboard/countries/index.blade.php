@@ -1,69 +1,85 @@
 @extends('layouts.dashboard')
-
 @section('title', 'Countries')
 
 @section('content')
-<div class="page-wrapper">
-    <div class="page-breadcrumb">
-        <div class="row">
-            <div class="col-12 d-flex no-block align-items-center">
-                <h4 class="page-title">Countries</h4>
-                <div class="ms-auto text-end">
-                    <a href="{{ route('dashboard.countries.create') }}" class="btn btn-primary">Add New Country</a>
-                </div>
+    <div class="admin-page-header">
+        <div>
+            <h1>Countries</h1>
+            <div class="breadcrumb-nav">
+                <a href="{{ route('dashboard.index') }}">Dashboard</a>
+                <span class="separator">/</span>
+                Countries
             </div>
         </div>
+        <a href="{{ route('dashboard.countries.create') }}" class="btn-admin-primary">
+            <i class="fas fa-plus"></i> Add Country
+        </a>
     </div>
 
-    <div class="">
-        <div class="card">
-            <div class="card-body">
-                @include('includes.info-bar')
-                <h5 class="card-title">List of Countries</h5>
-                <table class="table table-bordered">
+    @include('includes.info-bar')
+
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h2>All Countries</h2>
+        </div>
+        <div class="admin-card-body no-padding">
+            <div class="admin-table-wrap">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Country Name</th>
-                            <th>Country Code</th>
+                            <th>Country</th>
+                            <th>Code</th>
                             <th>Icon</th>
                             <th>Currency</th>
-                            <th>ISO Currency</th>
+                            <th>ISO</th>
                             <th>Domain</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($countries as $country)
-                        <tr>
-                            <td>{{ $country->id }}</td>
-                            <td>{{ $country->country_name }}</td>
-                            <td>{{ $country->country_code }}</td>
-                            <td><span class="{{ strtolower($country->icon) }}"></span></td>
-                            <td>{{ $country->currency }}</td>
-                            <td>{{ $country->iso_currency }}</td>
-                            <td>{{ $country->domain }}</td>
-                            <td>
-                                <a href="{{ route('dashboard.countries.show', $country->id) }}" class="btn btn-info btn-sm">View</a>
-                                <a href="{{ route('dashboard.countries.edit', $country->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('dashboard.countries.destroy', $country->id) }}" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete this country?')">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                        @if($countries->isEmpty())
-                        <tr>
-                            <td colspan="8" class="text-center">No countries found.</td>
-                        </tr>
-                        @endif
+                        @forelse($countries as $country)
+                            <tr>
+                                <td>{{ $country->id }}</td>
+                                <td class="td-title">{{ $country->country_name }}</td>
+                                <td><span class="admin-badge badge-default">{{ $country->country_code }}</span></td>
+                                <td><span class="{{ strtolower($country->icon) }}"></span></td>
+                                <td>{{ $country->currency }}</td>
+                                <td>{{ $country->iso_currency }}</td>
+                                <td><code style="color:var(--admin-accent); font-size:12px;">{{ $country->domain }}</code></td>
+                                <td>
+                                    <div class="admin-action-group">
+                                        <a href="{{ route('dashboard.countries.edit', $country->id) }}"
+                                            class="btn-admin-icon btn-edit" title="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                        <a href="{{ route('dashboard.countries.show', $country->id) }}"
+                                            class="btn-admin-icon btn-view" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <form action="{{ route('dashboard.countries.destroy', $country->id) }}" method="POST"
+                                            style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-admin-icon btn-delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8">
+                                    <div class="admin-empty-state">
+                                        <i class="fas fa-globe"></i>
+                                        <h3>No countries found</h3>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
-@stop
+@endsection

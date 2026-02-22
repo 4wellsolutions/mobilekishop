@@ -1,238 +1,222 @@
-@extends("layouts.dashboard")
+@extends('layouts.dashboard')
+@section('title', 'Products')
 
-@section("title","Products - Dashboard")
-
-@section("content")
-  <div class="page-wrapper">
-    <!-- ============================================================== -->
-    <!-- Bread crumb and right sidebar toggle -->
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-      <div class="row">
-        <div class="col-12 d-flex no-block align-items-center">
-          <h4 class="page-title">All Products</h4>
-          <div class="ms-auto text-end">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Products
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
+@section('content')
+  <div class="admin-page-header">
+    <div>
+      <h1>Products</h1>
+      <div class="breadcrumb-nav">
+        <a href="{{ route('dashboard.index') }}">Dashboard</a>
+        <span class="separator">/</span>
+        Products
       </div>
     </div>
-    <div class="row bg-white"> 
-      <div class="px-5 py-3">
-        <!-- Combined form action with a single button for submit -->
-        <form action="{{ \Request::fullUrl() }}" method="get">
-          <div class="row">
-            <!-- First Row for Filters -->
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Date Filter</label>
-                <select class="form-control" name="date_filter" id="date_filter">
-                  <option value="">Select Filter</option>
-                  <option value="created_at" {{ \Request::get('date_filter') == "created_at" ? "selected" : '' }}>Created By</option>
-                  <option value="updated_at" {{ \Request::get('date_filter') == "updated_at" ? "selected" : '' }}>Updated By</option>
-                </select>
-              </div>
-            </div>
+    <a href="{{ route('dashboard.products.create') }}" class="btn-admin-primary">
+      <i class="fas fa-plus"></i> Add Product
+    </a>
+  </div>
 
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Date1</label>
-                <input type="date" name="date1" class="form-control" value="{{ \Request::has('date1') ? \Request::get('date1') : \Carbon\Carbon::now()->format('Y-m-d') }}">
-              </div>
-            </div>
+  {{-- Filter Panel --}}
+  <div class="admin-filter-panel">
+    <form action="{{ Request::fullUrl() }}" method="get">
+      <div class="admin-filter-grid">
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">Date Filter</label>
+          <select class="admin-form-control" name="date_filter">
+            <option value="">Select Filter</option>
+            <option value="created_at" {{ Request::get('date_filter') == 'created_at' ? 'selected' : '' }}>Created Date
+            </option>
+            <option value="updated_at" {{ Request::get('date_filter') == 'updated_at' ? 'selected' : '' }}>Updated Date
+            </option>
+          </select>
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">From</label>
+          <input type="date" name="date1" class="admin-form-control"
+            value="{{ Request::get('date1', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">To</label>
+          <input type="date" name="date2" class="admin-form-control"
+            value="{{ Request::get('date2', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">Category</label>
+          <select class="admin-form-control" name="category_id">
+            <option value="">All Categories</option>
+            @if($categories = App\Models\Category::all())
+              @foreach($categories as $category)
+                <option value="{{ $category->id }}" {{ Request::get('category_id') == $category->id ? 'selected' : '' }}>
+                  {{ $category->category_name }}</option>
+              @endforeach
+            @endif
+          </select>
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">Sort By</label>
+          <select class="admin-form-control" name="filter_key">
+            <option value="">Default</option>
+            <option value="id" {{ Request::get('filter_key') == 'id' ? 'selected' : '' }}>ID</option>
+            <option value="views" {{ Request::get('filter_key') == 'views' ? 'selected' : '' }}>Views</option>
+            <option value="release_date" {{ Request::get('filter_key') == 'release_date' ? 'selected' : '' }}>Release Date
+            </option>
+            <option value="created_at" {{ Request::get('filter_key') == 'created_at' ? 'selected' : '' }}>Created Date
+            </option>
+            <option value="updated_at" {{ Request::get('filter_key') == 'updated_at' ? 'selected' : '' }}>Updated Date
+            </option>
+          </select>
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">Order</label>
+          <select class="admin-form-control" name="filter_value">
+            <option value="">Default</option>
+            <option value="ASC" {{ Request::get('filter_value') == 'ASC' ? 'selected' : '' }}>Ascending</option>
+            <option value="DESC" {{ Request::get('filter_value') == 'DESC' ? 'selected' : '' }}>Descending</option>
+          </select>
+        </div>
+        <div class="admin-form-group" style="margin-bottom:0;">
+          <label class="admin-form-label">Search</label>
+          <input type="text" name="search" id="search" class="admin-form-control" placeholder="Search products..."
+            value="{{ Request::get('search') }}">
+        </div>
+        <div class="admin-filter-actions">
+          <button class="btn-admin-primary" type="submit">
+            <i class="fas fa-search"></i> Filter
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Date2</label>
-                <input type="date" name="date2" class="form-control" value="{{ \Request::has('date2') ? \Request::get('date2') : \Carbon\Carbon::now()->format('Y-m-d') }}">
-              </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Category (Optional)</label>
-                <select class="form-control" name="category_id" id="category_id">
-                  <option value="">Select Category</option>
-                  @if($categories = App\Models\Category::all())
-                    @foreach($categories as $category)
-                      <option value="{{$category->id}}" {{ \Request::get("category_id") == $category->id ? 'selected' : '' }}>{{$category->category_name}}</option>
-                    @endforeach
+  {{-- Products Table --}}
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>
+        <span style="opacity:0.5; font-weight:400;">Total:</span> {{ App\Models\Product::count() }} products
+        @if(isset($today) && $today > 0)
+          <span class="admin-badge badge-success" style="margin-left:8px;">+{{ $today }} today</span>
+        @endif
+      </h2>
+    </div>
+    <div class="admin-card-body no-padding">
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Release Date</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($products as $product)
+              <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>
+                  <img src="{{ $product->thumbnail }}" alt="" class="td-image">
+                </td>
+                <td class="td-title">{{ Str::title($product->name) }}</td>
+                <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                <td>
+                  <span class="admin-badge badge-default">{{ $product->category->category_name ?? 'N/A' }}</span>
+                </td>
+                <td>
+                  @if($releaseDate = $product->getAttributeValue('release_date'))
+                    {{ \Carbon\Carbon::parse($releaseDate)->format('d M Y') }}
+                  @else
+                    <span class="text-admin-muted">—</span>
                   @endif
-                </select>
-              </div>
-            </div>
-
-            <!-- Second Row for Filter Options -->
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Filter By</label>
-                <select class="form-control" name="filter_key" id="filter_key">
-                  <option value="">Filter</option>
-                  <option value="id" {{ \Request::get('filter_key') == "id" ? "selected" : '' }}>ID</option>
-                  <option value="views" {{ \Request::get('filter_key') == "views" ? "selected" : '' }}>Views</option>
-                  <option value="release_date" {{ \Request::get('filter_key') == "release_date" ? "selected" : '' }}>Release Date</option>
-                  <option value="created_at" {{ \Request::get('filter_key') == "created_at" ? "selected" : '' }}>Created By</option>
-                  <option value="updated_at" {{ \Request::get('filter_key') == "updated_at" ? "selected" : '' }}>Updated By</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-3">
-              <div class="form-group">
-                <label>Order By</label>
-                <select class="form-control" name="filter_value" id="filter_value">
-                  <option value="">Order By</option>
-                  <option value="ASC" {{ \Request::get('filter_value') == "ASC" ? "selected" : '' }}>Ascending</option>
-                  <option value="DESC" {{ \Request::get('filter_value') == "DESC" ? "selected" : '' }}>Descending</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="col-12 col-md-9 col-lg-4">
-              <label>Search (Optional)</label>
-              <input type="text" name="search" id="search" class="form-control" value="{{ \Request::get('search') }}">
-            </div>
-
-            <!-- Submit Button for Filters -->
-            <div class="col-12 col-md-6 col-lg-2 pt-4 mt-1">
-              <button class="btn btn-primary" type="submit">Apply Filters</button>
-            </div>
-          </div>
-        </form>
+                </td>
+                <td>{{ date('d M Y', strtotime($product->created_at)) }}</td>
+                <td>
+                  <div class="admin-action-group">
+                    <a href="{{ route('dashboard.products.edit', $product->id) }}" class="btn-admin-icon btn-edit"
+                      title="Edit">
+                      <i class="fas fa-pen"></i>
+                    </a>
+                    <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="btn-admin-icon btn-view"
+                      title="View">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{{ route('dashboard.products.price.create', $product->id) }}" class="btn-admin-icon btn-price"
+                      title="Prices">
+                      <i class="fas fa-dollar-sign"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="8">
+                  <div class="admin-empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your filters or add a new product.</p>
+                  </div>
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <div class="">
-        
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Total Products: {{App\Models\Product::count()}}, Mobiles Found: , Today: ({{isset($today) ? $today : 0}})</h5>
-            <div class="table-responsive">
-              <table id="zero_config" class="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th>Sr.#</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Release Date</th>
-                    <th>Created At</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                @if(!$products->isEmpty())
-                @foreach($products as $product)
-                <tbody>
-                  <tr>
-                    <td>{{$loop->iteration}}</td>
-                    <td><img src="{{$product->thumbnail}}" class="img-fluid" style="max-height: 70px;"></td>
-                    <td>{{Str::title($product->name)}}</td>
-                    <td>{{isset($product->brand->name) ? $product->brand->name : 'N/A'}}</td>
-                    <td>{{$product->category->category_name ?? 'N/A'}}</td>
-                    <td>
-                        @if($releaseDate = $product->getAttributeValue('release_date'))
-                            {{ \Carbon\Carbon::parse($releaseDate)->format("d-M-Y") }}
-                        @endif
-                    </td>
-                    <td>{{date("d-m-Y H:i:s", strtotime($product->created_at))}}</td>
-                    <td><a href="{{route('dashboard.products.edit',$product->id)}}"><i class="far fa-edit text-success fa-2x"></i></a> <a href="{{route('product.show',$product->slug)}}" target="_blank"><i class="fas fa-eye fa-2x text-warning"></i></a> <a href="{{route('dashboard.products.price.create',$product->id)}}"><i class="fa-solid fa-money-bill-wave fa-2x"></i></a></td>
-                  </tr>
-                </tbody>
-                @endforeach
-                @endif
-                <tfoot>
-                  <tr>
-                    <th>Sr.#</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Date Added</th>
-                    <th>Last Updated</th>
-                    <th>Action</th>
-                  </tr>
-                </tfoot>
-              </table>
-              {{$products->withQueryString()->links()}}
-            </div>
-          </div>
+      @if($products->hasPages())
+        <div class="admin-pagination-wrap">
+          {{ $products->withQueryString()->links() }}
         </div>
-      </div>    
+      @endif
     </div>
   </div>
-@stop
+@endsection
 
 @section('styles')
-<style type="text/css">
-  .twitter-typeahead{
-    width: 100% !important;
-  }
-  .tt-menu{
-    width: inherit !important;
-  }
-</style>
-@stop
+  <style>
+    .twitter-typeahead {
+      width: 100% !important;
+    }
+
+    .tt-menu {
+      width: inherit !important;
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-surface-border);
+      border-radius: var(--admin-radius);
+    }
+
+    .tt-suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--admin-text-secondary);
+    }
+
+    .tt-suggestion:hover {
+      background: rgba(99, 102, 241, 0.08);
+      color: var(--admin-text-primary);
+    }
+  </style>
+@endsection
 
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/0.11.1/typeahead.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
-    </script>
-
-
-    <script type="text/javascript">
-        var route = "{{ route('autocomplete.search') }}";
-        var base_url = "{{URL::to('/dashboard/mobile')}}";
-        // Set the Options for "Bloodhound" suggestion engine
-        var engine = new Bloodhound({
-            remote: {
-                url: route+"?query=%QUERY%",
-                wildcard: '%QUERY%'
-            },
-            datumTokenizer: Bloodhound.tokenizers.whitespace('query'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace
-        });
-
-        $("#search").typeahead({
-            hint: false,
-            highlight: true,
-            minLength: 1
-        }, {
-            source: engine.ttAdapter(),
-            limit: 8+1,
-
-            // This will be appended to "tt-dataset-" to form the class name of the suggestion menu.
-            name: 'usersList',
-            displayKey: 'name',
-            // the key from the array we want to display (name,id,email,etc...)
-            templates: {
-                empty: [
-                    '<div class="list-group search-results-dropdown"><div class="list-group-item">Nothing found.</div></div>'
-                ],
-                header: [
-                    '<div class="list-group search-results-dropdown">'
-                ],
-                suggestion: function (data) {
-                    console.log(data.brand.slug);
-                     return '<a target="_blank" href="'+base_url+'/'+data.id+'/edit"><div class="row bg-white border-bottom"><div class="col-2"><img src="'+data.thumbnail+'" class="img-fluid searchImage my-1"></div><div class="col-10 text-uppercase" style="font-weight:600;">'+data.name+'</div></div></a>'
-          }
-            }
-        });
-
-        $('#searchInput').bind('typeahead:select', function(ev, suggestion) {
-            console.log('Selection: ' + $(this).attr("id"));
-            $("#input-"+$(this).attr("id")).val(suggestion.slug);
-            if($("#searchInput").val() != ""){
-                param1 = $("#searchInput").val();
-            }
-        });
-    </script>
-
-@stop
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/0.11.1/typeahead.bundle.min.js"></script>
+  <script>
+    var route = "{{ route('autocomplete.search') }}";
+    var base_url = "{{ URL::to('/dashboard/mobile') }}";
+    var engine = new Bloodhound({
+      remote: { url: route + "?query=%QUERY%", wildcard: '%QUERY%' },
+      datumTokenizer: Bloodhound.tokenizers.whitespace('query'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace
+    });
+    $("#search").typeahead({ hint: false, highlight: true, minLength: 1 }, {
+      source: engine.ttAdapter(), limit: 9, name: 'usersList', displayKey: 'name',
+      templates: {
+        empty: '<div class="list-group search-results-dropdown"><div class="list-group-item">Nothing found.</div></div>',
+        suggestion: function (data) {
+          return '<div style="display:flex;align-items:center;gap:10px;padding:4px;"><img src="' + data.thumbnail + '" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><span>' + data.name + '</span></div>';
+        }
+      }
+    });
+  </script>
+@endsection
