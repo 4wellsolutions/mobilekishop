@@ -81,9 +81,8 @@ class ProductController extends Controller
     {
         $term = $request->get('term');
         $products = Product::where('name', 'LIKE', "%{$term}%")
-            ->where('is_active', 1)
             ->limit(10)
-            ->get(['id', 'name', 'slug']);
+            ->get(['id', 'name', 'slug', 'thumbnail']);
 
         return response()->json($products);
     }

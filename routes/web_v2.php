@@ -69,9 +69,9 @@ $webRoutes = function () {
     Route::get('/compare/{slug}', [ComparisonController::class, 'show'])->name('compare');
 
     // Product details
+    Route::get('product/autocomplete', [ProductController::class, 'autocomplete'])->name('product.autocomplete');
     Route::get('product/{product}', [ProductController::class, 'show'])->name('product.show');
     Route::get('products-show/{id}', [ProductController::class, 'getRedirect'])->name('product.redirect');
-    Route::get('product/autocomplete', [ProductController::class, 'autocomplete'])->name('product.autocomplete');
 
 
 
