@@ -142,6 +142,12 @@ class LoginController extends Controller
 
         Auth::login($user);
 
+        // Redirect admins to dashboard, regular users to previous page
+        $type = $user->type_id;
+        if ($type == "1" || $type == "2" || $type == "3") {
+            return redirect()->route('dashboard.index');
+        }
+
         // Get the initially stored URL and redirect back to it
         $redirectUrl = session('redirect_url', url('/'));
 
