@@ -18,7 +18,8 @@
         @csrf
         <div class="admin-form-grid" style="grid-template-columns:1fr;">
           <div class="admin-form-group"><label class="admin-form-label">From URL</label>
-            <input type="text" name="from_url" class="admin-form-control" placeholder="/old-path">
+            <input type="text" name="from_url" class="admin-form-control" placeholder="/old-path"
+              value="{{ old('from_url', request('from_url')) }}">
           </div>
           <div class="admin-form-group"><label class="admin-form-label">To URL</label>
             <input type="text" name="to_url" class="admin-form-control" placeholder="/new-path">

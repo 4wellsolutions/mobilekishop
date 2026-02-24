@@ -8,11 +8,37 @@ use Illuminate\Http\Request;
 
 class ErrorLogController extends Controller
 {
-    // Show all error logs
-    public function index()
+    // Show all error logs with optional filtering
+    public function index(Request $request)
     {
-        $errorLogs = ErrorLog::latest()->paginate(100); // Get all error logs
-        return view('dashboard.error_logs.index', compact('errorLogs'));
+        $query = ErrorLog::query();
+
+        // Filter by error code
+        if ($request->filled('error_code')) {
+            $query->where('error_code', $request->error_code);
+        }
+
+        // Search by URL
+        if ($request->filled('search')) {
+            $query->where('url', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'updated_at');
+        $sortDir = $request->get('dir', 'desc');
+        $allowedSorts = ['updated_at', 'created_at', 'hit_count', 'url', 'error_code'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortDir === 'asc' ? 'asc' : 'desc');
+        } else {
+            $query->latest('updated_at');
+        }
+
+        $errorLogs = $query->paginate(50)->withQueryString();
+
+        // Get distinct error codes for filter dropdown
+        $errorCodes = ErrorLog::select('error_code')->distinct()->orderBy('error_code')->pluck('error_code');
+
+        return view('dashboard.error_logs.index', compact('errorLogs', 'errorCodes'));
     }
 
     // Delete an error log
@@ -22,5 +48,21 @@ class ErrorLogController extends Controller
         $errorLog->delete();
 
         return redirect()->route('dashboard.error_logs.index')->with('success', 'Error log deleted successfully.');
+    }
+
+    // Clear all error logs (optionally only 404s)
+    public function clearAll(Request $request)
+    {
+        if ($request->get('code') == '404') {
+            $count = ErrorLog::where('error_code', 404)->count();
+            ErrorLog::where('error_code', 404)->delete();
+            $message = "Cleared {$count} 404 error logs.";
+        } else {
+            $count = ErrorLog::count();
+            ErrorLog::truncate();
+            $message = "Cleared all {$count} error logs.";
+        }
+
+        return redirect()->route('dashboard.error_logs.index')->with('success', $message);
     }
 }

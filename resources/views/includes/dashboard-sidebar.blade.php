@@ -288,7 +288,7 @@
               <li class="sidebar-nav-item">
                 <a href="{{ route('dashboard.error_logs.index') }}"
                   class="sidebar-nav-link {{ Request::routeIs('dashboard.error_logs.*') ? 'active' : '' }}">
-                  Error Logs
+                  Error / 404 Logs
                 </a>
               </li>
             </ul>

@@ -9,8 +9,12 @@ class ErrorLog extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'url',       // Add 'url' to the fillable array
+        'url',
         'error_code',
         'message',
+        'ip_address',
+        'user_agent',
+        'referer',
+        'hit_count',
     ];
 }
