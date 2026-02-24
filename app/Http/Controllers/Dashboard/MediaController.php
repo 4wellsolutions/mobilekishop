@@ -11,16 +11,21 @@ class MediaController extends Controller
 {
     private function getMediaFiles()
     {
-        $disk = Storage::disk('public');
-        $allFiles = $disk->allFiles('blogs');
+        $dir = public_path('blogs');
+        if (!file_exists($dir)) {
+            return collect();
+        }
 
-        return collect($allFiles)->map(function ($path) use ($disk) {
+        $files = collect(scandir($dir))->filter(fn($f) => !in_array($f, ['.', '..']));
+
+        return $files->map(function ($filename) use ($dir) {
+            $fullPath = $dir . DIRECTORY_SEPARATOR . $filename;
             return [
-                'name' => basename($path),
-                'path' => $path,
-                'url' => Storage::url($path),
-                'size' => $disk->size($path),
-                'modified' => $disk->lastModified($path),
+                'name' => $filename,
+                'path' => 'blogs/' . $filename,
+                'url' => '/blogs/' . $filename,
+                'size' => filesize($fullPath),
+                'modified' => filemtime($fullPath),
             ];
         })->sortByDesc('modified')->values();
     }
@@ -46,13 +51,18 @@ class MediaController extends Controller
         $uploaded = [];
 
         if ($request->hasFile('files')) {
+            $destinationPath = public_path('blogs');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
             foreach ($request->file('files') as $file) {
                 $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('blogs', $filename, 'public');
+                $file->move($destinationPath, $filename);
                 $uploaded[] = [
                     'name' => $filename,
-                    'url' => Storage::url($path),
-                    'path' => $path,
+                    'url' => '/blogs/' . $filename,
+                    'path' => 'blogs/' . $filename,
                 ];
             }
         }
@@ -73,9 +83,9 @@ class MediaController extends Controller
     {
         $request->validate(['path' => 'required|string']);
 
-        $disk = Storage::disk('public');
-        if ($disk->exists($request->path)) {
-            $disk->delete($request->path);
+        $fullPath = public_path($request->path);
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
             return redirect()->route('dashboard.media.index')
                 ->with('success', 'File deleted successfully.');
         }

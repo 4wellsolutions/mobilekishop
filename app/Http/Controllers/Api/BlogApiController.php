@@ -179,12 +179,20 @@ class BlogApiController extends Controller
 
         $file = $request->file('image');
         $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('blogs', $filename, 'public');
+
+        // Store directly in public/blogs/
+        $destinationPath = public_path('blogs');
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+        $file->move($destinationPath, $filename);
+
+        $url = '/blogs/' . $filename;
 
         return response()->json([
             'message' => 'Image uploaded successfully.',
-            'url' => Storage::url($path),
-            'path' => $path,
+            'url' => $url,
+            'path' => 'blogs/' . $filename,
         ], 201);
     }
 }
