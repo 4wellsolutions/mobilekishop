@@ -6,7 +6,7 @@
 
 @section('style')
     {{-- Preload hero image for fast LCP --}}
-    <link rel="preload" as="image" href="{{ asset('images/hero-iphone16-pro-max.jpg') }}" fetchpriority="high" />
+    <link rel="preload" as="image" href="{{ asset('images/hero-iphone17-pro-max.png') }}" fetchpriority="high" />
 @endsection
 
 @php
@@ -19,7 +19,7 @@
         </div>
         <div class="w-full h-[480px] bg-center bg-cover bg-no-repeat transition-transform duration-700 group-hover:scale-105"
             data-alt="Close up of a premium titanium smartphone in dark lighting"
-            style="background-image: url('{{ asset('images/hero-iphone16-pro-max.jpg') }}');">
+            style="background-image: url('{{ asset('images/hero-iphone17-pro-max.png') }}');">
         </div>
         <div class="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-12 lg:px-16 max-w-3xl">
             <div
@@ -28,10 +28,11 @@
                 <span class="text-xs font-bold text-primary uppercase tracking-wider">Featured Review</span>
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-4 tracking-tight">
-                iPhone 16 Pro Max
+                iPhone 17 Pro Max
             </h1>
             <p class="text-lg md:text-xl text-gray-200 mb-8 max-w-xl font-normal leading-relaxed">
-                The Titanium Titan. Experience the A18 Pro chip and new camera control features in our in-depth technical
+                The Ultimate Titanium Powerhouse. Experience the A19 Pro chip and revolutionary camera system in our
+                in-depth technical
                 analysis.
             </p>
             <div class="flex flex-wrap gap-4">

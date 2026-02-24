@@ -281,18 +281,24 @@ class SitemapService
      */
     protected function generateSitemapIndex(string $baseUrl, string $sitemapDir)
     {
+        // Extract country code from the directory path
+        $countryCode = basename($sitemapDir);
+        $mainDomain = 'https://mobilekishop.net';
 
         $sitemapIndex = SitemapIndex::create();
 
-        // Define the path prefix for sitemaps
-        $sitemapPathPrefix = "{$baseUrl}/sitemap";
+        // Use direct static file paths instead of route-based URLs
+        $sitemapPathPrefix = "{$mainDomain}/sitemaps/{$countryCode}/sitemap";
 
-        // List of sitemap files to include
-        $sections = ['categories', 'brands', 'filters', 'news'];
+        // List of sitemap files to include (only ones that actually exist)
+        $sections = ['categories', 'brands', 'filters'];
 
         foreach ($sections as $section) {
-            $sitemapUrl = "{$sitemapPathPrefix}-{$section}.xml";
-            $sitemapIndex->add($sitemapUrl, now());
+            $filePath = "{$sitemapDir}/sitemap-{$section}.xml";
+            if (File::exists($filePath)) {
+                $sitemapUrl = "{$sitemapPathPrefix}-{$section}.xml";
+                $sitemapIndex->add($sitemapUrl, now());
+            }
         }
 
         // Add Products sitemaps
@@ -301,15 +307,14 @@ class SitemapService
             $filename = $file->getFilename();
 
             if (preg_match('/sitemap-products-\d+\.xml$/', $filename)) {
-                // Corrected: Use the filename as-is without adding 'sitemap-'
-                $sitemapUrl = "{$baseUrl}/{$filename}";
+                $sitemapUrl = "{$mainDomain}/sitemaps/{$countryCode}/{$filename}";
                 $sitemapIndex->add($sitemapUrl, now());
             }
         }
 
         // Save Sitemap Index
-        $filePath = "{$sitemapDir}/sitemap.xml";
-        File::put($filePath, $sitemapIndex->render());
+        $indexPath = "{$sitemapDir}/sitemap.xml";
+        File::put($indexPath, $sitemapIndex->render());
     }
 
     /**
@@ -323,14 +328,36 @@ class SitemapService
         $countries = \App\Models\Country::where('is_active', 1)->get();
         $sitemapIndex = SitemapIndex::create();
         $included = [];
+        $mainDomain = 'https://mobilekishop.net';
 
+        // Instead of referencing country sitemap indexes (which causes nested indexing),
+        // directly reference each individual sitemap file from every country.
         foreach ($countries as $country) {
             $dir = "{$this->baseSitemapPath}/{$country->country_code}";
-            $indexFile = "{$dir}/sitemap.xml";
 
-            if (File::exists($indexFile)) {
-                $mainDomain = 'https://mobilekishop.net';
-                $sitemapIndex->add("{$mainDomain}/sitemaps/{$country->country_code}/sitemap.xml", now());
+            if (!File::isDirectory($dir)) {
+                continue;
+            }
+
+            $hasFiles = false;
+            foreach (File::files($dir) as $file) {
+                $filename = $file->getFilename();
+
+                // Skip the country's own sitemap index — we flatten everything
+                if ($filename === 'sitemap.xml') {
+                    continue;
+                }
+
+                if (strtolower($file->getExtension()) === 'xml') {
+                    $sitemapIndex->add(
+                        "{$mainDomain}/sitemaps/{$country->country_code}/{$filename}",
+                        now()
+                    );
+                    $hasFiles = true;
+                }
+            }
+
+            if ($hasFiles) {
                 $included[] = $country->country_name;
             }
         }
