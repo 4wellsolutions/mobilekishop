@@ -53,7 +53,9 @@ class ErrorLogController extends Controller
     // Clear all error logs (optionally only 404s)
     public function clearAll(Request $request)
     {
-        if ($request->get('code') == '404') {
+        $code = $request->input('code');
+
+        if ($code == '404') {
             $count = ErrorLog::where('error_code', 404)->count();
             ErrorLog::where('error_code', 404)->delete();
             $message = "Cleared {$count} 404 error logs.";

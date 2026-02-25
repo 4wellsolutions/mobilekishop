@@ -217,6 +217,8 @@ Route::prefix('dashboard')
 		Route::get('cache', [\App\Http\Controllers\Dashboard\CacheController::class, 'index'])->name('cache.index');
 		Route::post('cache/clear', [\App\Http\Controllers\Dashboard\CacheController::class, 'clear'])->name('cache.clear');
 		Route::post('cache/clear-all', [\App\Http\Controllers\Dashboard\CacheController::class, 'clearAll'])->name('cache.clear-all');
+		Route::post('cache/build-route', [\App\Http\Controllers\Dashboard\CacheController::class, 'buildRoute'])->name('cache.build.route');
+		Route::post('cache/build-config', [\App\Http\Controllers\Dashboard\CacheController::class, 'buildConfig'])->name('cache.build.config');
 
 		// Sitemap Management
 		Route::get('sitemap', [\App\Http\Controllers\Dashboard\SitemapController::class, 'index'])->name('sitemap.index');

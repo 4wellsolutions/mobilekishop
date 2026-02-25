@@ -127,4 +127,22 @@ class CacheController extends Controller
 
         return $stats;
     }
+
+    /**
+     * Build the route cache.
+     */
+    public function buildRoute()
+    {
+        Artisan::call('route:cache');
+        return back()->with('success', 'Route cache built successfully!');
+    }
+
+    /**
+     * Build the config cache.
+     */
+    public function buildConfig()
+    {
+        Artisan::call('config:cache');
+        return back()->with('success', 'Config cache built successfully!');
+    }
 }

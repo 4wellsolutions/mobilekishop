@@ -107,6 +107,7 @@
                             <th>Category</th>
                             <th>Status</th>
                             <th>Published</th>
+                            <th>Last Updated</th>
                             <th style="width:160px;">Actions</th>
                         </tr>
                     </thead>
@@ -146,6 +147,9 @@
                                 </td>
                                 <td>
                                     {{ $blog->published_at ? $blog->published_at->format('M d, Y') : '—' }}
+                                </td>
+                                <td>
+                                    {{ $blog->updated_at ? $blog->updated_at->format('M d, Y h:i A') : '—' }}
                                 </td>
                                 <td>
                                     <div style="display:flex; gap:8px;">
