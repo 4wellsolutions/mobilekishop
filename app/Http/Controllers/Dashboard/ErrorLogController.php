@@ -84,6 +84,8 @@ class ErrorLogController extends Controller
             'last_checked_at' => now(),
         ]);
 
+        $errorLog->refresh();
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,

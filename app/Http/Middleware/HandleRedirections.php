@@ -21,6 +21,16 @@ class HandleRedirections
      */
     public function handle(Request $request, Closure $next)
     {
+        // Only apply redirections to GET requests (skip POST/PUT/DELETE to avoid CSRF issues)
+        if (!$request->isMethod('GET')) {
+            return $next($request);
+        }
+
+        // Skip dashboard routes — they don't need URL redirections
+        if (str_starts_with($request->path(), 'dashboard')) {
+            return $next($request);
+        }
+
         $currentUrl = $request->fullUrl();
         $currentPath = '/' . ltrim($request->path(), '/');
 

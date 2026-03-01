@@ -16,5 +16,11 @@ class ErrorLog extends Model
         'user_agent',
         'referer',
         'hit_count',
+        'last_checked_status',
+        'last_checked_at',
+    ];
+
+    protected $casts = [
+        'last_checked_at' => 'datetime',
     ];
 }

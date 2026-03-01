@@ -47,6 +47,10 @@ Route::bind('brand', function ($value) {
 Route::bind('product', function ($value) {
     if ($value instanceof \App\Models\Product)
         return $value;
+    // Support both numeric ID (dashboard) and slug (frontend)
+    if (is_numeric($value)) {
+        return \App\Models\Product::findOrFail($value);
+    }
     return \App\Models\Product::whereSlug($value)->firstOrFail();
 });
 
