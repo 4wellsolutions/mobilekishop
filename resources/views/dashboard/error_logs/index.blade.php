@@ -79,9 +79,9 @@
               <th>#</th>
               <th>URL</th>
               <th>Code</th>
+              <th>Status</th>
               <th>Hits</th>
               <th>Referer</th>
-              <th>IP</th>
               <th>Last Seen</th>
               <th>Actions</th>
             </tr>
@@ -90,8 +90,13 @@
             @forelse($errorLogs as $errorLog)
               <tr>
                 <td>{{ $errorLogs->firstItem() + $loop->index }}</td>
-                <td style="max-width:300px; word-break:break-all;">
-                  <code style="color:var(--admin-accent); font-size:12px;">{{ $errorLog->url }}</code>
+                <td style="max-width:300px; word-break:break-all; position:relative;">
+                  <code style="color:var(--admin-accent); font-size:12px;"
+                    id="url-{{ $errorLog->id }}">{{ $errorLog->url }}</code>
+                  <button onclick="copyToClipboard('url-{{ $errorLog->id }}')" class="btn-admin-icon"
+                    style="padding:2px 5px; margin-left:5px; font-size:10px;" title="Copy URL">
+                    <i class="fas fa-copy"></i>
+                  </button>
                   @if($errorLog->message && $errorLog->message !== 'Page not found')
                     <br><small style="color:var(--admin-text-muted);">{{ Str::limit($errorLog->message, 60) }}</small>
                   @endif
@@ -102,7 +107,26 @@
                   </span>
                 </td>
                 <td>
-                  <span class="admin-badge badge-info" style="font-weight:600;">
+                  @if($errorLog->last_checked_status)
+                    @php
+                      $statusClass = 'badge-secondary';
+                      if ($errorLog->last_checked_status >= 200 && $errorLog->last_checked_status < 300)
+                        $statusClass = 'badge-success';
+                      elseif ($errorLog->last_checked_status >= 300 && $errorLog->last_checked_status < 400)
+                        $statusClass = 'badge-info';
+                      elseif ($errorLog->last_checked_status >= 400)
+                        $statusClass = 'badge-danger';
+                    @endphp
+                    <span class="admin-badge {{ $statusClass }}"
+                      title="Checked {{ $errorLog->last_checked_at ? $errorLog->last_checked_at->diffForHumans() : '' }}">
+                      {{ $errorLog->last_checked_status }}
+                    </span>
+                  @else
+                    <small style="color:var(--admin-text-muted);">—</small>
+                  @endif
+                </td>
+                <td>
+                  <span class="admin-badge badge-primary" style="font-weight:600;">
                     {{ $errorLog->hit_count ?? 1 }}
                   </span>
                 </td>
@@ -114,15 +138,16 @@
                   @endif
                 </td>
                 <td>
-                  <small style="color:var(--admin-text-muted);">{{ $errorLog->ip_address ?? '—' }}</small>
-                </td>
-                <td>
                   <small title="{{ $errorLog->updated_at }}">
                     {{ $errorLog->updated_at ? $errorLog->updated_at->diffForHumans() : '—' }}
                   </small>
                 </td>
                 <td>
                   <div class="admin-action-group">
+                    <a href="{{ route('dashboard.error_logs.check', $errorLog->id) }}" class="btn-admin-icon btn-view"
+                      title="Check Current Status">
+                      <i class="fas fa-sync-alt"></i>
+                    </a>
                     @if($errorLog->error_code == 404)
                       @php
                         $parsedUrl = parse_url($errorLog->url);
@@ -162,4 +187,16 @@
       @endif
     </div>
   </div>
+@endsection
+@section('scripts')
+  <script>
+    function copyToClipboard(elementId) {
+      var text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        alert('URL copied to clipboard');
+      }).catch(function (err) {
+        console.error('Unable to copy', err);
+      });
+    }
+  </script>
 @endsection

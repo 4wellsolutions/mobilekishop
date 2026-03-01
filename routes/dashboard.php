@@ -233,6 +233,7 @@ Route::prefix('dashboard')
 		Route::delete('sitemap/destroy', [\App\Http\Controllers\Dashboard\SitemapController::class, 'destroy'])->name('sitemap.destroy');
 
 		Route::get('error_logs/index', [ErrorLogController::class, 'index'])->name('error_logs.index');
+		Route::get('error_logs/{id}/check', [ErrorLogController::class, 'checkStatus'])->name('error_logs.check');
 		Route::delete('error_logs/clear-all', [ErrorLogController::class, 'clearAll'])->name('error_logs.clearAll');
 		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
 

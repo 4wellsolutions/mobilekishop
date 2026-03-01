@@ -50,6 +50,34 @@ class ErrorLogController extends Controller
         return redirect()->route('dashboard.error_logs.index')->with('success', 'Error log deleted successfully.');
     }
 
+    // Check the HTTP status of a logged URL
+    public function checkStatus($id)
+    {
+        $errorLog = ErrorLog::findOrFail($id);
+
+        try {
+            $url = $errorLog->url;
+            if (!str_starts_with($url, 'http')) {
+                $url = url($url);
+            }
+
+            $response = \Illuminate\Support\Facades\Http::timeout(5)
+                ->withHeaders(['User-Agent' => 'MobileKiShop-StatusChecker/1.0'])
+                ->get($url);
+
+            $status = $response->status();
+        } catch (\Exception $e) {
+            $status = 0; // Connection failed
+        }
+
+        $errorLog->update([
+            'last_checked_status' => $status,
+            'last_checked_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', "URL Status Checked: " . ($status ?: 'Failed to connect'));
+    }
+
     // Clear all error logs (optionally only 404s)
     public function clearAll(Request $request)
     {

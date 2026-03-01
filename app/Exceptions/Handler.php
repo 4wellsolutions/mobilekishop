@@ -49,7 +49,6 @@ class Handler extends ExceptionHandler
         try {
             $url = $request->fullUrl();
             $userAgent = $request->userAgent() ?? '';
-            \Illuminate\Support\Facades\Log::info("404 handler executed for URL: " . $url . " UserAgent: " . $userAgent);
 
 
             // Skip static asset requests to avoid noise
