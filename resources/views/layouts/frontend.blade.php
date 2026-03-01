@@ -43,7 +43,8 @@
         $basePath = preg_replace('/^[a-z]{2}(\/|$)/', '', $currentPath);
     @endphp
     @php $isBlogPath = str_starts_with(ltrim($basePath, '/'), 'blog'); @endphp
-    @if(!$isBlogPath)
+    @php $isPackagePath = str_starts_with(ltrim($basePath, '/'), 'package'); @endphp
+    @if(!$isBlogPath && !$isPackagePath)
     <link rel="alternate" hreflang="x-default" href="{{ url($basePath) }}" />
     @foreach($allCountries as $c)
         <link rel="alternate" hreflang="{{ $c->locale ?? 'en-' . $c->country_code }}"
