@@ -49,6 +49,8 @@ class Handler extends ExceptionHandler
         try {
             $url = $request->fullUrl();
             $userAgent = $request->userAgent() ?? '';
+            \Illuminate\Support\Facades\Log::info("404 handler executed for URL: " . $url . " UserAgent: " . $userAgent);
+
 
             // Skip static asset requests to avoid noise
             $skipExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.map', '.webp'];
@@ -78,7 +80,7 @@ class Handler extends ExceptionHandler
                 $existing->update([
                     'ip_address' => $request->ip(),
                     'user_agent' => \Illuminate\Support\Str::limit($userAgent, 250),
-                    'referer' => \Illuminate\Support\Str::limit($request->header('referer'), 250),
+                    'referer' => \Illuminate\Support\Str::limit($request->header('referer') ?? '', 250),
                 ]);
             } else {
                 ErrorLog::create([
@@ -87,11 +89,11 @@ class Handler extends ExceptionHandler
                     'message' => $e->getMessage() ?: 'Page not found',
                     'ip_address' => $request->ip(),
                     'user_agent' => \Illuminate\Support\Str::limit($userAgent, 250),
-                    'referer' => \Illuminate\Support\Str::limit($request->header('referer'), 250),
+                    'referer' => \Illuminate\Support\Str::limit($request->header('referer') ?? '', 250),
                     'hit_count' => 1,
                 ]);
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Silently fail — don't break the 404 page if logging fails
             \Illuminate\Support\Facades\Log::error('Failed to log 404: ' . $ex->getMessage());
         }

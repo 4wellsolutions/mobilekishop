@@ -61,21 +61,56 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->report(function (Throwable $e) {
-            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
-                $statusCode = $e->getStatusCode();
-                if (in_array($statusCode, [404, 500])) {
-                    try {
-                        \App\ErrorLog::create([
-                            'url' => Request::fullUrl(),
-                            'error_code' => $statusCode,
-                            'message' => $e->getMessage() ?: ($statusCode == 404 ? 'Page not found' : 'Internal server error')
-                        ]);
-                    } catch (\Throwable $loggingError) {
-                        // Prevent infinite loop if DB logging fails
-                    }
+        $exceptions->report(function (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("Caught exception: " . get_class($e));
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            try {
+                $url = $request->fullUrl();
+                $userAgent = $request->userAgent() ?? '';
+
+                // Filtering bots and static assets
+                $skipExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.map', '.webp'];
+                $path = strtolower($request->path());
+                foreach ($skipExtensions as $ext) {
+                    if (str_ends_with($path, $ext))
+                        return null;
                 }
+
+                $botPatterns = ['bot', 'crawler', 'spider', 'slurp', 'mediapartners', 'feedfetcher'];
+                $lowerAgent = strtolower($userAgent);
+                foreach ($botPatterns as $pattern) {
+                    if (str_contains($lowerAgent, $pattern))
+                        return null;
+                }
+
+                // Deduplication
+                $existing = \App\Models\ErrorLog::where('url', $url)->where('error_code', 404)->first();
+                if ($existing) {
+                    $existing->increment('hit_count');
+                    $existing->update([
+                        'ip_address' => $request->ip(),
+                        'user_agent' => \Illuminate\Support\Str::limit($userAgent, 250),
+                        'referer' => \Illuminate\Support\Str::limit($request->header('referer') ?? '', 250),
+                    ]);
+                    return null;
+                }
+
+                \App\Models\ErrorLog::create([
+                    'url' => \Illuminate\Support\Str::limit($url, 250),
+                    'error_code' => 404,
+                    'message' => $e->getMessage() ?: 'Page not found',
+                    'ip_address' => $request->ip(),
+                    'user_agent' => \Illuminate\Support\Str::limit($userAgent, 250),
+                    'referer' => \Illuminate\Support\Str::limit($request->header('referer') ?? '', 250),
+                    'hit_count' => 1,
+                ]);
+            } catch (\Throwable $loggingError) {
+                \Illuminate\Support\Facades\Log::error('Failed to log 404 in render: ' . $loggingError->getMessage());
             }
+
+            return null; // Continue to default 404 page
         });
     })
     ->create();
