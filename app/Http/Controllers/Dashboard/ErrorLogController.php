@@ -51,7 +51,7 @@ class ErrorLogController extends Controller
     }
 
     // Check the HTTP status of a logged URL
-    public function checkStatus($id)
+    public function checkStatus(Request $request, $id)
     {
         $errorLog = ErrorLog::findOrFail($id);
 
@@ -74,6 +74,15 @@ class ErrorLogController extends Controller
             'last_checked_status' => $status,
             'last_checked_at' => now(),
         ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $status,
+                'checked_at' => $errorLog->last_checked_at->diffForHumans(),
+                'message' => "URL Status Checked: " . ($status ?: 'Failed to connect')
+            ]);
+        }
 
         return redirect()->back()->with('success', "URL Status Checked: " . ($status ?: 'Failed to connect'));
     }

@@ -106,7 +106,7 @@
                     {{ $errorLog->error_code }}
                   </span>
                 </td>
-                <td>
+                <td id="status-cell-{{ $errorLog->id }}">
                   @if($errorLog->last_checked_status)
                     @php
                       $statusClass = 'badge-secondary';
@@ -144,8 +144,9 @@
                 </td>
                 <td>
                   <div class="admin-action-group">
-                    <a href="{{ route('dashboard.error_logs.check', $errorLog->id) }}" class="btn-admin-icon btn-view"
-                      title="Check Current Status">
+                    <a href="javascript:void(0)"
+                      onclick="checkUrlStatus({{ $errorLog->id }}, '{{ route('dashboard.error_logs.check', $errorLog->id) }}')"
+                      class="btn-admin-icon btn-view" title="Check Current Status" id="check-btn-{{ $errorLog->id }}">
                       <i class="fas fa-sync-alt"></i>
                     </a>
                     @if($errorLog->error_code == 404)
@@ -190,6 +191,48 @@
 @endsection
 @section('scripts')
   <script>
+    function checkUrlStatus(id, url) {
+      const btn = document.getElementById('check-btn-' + id);
+      const cell = document.getElementById('status-cell-' + id);
+      const icon = btn.querySelector('i');
+
+      // Loading state
+      icon.classList.add('fa-spin');
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+
+      fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            let statusClass = 'badge-secondary';
+            if (data.status >= 200 && data.status < 300) statusClass = 'badge-success';
+            else if (data.status >= 300 && data.status < 400) statusClass = 'badge-info';
+            else if (data.status >= 400) statusClass = 'badge-danger';
+
+            cell.innerHTML = `
+              <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
+                ${data.status || '0'}
+              </span>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to check status');
+        })
+        .finally(() => {
+          icon.classList.remove('fa-spin');
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        });
+    }
+
     function copyToClipboard(elementId) {
       var text = document.getElementById(elementId).innerText;
       navigator.clipboard.writeText(text).then(function () {
