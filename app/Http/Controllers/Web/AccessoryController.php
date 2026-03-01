@@ -244,11 +244,11 @@ class AccessoryController extends Controller
         }
 
         $metas = (object) [
-            'title' => "{$watt}W Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
+            'title' => "{$watt} Watt Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
             'description' => "Discover {$watt} Watt chargers designed for fast and efficient power delivery. Compatible with various devices for safe and reliable charging in {$country->country_name}.",
             'canonical' => request()->fullUrl(),
-            'h1' => "{$watt}Watt Chargers in {$country->country_name}",
-            'name' => "{$watt}Watt Chargers"
+            'h1' => "{$watt} Watt Chargers in {$country->country_name}",
+            'name' => "{$watt} Watt Chargers"
         ];
 
         $products = $products->simplePaginate(32);

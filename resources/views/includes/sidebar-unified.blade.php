@@ -324,12 +324,12 @@
         ];
         $wattages = [15, 20, 25, 35, 45, 65, 75, 100, 120, 150, 180];
         $wattAndTypes = [
-            ['name' => '30W USB Type C Chargers', 'slug' => '30w-usb-type-c-chargers'],
-            ['name' => '45W USB Type C Chargers', 'slug' => '45w-usb-type-c-chargers'],
-            ['name' => '60W USB Type C Chargers', 'slug' => '60w-usb-type-c-chargers'],
-            ['name' => '65W USB Type C Chargers', 'slug' => '65w-usb-type-c-chargers'],
-            ['name' => '67W USB Type C Chargers', 'slug' => '67w-usb-type-c-chargers'],
-            ['name' => '140W USB Type C Chargers', 'slug' => '140w-usb-type-c-chargers'],
+            ['name' => '30 Watt USB Type C Chargers', 'slug' => '30-watt-usb-type-c-chargers'],
+            ['name' => '45 Watt USB Type C Chargers', 'slug' => '45-watt-usb-type-c-chargers'],
+            ['name' => '60 Watt USB Type C Chargers', 'slug' => '60-watt-usb-type-c-chargers'],
+            ['name' => '65 Watt USB Type C Chargers', 'slug' => '65-watt-usb-type-c-chargers'],
+            ['name' => '67 Watt USB Type C Chargers', 'slug' => '67-watt-usb-type-c-chargers'],
+            ['name' => '140 Watt USB Type C Chargers', 'slug' => '140-watt-usb-type-c-chargers'],
         ];
     @endphp
 
@@ -358,10 +358,14 @@
         <div class="max-h-[250px] overflow-y-auto">
             <ul class="space-y-1.5 list-none p-0 m-0">
                 @foreach($wattages as $watt)
+                    @php
+                        $targetUrl = url($prefix . '/' . $watt . '-watt-chargers');
+                        $isActive = request()->url() === $targetUrl;
+                    @endphp
                     <li>
-                        <a href="{{ url($prefix . '/' . $watt . 'watt-chargers') }}"
-                            class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
-                            {{ $watt }}Watt Chargers
+                        <a href="{{ $targetUrl }}"
+                            class="text-sm no-underline block py-0.5 transition-colors {{ $isActive ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
+                            {{ $watt }} Watt Chargers
                         </a>
                     </li>
                 @endforeach

@@ -243,7 +243,7 @@ $webRoutes = function () {
         ->where('type', 'a|c');
 
     // Chargers: {watt}watt-chargers
-    Route::get('{watt}watt-chargers', [AccessoryController::class, 'chargersByWatt'])
+    Route::get('{watt}-watt-chargers', [AccessoryController::class, 'chargersByWatt'])
         ->name('filter.charger.watt')
         ->where('watt', '[0-9]+');
 
