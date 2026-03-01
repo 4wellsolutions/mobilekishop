@@ -59,6 +59,20 @@ class ErrorLogController extends Controller
         return redirect()->route('dashboard.error_logs.index')->with('success', 'Error log deleted successfully.');
     }
 
+    // Bulk delete error logs
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->route('dashboard.error_logs.index')->with('error', 'No items selected.');
+        }
+
+        $count = ErrorLog::whereIn('id', $ids)->delete();
+
+        return redirect()->route('dashboard.error_logs.index')->with('success', "Deleted {$count} error log(s) successfully.");
+    }
+
     // Check the HTTP status of a logged URL
     public function checkStatus(Request $request, $id)
     {

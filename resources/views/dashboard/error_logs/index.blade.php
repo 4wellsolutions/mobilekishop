@@ -13,6 +13,10 @@
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
       @if($errorLogs->total() > 0)
+        <button type="button" class="btn-admin-danger" id="bulkDeleteBtn" style="display:none;"
+          onclick="document.getElementById('bulkDeleteForm').submit()">
+          <i class="fas fa-trash-alt"></i> Delete Selected (<span id="selectedCount">0</span>)
+        </button>
         <form action="{{ route('dashboard.error_logs.clearAll') }}" method="POST"
           onsubmit="return confirm('Are you sure you want to clear ALL 404 error logs?')" style="display:inline;">
           @csrf @method('DELETE')
@@ -82,122 +86,128 @@
           style="color:var(--admin-text-muted); font-weight:400; font-size:14px;">({{ $errorLogs->total() }} total)</span>
       </h2>
     </div>
-    <div class="admin-card-body no-padding">
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>URL</th>
-              <th>Code</th>
-              <th>Status</th>
-              <th>Hits</th>
-              <th>Referer</th>
-              <th>Last Seen</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($errorLogs as $errorLog)
+    <form id="bulkDeleteForm" action="{{ route('dashboard.error_logs.bulkDestroy') }}" method="POST"
+      onsubmit="return confirm('Are you sure you want to delete the selected error logs?')">
+      @csrf @method('DELETE')
+      <div class="admin-card-body no-padding">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
               <tr>
-                <td>{{ $errorLogs->firstItem() + $loop->index }}</td>
-                <td style="max-width:300px; word-break:break-all; position:relative;">
-                  <code style="color:var(--admin-accent); font-size:12px;"
-                    id="url-{{ $errorLog->id }}">{{ $errorLog->url }}</code>
-                  <button onclick="copyToClipboard('url-{{ $errorLog->id }}')" class="btn-admin-icon"
-                    style="padding:2px 5px; margin-left:5px; font-size:10px;" title="Copy URL">
-                    <i class="fas fa-copy"></i>
-                  </button>
-                  @if($errorLog->message && $errorLog->message !== 'Page not found')
-                    <br><small style="color:var(--admin-text-muted);">{{ Str::limit($errorLog->message, 60) }}</small>
-                  @endif
-                </td>
-                <td>
-                  <span class="admin-badge {{ $errorLog->error_code == 404 ? 'badge-warning' : 'badge-danger' }}">
-                    {{ $errorLog->error_code }}
-                  </span>
-                </td>
-                <td id="status-cell-{{ $errorLog->id }}">
-                  @if($errorLog->last_checked_status)
-                    @php
-                      $statusClass = 'badge-secondary';
-                      if ($errorLog->last_checked_status >= 200 && $errorLog->last_checked_status < 300)
-                        $statusClass = 'badge-success';
-                      elseif ($errorLog->last_checked_status >= 300 && $errorLog->last_checked_status < 400)
-                        $statusClass = 'badge-info';
-                      elseif ($errorLog->last_checked_status >= 400)
-                        $statusClass = 'badge-danger';
-                    @endphp
-                    <span class="admin-badge {{ $statusClass }}"
-                      title="Checked {{ $errorLog->last_checked_at ? $errorLog->last_checked_at->diffForHumans() : '' }}">
-                      {{ $errorLog->last_checked_status }}
-                    </span>
-                  @else
-                    <small style="color:var(--admin-text-muted);">—</small>
-                  @endif
-                </td>
-                <td>
-                  <span class="admin-badge badge-primary" style="font-weight:600;">
-                    {{ $errorLog->hit_count ?? 1 }}
-                  </span>
-                </td>
-                <td style="max-width:200px; word-break:break-all;">
-                  @if($errorLog->referer)
-                    <small style="color:var(--admin-text-muted);">{{ Str::limit($errorLog->referer, 40) }}</small>
-                  @else
-                    <small style="color:var(--admin-text-muted);">—</small>
-                  @endif
-                </td>
-                <td>
-                  <small title="{{ $errorLog->updated_at }}">
-                    {{ $errorLog->updated_at ? $errorLog->updated_at->diffForHumans() : '—' }}
-                  </small>
-                </td>
-                <td>
-                  <div class="admin-action-group">
-                    <a href="javascript:void(0)"
-                      onclick="checkUrlStatus({{ $errorLog->id }}, '{{ route('dashboard.error_logs.check', $errorLog->id) }}')"
-                      class="btn-admin-icon btn-view" title="Check Current Status" id="check-btn-{{ $errorLog->id }}">
-                      <i class="fas fa-sync-alt"></i>
-                    </a>
-                    @if($errorLog->error_code == 404)
-                      @php
-                        $parsedUrl = parse_url($errorLog->url);
-                        $fromPath = ($parsedUrl['path'] ?? '/') . (isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '');
-                      @endphp
-                      <a href="{{ route('dashboard.redirections.create') }}?from_url={{ urlencode($fromPath) }}"
-                        class="btn-admin-icon btn-edit" title="Create Redirect">
-                        <i class="fas fa-directions"></i>
-                      </a>
+                <th style="width:40px;"><input type="checkbox" id="selectAll" title="Select All"></th>
+                <th>#</th>
+                <th>URL</th>
+                <th>Code</th>
+                <th>Status</th>
+                <th>Hits</th>
+                <th>Referer</th>
+                <th>Last Seen</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($errorLogs as $errorLog)
+                <tr>
+                  <td><input type="checkbox" name="ids[]" value="{{ $errorLog->id }}" class="row-checkbox"></td>
+                  <td>{{ $errorLogs->firstItem() + $loop->index }}</td>
+                  <td style="max-width:300px; word-break:break-all; position:relative;">
+                    <code style="color:var(--admin-accent); font-size:12px;"
+                      id="url-{{ $errorLog->id }}">{{ $errorLog->url }}</code>
+                    <button onclick="copyToClipboard('url-{{ $errorLog->id }}')" class="btn-admin-icon"
+                      style="padding:2px 5px; margin-left:5px; font-size:10px;" title="Copy URL">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                    @if($errorLog->message && $errorLog->message !== 'Page not found')
+                      <br><small style="color:var(--admin-text-muted);">{{ Str::limit($errorLog->message, 60) }}</small>
                     @endif
-                    <form action="{{ route('dashboard.error_logs.destroy', $errorLog->id) }}" method="POST"
-                      style="display:inline;" onsubmit="return confirm('Are you sure?')">
-                      @csrf @method('DELETE')
-                      <button type="submit" class="btn-admin-icon btn-delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="8">
-                  <div class="admin-empty-state">
-                    <i class="fas fa-check-circle" style="color:var(--admin-success);"></i>
-                    <h3>No errors logged</h3>
-                    <p>Everything is running smoothly!</p>
-                  </div>
-                </td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
+                  </td>
+                  <td>
+                    <span class="admin-badge {{ $errorLog->error_code == 404 ? 'badge-warning' : 'badge-danger' }}">
+                      {{ $errorLog->error_code }}
+                    </span>
+                  </td>
+                  <td id="status-cell-{{ $errorLog->id }}">
+                    @if($errorLog->last_checked_status)
+                      @php
+                        $statusClass = 'badge-secondary';
+                        if ($errorLog->last_checked_status >= 200 && $errorLog->last_checked_status < 300)
+                          $statusClass = 'badge-success';
+                        elseif ($errorLog->last_checked_status >= 300 && $errorLog->last_checked_status < 400)
+                          $statusClass = 'badge-info';
+                        elseif ($errorLog->last_checked_status >= 400)
+                          $statusClass = 'badge-danger';
+                      @endphp
+                      <span class="admin-badge {{ $statusClass }}"
+                        title="Checked {{ $errorLog->last_checked_at ? $errorLog->last_checked_at->diffForHumans() : '' }}">
+                        {{ $errorLog->last_checked_status }}
+                      </span>
+                    @else
+                      <small style="color:var(--admin-text-muted);">—</small>
+                    @endif
+                  </td>
+                  <td>
+                    <span class="admin-badge badge-primary" style="font-weight:600;">
+                      {{ $errorLog->hit_count ?? 1 }}
+                    </span>
+                  </td>
+                  <td style="max-width:200px; word-break:break-all;">
+                    @if($errorLog->referer)
+                      <small style="color:var(--admin-text-muted);">{{ Str::limit($errorLog->referer, 40) }}</small>
+                    @else
+                      <small style="color:var(--admin-text-muted);">—</small>
+                    @endif
+                  </td>
+                  <td>
+                    <small title="{{ $errorLog->updated_at }}">
+                      {{ $errorLog->updated_at ? $errorLog->updated_at->diffForHumans() : '—' }}
+                    </small>
+                  </td>
+                  <td>
+                    <div class="admin-action-group">
+                      <a href="javascript:void(0)"
+                        onclick="checkUrlStatus({{ $errorLog->id }}, '{{ route('dashboard.error_logs.check', $errorLog->id) }}')"
+                        class="btn-admin-icon btn-view" title="Check Current Status" id="check-btn-{{ $errorLog->id }}">
+                        <i class="fas fa-sync-alt"></i>
+                      </a>
+                      @if($errorLog->error_code == 404)
+                        @php
+                          $parsedUrl = parse_url($errorLog->url);
+                          $fromPath = ($parsedUrl['path'] ?? '/') . (isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '');
+                        @endphp
+                        <a href="{{ route('dashboard.redirections.create') }}?from_url={{ urlencode($fromPath) }}"
+                          class="btn-admin-icon btn-edit" title="Create Redirect">
+                          <i class="fas fa-directions"></i>
+                        </a>
+                      @endif
+                      <form action="{{ route('dashboard.error_logs.destroy', $errorLog->id) }}" method="POST"
+                        style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn-admin-icon btn-delete" title="Delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="9">
+                    <div class="admin-empty-state">
+                      <i class="fas fa-check-circle" style="color:var(--admin-success);"></i>
+                      <h3>No errors logged</h3>
+                      <p>Everything is running smoothly!</p>
+                    </div>
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+        @if($errorLogs->hasPages())
+          <div class="admin-pagination-wrap">{{ $errorLogs->links('pagination::bootstrap-5') }}</div>
+        @endif
       </div>
-      @if($errorLogs->hasPages())
-        <div class="admin-pagination-wrap">{{ $errorLogs->links('pagination::bootstrap-5') }}</div>
-      @endif
-    </div>
+    </form>
   </div>
 @endsection
 @section('scripts')
@@ -227,10 +237,10 @@
             else if (data.status >= 400) statusClass = 'badge-danger';
 
             cell.innerHTML = `
-                <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
-                  ${data.status || '0'}
-                </span>
-              `;
+                  <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
+                    ${data.status || '0'}
+                  </span>
+                `;
             toastr.success(data.message);
           } else {
             toastr.error(data.message || 'Failed to check status');
@@ -256,5 +266,30 @@
         toastr.error('Failed to copy URL');
       });
     }
+
+    // Bulk selection logic
+    const selectAll = document.getElementById('selectAll');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCountEl = document.getElementById('selectedCount');
+
+    function updateBulkUI() {
+      const checked = document.querySelectorAll('.row-checkbox:checked');
+      const total = document.querySelectorAll('.row-checkbox');
+      selectedCountEl.textContent = checked.length;
+      bulkDeleteBtn.style.display = checked.length > 0 ? 'inline-flex' : 'none';
+      selectAll.checked = total.length > 0 && checked.length === total.length;
+      selectAll.indeterminate = checked.length > 0 && checked.length < total.length;
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = this.checked);
+        updateBulkUI();
+      });
+    }
+
+    document.querySelectorAll('.row-checkbox').forEach(cb => {
+      cb.addEventListener('change', updateBulkUI);
+    });
   </script>
 @endsection
