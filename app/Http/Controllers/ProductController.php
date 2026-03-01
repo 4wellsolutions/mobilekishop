@@ -8,38 +8,11 @@ use App\Models\Product;
 use App\Models\Compare;
 use App\Models\Brand;
 use Response;
-use App\Models\Click;
+
 use DB;
 class ProductController extends Controller
 {
-    public function getRedirect($id, Request $request)
-    {
-        if (!$product = Product::where("external_id", $id)->first()) {
-            abort(404);
-        }
-        $agent = new Agent();
-        $device = $agent->device();
-        $platform = $agent->platform();
-        $browser = $agent->browser();
-        $isMobile = $agent->isMobile();
-        $placement = $request->get('placement');
 
-        // Retrieve the referral URL
-        $referer = $_SERVER['HTTP_REFERER'] ?? null;
-
-        $click = new Click();
-        $click->referral = $referer;
-        $click->placement = $placement;
-        $click->ip_address = $request->ip();
-        $click->device = $device;
-        $click->platform = $platform;
-        $click->browser = $browser;
-        $click->is_mobile = $isMobile;
-        $click->product_id = $product->id;
-        $click->save();
-
-        return redirect()->away($product->url);
-    }
 
     public function showOld($brand, $slug)
     {
@@ -147,26 +120,7 @@ class ProductController extends Controller
         $result = json_decode($results->get());
         return Response::make($result);
     }
-    public function storeUserInfo(Request $request)
-    {
 
-        $product = Product::whereSlug($request->product_slug)->first();
-
-        $agent = new Agent();
-
-        $click = new Click();
-        $click->referral = $request->input('url');
-        $click->placement = $request->input('placement');
-        $click->device = $agent->device();          // Gets the device name
-        $click->ip_address = $request->ip();         // Gets the IP address from the request
-        $click->platform = $agent->platform();       // Gets the platform (OS)
-        $click->browser = $agent->browser();         // Gets the browser name
-        $click->is_mobile = $agent->isMobile() ? 'Yes' : 'No'; // Checks if the device is mobile
-        $click->product_id = isset($product->id) ? $product->id : null;
-        $click->save();
-
-        return response()->json(['success' => true, 'message' => 'User info saved successfully.']);
-    }
     public function scrape(Request $request)
     {
         // Validate the incoming request

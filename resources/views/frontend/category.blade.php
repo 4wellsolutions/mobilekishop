@@ -94,16 +94,7 @@
                 <!-- Sidebar Component -->
                 <x-filters-sidebar :category="$category ?? null" :country="$country" />
 
-                <!-- Ad Box -->
-                <div class="mt-8 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 p-5 text-white shadow-lg">
-                    <span
-                        class="inline-block rounded bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider mb-2">Ad</span>
-                    <h4 class="font-bold text-lg leading-tight mb-2">Galaxy S24 Ultra</h4>
-                    <p class="text-xs text-slate-300 mb-4">Experience the new era of mobile AI.</p>
-                    <a href="{{ route(($country->country_code == 'pk' ? '' : 'country.') . 'product.show', array_merge(($country->country_code == 'pk' ? [] : ['country_code' => $country->country_code]), ['product' => 'samsung-galaxy-s24-ultra'])) }}"
-                        class="w-full block text-center rounded bg-white py-2 text-sm font-bold text-slate-900 hover:bg-slate-100 transition-colors">Check
-                        Price</a>
-                </div>
+
             </div>
         </aside>
 

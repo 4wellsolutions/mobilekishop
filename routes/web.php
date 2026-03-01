@@ -49,7 +49,7 @@ Route::get('product/product', function () {
     }
 });
 
-Route::post('/store-user-info', [ProductController::class, "storeUserInfo"])->name('store.user.info');
+
 Route::get('/review/{any}', function () {
     return redirect('/')->setStatusCode(301);
 })->where('any', '.*');

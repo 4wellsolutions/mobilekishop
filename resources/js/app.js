@@ -134,20 +134,7 @@ $(document).ready(function () {
     }
     window.addEventListener('scroll', onScroll);
 
-    // 13. Amazon Button / External Click Tracking
-    $('.amazonButton').on('click', function () {
-        const product_slug = $(this).data('product-slug');
-        if (!product_slug) return;
-        $.ajax({
-            url: config.routes && config.routes.storeUserInfo ? config.routes.storeUserInfo : '/store-user-info',
-            type: "POST",
-            data: {
-                _token: config.csrfToken,
-                "product_slug": product_slug,
-                "url": window.location.href,
-            }
-        });
-    });
+
 
     // 14. Comparison Tab Handler
     $("#nav-compare-tab").on('click', function () {

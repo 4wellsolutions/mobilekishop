@@ -41,8 +41,7 @@
                 register: '{{ route("auth.register") }}',
                 getProductsByBrand: '{{ route("get.products.by.brand") }}',
                 installmentPlanPost: '{{ route("installment.plan.post") }}',
-                reviewPost: '{{ route("review.post") }}',
-                storeUserInfo: '{{ route("store.user.info") }}'
+                reviewPost: '{{ route("review.post") }}'
             },
             isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}
         };

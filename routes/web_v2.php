@@ -75,7 +75,7 @@ $webRoutes = function () {
     // Product details
     Route::get('product/autocomplete', [ProductController::class, 'autocomplete'])->name('product.autocomplete');
     Route::get('product/{product}', [ProductController::class, 'show'])->name('product.show');
-    Route::get('products-show/{id}', [ProductController::class, 'getRedirect'])->name('product.redirect');
+
 
 
 
