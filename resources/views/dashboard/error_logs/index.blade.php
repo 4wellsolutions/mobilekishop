@@ -33,8 +33,17 @@
       <div class="admin-filter-grid">
         <div class="admin-form-group" style="margin-bottom:0;">
           <label class="admin-form-label">Search URL</label>
-          <input type="text" name="search" class="admin-form-control" placeholder="Search by URL..."
-            value="{{ request('search') }}">
+          <div style="display:flex; gap:5px;">
+            <select name="search_type" class="admin-form-control" style="width:140px; flex-shrink:0;">
+              <option value="contains" {{ request('search_type') == 'contains' ? 'selected' : '' }}>Contains</option>
+              <option value="not_contains" {{ request('search_type') == 'not_contains' ? 'selected' : '' }}>Not Contain</option>
+              <option value="starts_with" {{ request('search_type') == 'starts_with' ? 'selected' : '' }}>Starts With</option>
+              <option value="ends_with" {{ request('search_type') == 'ends_with' ? 'selected' : '' }}>Ends With</option>
+              <option value="exact" {{ request('search_type') == 'exact' ? 'selected' : '' }}>Exact</option>
+            </select>
+            <input type="text" name="search" class="admin-form-control" placeholder="URL pattern..."
+              value="{{ request('search') }}">
+          </div>
         </div>
         <div class="admin-form-group" style="margin-bottom:0;">
           <label class="admin-form-label">Error Code</label>

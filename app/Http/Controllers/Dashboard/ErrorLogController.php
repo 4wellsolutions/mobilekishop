@@ -18,9 +18,18 @@ class ErrorLogController extends Controller
             $query->where('error_code', $request->error_code);
         }
 
-        // Search by URL
+        // Search by URL with advanced types
         if ($request->filled('search')) {
-            $query->where('url', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $type = $request->get('search_type', 'contains');
+
+            match ($type) {
+                'not_contains' => $query->where('url', 'not like', '%' . $search . '%'),
+                'starts_with' => $query->where('url', 'like', $search . '%'),
+                'ends_with' => $query->where('url', 'like', '%' . $search),
+                'exact' => $query->where('url', $search),
+                default => $query->where('url', 'like', '%' . $search . '%'),
+            };
         }
 
         // Sort
