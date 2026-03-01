@@ -50,6 +50,12 @@
             </a>
           </li>
           <li class="sidebar-nav-item">
+            <a href="{{ route('dashboard.ai-import.index') }}"
+              class="sidebar-nav-link {{ Request::routeIs('dashboard.ai-import.*') ? 'active' : '' }}">
+              <i class="fas fa-robot" style="font-size:11px;margin-right:4px;opacity:0.7;"></i> AI Import
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
             <a href="{{ route('dashboard.expert-ratings.index') }}"
               class="sidebar-nav-link {{ Request::routeIs('dashboard.expert-ratings.*') ? 'active' : '' }}">
               Expert Ratings

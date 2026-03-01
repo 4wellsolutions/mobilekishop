@@ -762,7 +762,7 @@
             ['name' => $product->category ? $product->category->name : 'Products', 'url' => $categoryUrl],
             ['name' => $product->name, 'url' => url()->current()]
         ]
-    ])\r
+    ])
     {{-- Sticky Mobile Bottom Bar --}}
 
                    <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-border-lig

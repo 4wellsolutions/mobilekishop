@@ -176,11 +176,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
 @if (App::environment('production'))
   <!-- Google tag (gtag.js) -->
-  <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-1TRC97HYME"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GT-KFLGKWJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
+
+    gtag('config', 'GT-KFLGKWJ');
     gtag('config', 'G-1TRC97HYME');
   </script>
 @endif

@@ -211,7 +211,12 @@ Route::prefix('dashboard')
 		Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
 		// Settings
 		Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
-		Route::post('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+		Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+
+		// AI Product Import
+		Route::get('ai-import', [\App\Http\Controllers\Dashboard\AiImportController::class, 'index'])->name('ai-import.index');
+		Route::post('ai-import/process', [\App\Http\Controllers\Dashboard\AiImportController::class, 'process'])->name('ai-import.process');
+		Route::post('ai-import/save', [\App\Http\Controllers\Dashboard\AiImportController::class, 'save'])->name('ai-import.save');
 
 		// Cache Management
 		Route::get('cache', [\App\Http\Controllers\Dashboard\CacheController::class, 'index'])->name('cache.index');

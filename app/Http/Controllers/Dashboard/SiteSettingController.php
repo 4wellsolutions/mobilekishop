@@ -10,7 +10,7 @@ class SiteSettingController extends Controller
 {
     public function index()
     {
-        $settings = [
+        $settings = (object) [
             'head_code' => SiteSetting::get('head_code'),
             'body_start_code' => SiteSetting::get('body_start_code'),
             'body_end_code' => SiteSetting::get('body_end_code'),
