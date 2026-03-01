@@ -31,18 +31,20 @@
   <div class="admin-filter-panel">
     <form action="{{ route('dashboard.error_logs.index') }}" method="get">
       <div class="admin-filter-grid">
-        <div class="admin-form-group" style="margin-bottom:0;">
+        <div class="admin-form-group" style="margin-bottom:0; grid-column: span 2;">
           <label class="admin-form-label">Search URL</label>
           <div style="display:flex; gap:5px;">
-            <select name="search_type" class="admin-form-control" style="width:140px; flex-shrink:0;">
+            <select name="search_type" class="admin-form-control" style="width:110px; flex-shrink:0;">
               <option value="contains" {{ request('search_type') == 'contains' ? 'selected' : '' }}>Contains</option>
-              <option value="not_contains" {{ request('search_type') == 'not_contains' ? 'selected' : '' }}>Not Contain</option>
-              <option value="starts_with" {{ request('search_type') == 'starts_with' ? 'selected' : '' }}>Starts With</option>
+              <option value="not_contains" {{ request('search_type') == 'not_contains' ? 'selected' : '' }}>Not Contain
+              </option>
+              <option value="starts_with" {{ request('search_type') == 'starts_with' ? 'selected' : '' }}>Starts With
+              </option>
               <option value="ends_with" {{ request('search_type') == 'ends_with' ? 'selected' : '' }}>Ends With</option>
               <option value="exact" {{ request('search_type') == 'exact' ? 'selected' : '' }}>Exact</option>
             </select>
-            <input type="text" name="search" class="admin-form-control" placeholder="URL pattern..."
-              value="{{ request('search') }}">
+            <input type="text" name="search" class="admin-form-control" placeholder="URL pattern (e.g. /product/)..."
+              value="{{ request('search') }}" style="flex:1;">
           </div>
         </div>
         <div class="admin-form-group" style="margin-bottom:0;">
@@ -225,15 +227,18 @@
             else if (data.status >= 400) statusClass = 'badge-danger';
 
             cell.innerHTML = `
-              <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
-                ${data.status || '0'}
-              </span>
-            `;
+                <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
+                  ${data.status || '0'}
+                </span>
+              `;
+            toastr.success(data.message);
+          } else {
+            toastr.error(data.message || 'Failed to check status');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Failed to check status');
+          toastr.error('Failed to check status');
         })
         .finally(() => {
           icon.classList.remove('fa-spin');
@@ -245,9 +250,10 @@
     function copyToClipboard(elementId) {
       var text = document.getElementById(elementId).innerText;
       navigator.clipboard.writeText(text).then(function () {
-        alert('URL copied to clipboard');
+        toastr.success('URL copied to clipboard');
       }).catch(function (err) {
         console.error('Unable to copy', err);
+        toastr.error('Failed to copy URL');
       });
     }
   </script>

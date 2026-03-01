@@ -25,6 +25,7 @@
   {{-- Admin Modern Design System --}}
   <link href="{{URL::to('/')}}/css/admin-modern.css" rel="stylesheet" />
   <link href="{{URL::to('/')}}/css/html-editor.css" rel="stylesheet" />
+  <link href="{{URL::to('/')}}/assets/libs/toastr/build/toastr.min.css" rel="stylesheet" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   {{-- Apply saved theme before paint to prevent flash --}}
@@ -102,6 +103,7 @@
   {{-- Core Scripts --}}
   <script src="{{URL::to('/')}}/assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="{{URL::to('/')}}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{URL::to('/')}}/assets/libs/toastr/build/toastr.min.js"></script>
   <script src="{{URL::to('/')}}/js/html-editor.js"></script>
 
   {{-- Sidebar Toggle Script --}}
