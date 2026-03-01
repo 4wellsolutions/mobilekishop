@@ -84,7 +84,7 @@
     <div class="bg-surface-card rounded-xl p-4 mb-3">
         <div class="flex justify-between items-center mb-3 cursor-pointer"
             onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.toggle-icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'expand_more' : 'expand_less';">
-            <h5 class="text-sm font-semibold text-text-main m-0">Quick Filters</h5>
+            <h5 class="text-sm font-semibold text-text-main m-0">Quick Links</h5>
             <span class="material-symbols-outlined text-lg text-text-muted toggle-icon">expand_less</span>
         </div>
         <div class="max-h-[300px] overflow-y-auto">

@@ -281,7 +281,7 @@ class AccessoryController extends Controller
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        $typeName = Str::upper($watt) . 'W USB Type C';
+        $typeName = $watt . ' Watt USB Type C';
         $metas = (object) [
             'title' => "{$typeName} Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
             'description' => "Discover {$typeName} chargers designed for fast and efficient power delivery. Compatible with various devices for safe and reliable charging in {$country->country_name}.",

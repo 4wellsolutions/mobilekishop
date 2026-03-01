@@ -42,12 +42,14 @@
         // Strip country prefix from path if present (handles both "us/something" and bare "us")
         $basePath = preg_replace('/^[a-z]{2}(\/|$)/', '', $currentPath);
     @endphp
+    @php $isBlogPath = str_starts_with(ltrim($basePath, '/'), 'blog'); @endphp
+    @if(!$isBlogPath)
     <link rel="alternate" hreflang="x-default" href="{{ url($basePath) }}" />
-    @php $isBlogPath = str_starts_with(ltrim($basePath, '/'), 'blogs'); @endphp
     @foreach($allCountries as $c)
         <link rel="alternate" hreflang="{{ $c->locale ?? 'en-' . $c->country_code }}"
-            href="{{ url(($c->country_code == 'pk' || $isBlogPath) ? $basePath : $c->country_code . '/' . $basePath) }}" />
+            href="{{ url($c->country_code == 'pk' ? $basePath : $c->country_code . '/' . $basePath) }}" />
     @endforeach
+    @endif
 
     {{-- Open Graph Meta Tags --}}
     <meta property="og:type" content="@yield('og_type', 'website')">

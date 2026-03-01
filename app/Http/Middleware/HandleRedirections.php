@@ -22,15 +22,25 @@ class HandleRedirections
     public function handle(Request $request, Closure $next)
     {
         $currentUrl = $request->fullUrl();
+        $currentPath = '/' . ltrim($request->path(), '/');
 
-        // Cache all redirections as a lookup map (from_url => to_url)
+        // Cache all redirections as a lookup map
         // Refreshes every hour or when cache is manually cleared
         $redirections = Cache::remember('url_redirections', 3600, function () {
             return DB::table('redirections')->pluck('to_url', 'from_url')->toArray();
         });
 
+        // Check exact full URL match first
         if (isset($redirections[$currentUrl])) {
             return redirect()->to($redirections[$currentUrl], 301);
+        }
+
+        // Also check by path — extract path from stored from_url and compare
+        foreach ($redirections as $fromUrl => $toUrl) {
+            $fromPath = parse_url($fromUrl, PHP_URL_PATH);
+            if ($fromPath && $fromPath === $currentPath) {
+                return redirect()->to($toUrl, 301);
+            }
         }
 
         return $next($request);

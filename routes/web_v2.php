@@ -247,8 +247,8 @@ $webRoutes = function () {
         ->name('filter.charger.watt')
         ->where('watt', '[0-9]+');
 
-    // Chargers: {watt}w-usb-type-c-chargers
-    Route::get('{watt}w-usb-type-c-chargers', [AccessoryController::class, 'chargersByWattAndPortType'])
+    // Chargers: {watt}-watt-usb-type-c-chargers
+    Route::get('{watt}-watt-usb-type-c-chargers', [AccessoryController::class, 'chargersByWattAndPortType'])
         ->name('filter.charger.watt_type')
         ->where('watt', '[0-9]+');
 
@@ -273,7 +273,7 @@ $webRoutes = function () {
     Route::get('{brand}/{product}', [ProductController::class, 'show'])
         ->name('product.show.legacy')
         ->where([
-            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blogs)).*'
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blogs|google|facebook)).*'
         ]);
 };
 

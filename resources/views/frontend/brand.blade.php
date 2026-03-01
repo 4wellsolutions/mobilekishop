@@ -33,7 +33,7 @@
         <button
             class="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700 transition active:scale-95 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 flex-1 justify-center"
             onclick="document.getElementById('mobileFilters').classList.toggle('hidden')">
-            <span class="material-symbols-outlined text-[20px]">tune</span> Filters
+            <span class="material-symbols-outlined text-[20px]">tune</span> Quick Links
         </button>
         <div class="relative flex-1">
             <select
@@ -60,7 +60,7 @@
     <!-- Mobile Filters Sidebar (Hidden by default) -->
     <div id="mobileFilters" class="hidden lg:hidden fixed inset-0 z-50 bg-white dark:bg-slate-900 overflow-y-auto p-4">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold dark:text-white">Filters</h3>
+            <h3 class="text-xl font-bold dark:text-white">Quick Links</h3>
             <button onclick="document.getElementById('mobileFilters').classList.add('hidden')"
                 class="p-2 rounded-full bg-slate-100 dark:bg-slate-800">
                 <span class="material-symbols-outlined">close</span>
@@ -296,30 +296,30 @@
     </script>
 
     <script type="application/ld+json">
-                    {
-                      "@@context": "https://schema.org/",
-                      "@@type": "BreadcrumbList",
-                      "itemListElement": [
                         {
-                          "@@type": "ListItem",
-                          "position": 1,
-                           "name": "Home",
-                           "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
-                         },
-                        @if($category)
+                          "@@context": "https://schema.org/",
+                          "@@type": "BreadcrumbList",
+                          "itemListElement": [
                             {
                               "@@type": "ListItem",
-                              "position": 2,
-                               "name": "{{ Str::title($category->category_name) }}",
-                               "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                              "position": 1,
+                               "name": "Home",
+                               "item": "{{ url('/' . ($country->country_code === 'pk' ? '' : $country->country_code)) }}"
                              },
-                        @endif
-                        {
-                          "@@type": "ListItem",
-                          "position": {{ (isset($category) && $category) ? 3 : 2 }},
-                          "name": "{{ Str::title($brand->name ?? 'Brand') }}"
+                            @if($category)
+                                {
+                                  "@@type": "ListItem",
+                                  "position": 2,
+                                   "name": "{{ Str::title($category->category_name) }}",
+                                   "item": "{{ url(($country->country_code === 'pk' ? '' : $country->country_code) . '/category/' . $category->slug) }}"
+                                 },
+                            @endif
+                            {
+                              "@@type": "ListItem",
+                              "position": {{ (isset($category) && $category) ? 3 : 2 }},
+                              "name": "{{ Str::title($brand->name ?? 'Brand') }}"
+                            }
+                          ]
                         }
-                      ]
-                    }
-                    </script>
+                        </script>
 @endsection

@@ -260,7 +260,7 @@
     <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
         <details class="group" open>
             <summary class="flex cursor-pointer items-center justify-between py-2 font-bold marker:content-none text-slate-900 dark:text-white">
-                <span>Quick Filters</span>
+                <span>Quick Links</span>
                 <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
             </summary>
             <div class="pt-2 space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
