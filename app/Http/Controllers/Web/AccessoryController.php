@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Services\CountryService;
 use App\Services\FilterService;
 use App\Services\MetaService;
 use App\Services\ProductService;
@@ -13,21 +12,40 @@ use Illuminate\Support\Str;
 
 class AccessoryController extends Controller
 {
-    protected $countryService;
-    protected $filterService;
-    protected $metaService;
-    protected $productService;
-
     public function __construct(
-        CountryService $countryService,
-        FilterService $filterService,
-        MetaService $metaService,
-        ProductService $productService
+        private FilterService $filterService,
+        private MetaService $metaService,
+        private ProductService $productService
     ) {
-        $this->countryService = $countryService;
-        $this->filterService = $filterService;
-        $this->metaService = $metaService;
-        $this->productService = $productService;
+    }
+
+    /**
+     * Common handler for all accessory filter actions.
+     */
+    private function handleFilter(Request $request, $productsQuery, object $metas, string $categoryConfigKey, array $extraViewData = [])
+    {
+        $country = $request->attributes->get('country');
+
+        if ($request->has('filter')) {
+            $productsQuery = $this->productService->applyFilters($productsQuery, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $productsQuery->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $products = $productsQuery->simplePaginate(32);
+        $category = Category::find(config("categories.{$categoryConfigKey}"));
+        $filters = collect($request->query());
+
+        return view('frontend.filter', array_merge(
+            compact('products', 'metas', 'category', 'country', 'filters'),
+            $extraViewData
+        ));
     }
 
     /**
@@ -36,21 +54,11 @@ class AccessoryController extends Controller
     public function powerBanksByCapacity(Request $request)
     {
         $mah = (int) $request->route('mah');
+        if ($mah <= 0 || $mah > 100000)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getPowerBanksByCapacity($mah);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getPowerBanksByCapacity($mah, $country->country_code);
 
         $metas = (object) [
             'title' => "Best Power Banks with {$mah}mAh in {$country->country_name}",
@@ -60,11 +68,7 @@ class AccessoryController extends Controller
             'name' => "Power Banks with {$mah}mAh"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(9); // Power Banks
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'power_banks');
     }
 
     /**
@@ -75,19 +79,7 @@ class AccessoryController extends Controller
         $slug = $request->route('slug');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getPhoneCoversByModel($slug);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getPhoneCoversByModel($slug, $country->country_code);
 
         $title = ucwords(str_replace('-', ' ', $slug));
 
@@ -99,11 +91,7 @@ class AccessoryController extends Controller
             'name' => "{$title} Phone Cases"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(8); // Phone Covers
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'phone_covers');
     }
 
     /**
@@ -112,30 +100,14 @@ class AccessoryController extends Controller
     public function smartWatchesUnderPrice(Request $request)
     {
         $amount = (int) $request->route('amount');
+        if ($amount <= 0 || $amount > 10000000)
+            abort(404);
         $country = $request->attributes->get('country');
-        $countryCode = $country->country_code;
 
-        $products = $this->filterService->getSmartWatchesUnderPrice($amount, $countryCode);
+        $products = $this->filterService->getSmartWatchesUnderPrice($amount, $country->country_code);
+        $metas = $this->metaService->generatePriceFilterMeta($amount, $country, Category::find(config('categories.smart_watches')));
 
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
-        $metas = $this->metaService->generatePriceFilterMeta($amount, $country, Category::find(2));
-
-        $products = $products->simplePaginate(32);
-        $category = Category::find(2); // Smart Watches (Legacy ID 2)
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'smart_watches');
     }
 
     /**
@@ -144,23 +116,11 @@ class AccessoryController extends Controller
     public function phoneCoversByBrand(Request $request)
     {
         $brandParam = $request->route('brand');
-        $brandSlug = ($brandParam instanceof \App\Brand) ? $brandParam->slug : $brandParam;
+        $brandSlug = ($brandParam instanceof \App\Models\Brand) ? $brandParam->slug : $brandParam;
         $slug = $request->route('slug');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getPhoneCoversByBrand($brandSlug, $slug);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getPhoneCoversByBrand($brandSlug, $slug, $country->country_code);
 
         $brand = \App\Models\Brand::whereSlug($brandSlug)->first();
         if (!$brand) {
@@ -176,11 +136,7 @@ class AccessoryController extends Controller
             'name' => "{$brand->brand_name} {$title} Cases"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(8);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'phone_covers', ['brand' => $brand]);
     }
 
     /**
@@ -191,19 +147,7 @@ class AccessoryController extends Controller
         $portType = $request->route('type');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getChargersByPortType($portType);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getChargersByPortType($portType, $country->country_code);
 
         $typeName = Str::title(str_replace('-', ' ', $portType));
         $metas = (object) [
@@ -214,11 +158,7 @@ class AccessoryController extends Controller
             'name' => "{$typeName}"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(10); // Chargers
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'chargers');
     }
 
     /**
@@ -227,21 +167,11 @@ class AccessoryController extends Controller
     public function chargersByWatt(Request $request)
     {
         $watt = (int) $request->route('watt');
+        if ($watt <= 0 || $watt > 500)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getChargersByWatt($watt);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getChargersByWatt($watt, $country->country_code);
 
         $metas = (object) [
             'title' => "{$watt} Watt Chargers – Fast & Reliable Charging Adapters in {$country->country_name}",
@@ -251,11 +181,7 @@ class AccessoryController extends Controller
             'name' => "{$watt} Watt Chargers"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(10); // Chargers
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'chargers');
     }
 
     /**
@@ -264,22 +190,12 @@ class AccessoryController extends Controller
     public function chargersByWattAndPortType(Request $request)
     {
         $watt = (int) $request->route('watt');
+        if ($watt <= 0 || $watt > 500)
+            abort(404);
         $country = $request->attributes->get('country');
-        $portType = 'usb-type-c'; // Currently only Type C is used in specific watt routes in sidebar
+        $portType = 'usb-type-c';
 
-        $products = $this->filterService->getChargersByWattAndPortType($watt, $portType);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getChargersByWattAndPortType($watt, $portType, $country->country_code);
 
         $typeName = $watt . ' Watt USB Type C';
         $metas = (object) [
@@ -290,11 +206,7 @@ class AccessoryController extends Controller
             'name' => "{$typeName} Chargers"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(10); // Chargers
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'chargers');
     }
 
     /**
@@ -305,19 +217,7 @@ class AccessoryController extends Controller
         $slug = $request->route('slug');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getCablesByType($slug);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getCablesByType($slug, $country->country_code);
 
         $title = Str::title(str_replace('-', ' ', $slug));
 
@@ -329,11 +229,7 @@ class AccessoryController extends Controller
             'name' => "{$title} Cables"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(11); // Cables
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'cables');
     }
 
     /**
@@ -344,21 +240,11 @@ class AccessoryController extends Controller
         $brand = $request->route('brand');
         $brandSlug = ($brand instanceof \App\Models\Brand) ? $brand->slug : $brand;
         $watt = (int) $request->route('watt');
+        if ($watt <= 0 || $watt > 500)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getCablesByBrandAndWatt($brandSlug, $watt);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getCablesByBrandAndWatt($brandSlug, $watt, $country->country_code);
 
         $brandName = Str::title(str_replace('-', ' ', $brandSlug));
 
@@ -370,10 +256,6 @@ class AccessoryController extends Controller
             'name' => "{$brandName} {$watt}W Cables"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(11); // Cables
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas, 'cables');
     }
 }

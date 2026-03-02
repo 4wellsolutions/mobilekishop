@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Services\CountryService;
 use App\Services\FilterService;
 use App\Services\MetaService;
 use App\Services\ProductService;
@@ -12,21 +11,54 @@ use Illuminate\Http\Request;
 
 class TabletFilterController extends Controller
 {
-    protected $countryService;
-    protected $filterService;
-    protected $metaService;
-    protected $productService;
+    /** @var Category|null Cached tablets category */
+    private ?Category $tabletCategory = null;
 
     public function __construct(
-        CountryService $countryService,
-        FilterService $filterService,
-        MetaService $metaService,
-        ProductService $productService
+        private FilterService $filterService,
+        private MetaService $metaService,
+        private ProductService $productService
     ) {
-        $this->countryService = $countryService;
-        $this->filterService = $filterService;
-        $this->metaService = $metaService;
-        $this->productService = $productService;
+    }
+
+    /**
+     * Get the Tablets category (cached per request).
+     */
+    private function getTabletCategory(): Category
+    {
+        if (!$this->tabletCategory) {
+            $this->tabletCategory = Category::find(config('categories.tablets'));
+        }
+        return $this->tabletCategory;
+    }
+
+    /**
+     * Common handler for all tablet filter actions.
+     */
+    private function handleFilter(Request $request, $productsQuery, object $metas, array $extraViewData = [])
+    {
+        $country = $request->attributes->get('country');
+
+        if ($request->has('filter')) {
+            $productsQuery = $this->productService->applyFilters($productsQuery, $request->input('filter'), $country->id);
+        }
+
+        if ($request->ajax()) {
+            $products = $productsQuery->paginate(32);
+            if ($products->isEmpty()) {
+                return response()->json(['success' => false]);
+            }
+            return view('includes.products-partial', compact('products', 'country'))->render();
+        }
+
+        $products = $productsQuery->simplePaginate(32);
+        $category = $this->getTabletCategory();
+        $filters = collect($request->query());
+
+        return view('frontend.filter', array_merge(
+            compact('products', 'metas', 'category', 'country', 'filters'),
+            $extraViewData
+        ));
     }
 
     /**
@@ -34,32 +66,15 @@ class TabletFilterController extends Controller
      */
     public function underPrice(Request $request)
     {
-        // Retrieve 'amount' from route parameters safely
         $amount = (int) $request->route('amount');
-
+        if ($amount <= 0 || $amount > 10000000)
+            abort(404);
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getTabletsUnderPrice($amount, $country->country_code);
+        $metas = $this->metaService->generatePriceFilterMeta($amount, $country, $this->getTabletCategory());
 
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
-        $metas = $this->metaService->generatePriceFilterMeta($amount, $country, Category::find(3));
-
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3); // Tablets (Legacy ID 3)
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -68,21 +83,11 @@ class TabletFilterController extends Controller
     public function byRam(Request $request)
     {
         $ram = (int) $request->route('ram');
+        if ($ram <= 0 || $ram > 64)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsByRam($ram);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getTabletsByRam($ram, $country->country_code);
 
         $metas = (object) [
             'title' => "Tablets with {$ram}GB RAM Price in {$country->country_name}",
@@ -92,11 +97,7 @@ class TabletFilterController extends Controller
             'name' => "Tablets with {$ram}GB RAM"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -105,21 +106,11 @@ class TabletFilterController extends Controller
     public function byRom(Request $request)
     {
         $rom = (int) $request->route('rom');
+        if ($rom <= 0 || $rom > 2048)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsByRom($rom);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getTabletsByRom($rom, $country->country_code);
 
         $metas = (object) [
             'title' => "Tablets with {$rom}GB Storage Price in {$country->country_name}",
@@ -129,11 +120,7 @@ class TabletFilterController extends Controller
             'name' => "Tablets with {$rom}GB Storage"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -142,21 +129,11 @@ class TabletFilterController extends Controller
     public function byScreenSize(Request $request)
     {
         $inch = (int) $request->route('inch');
+        if ($inch <= 0 || $inch > 20)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsByScreenSize($inch);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getTabletsByScreenSize($inch, $country->country_code);
 
         $metas = (object) [
             'title' => "Tablets with {$inch}-inch Screen Price in {$country->country_name}",
@@ -166,11 +143,7 @@ class TabletFilterController extends Controller
             'name' => "Tablets with {$inch} Inch Screen"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -179,21 +152,11 @@ class TabletFilterController extends Controller
     public function byCameraMp(Request $request)
     {
         $mp = (int) $request->route('mp');
+        if ($mp <= 0 || $mp > 300)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsByCameraMp($mp);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getTabletsByCameraMp($mp, $country->country_code);
 
         $metas = (object) [
             'title' => "Tablets with {$mp}MP Camera Price in {$country->country_name}",
@@ -203,11 +166,7 @@ class TabletFilterController extends Controller
             'name' => "Tablets with {$mp}MP Camera"
         ];
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -218,26 +177,9 @@ class TabletFilterController extends Controller
         $type = $request->route('type');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getTabletsByType($type);
+        $products = $this->filterService->getTabletsByType($type, $country->country_code);
+        $metas = $this->metaService->generateTypeFilterMeta($type, $country, $this->getTabletCategory());
 
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
-        $metas = $this->metaService->generateTypeFilterMeta($type, $country, Category::find(3));
-
-        $products = $products->simplePaginate(32);
-        $category = Category::find(3);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 }

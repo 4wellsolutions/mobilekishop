@@ -73,6 +73,55 @@ class ErrorLogController extends Controller
         return redirect()->route('dashboard.error_logs.index')->with('success', "Deleted {$count} error log(s) successfully.");
     }
 
+    // Bulk check status of selected error logs
+    public function bulkCheckStatus(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No items selected.']);
+        }
+
+        $results = [];
+        $errorLogs = ErrorLog::whereIn('id', $ids)->get();
+
+        foreach ($errorLogs as $errorLog) {
+            try {
+                $url = $errorLog->url;
+                if (!str_starts_with($url, 'http')) {
+                    $url = url($url);
+                }
+
+                $response = \Illuminate\Support\Facades\Http::timeout(5)
+                    ->withHeaders(['User-Agent' => 'MobileKiShop-StatusChecker/1.0'])
+                    ->get($url);
+
+                $status = $response->status();
+            } catch (\Exception $e) {
+                $status = 0;
+            }
+
+            $errorLog->update([
+                'last_checked_status' => $status,
+                'last_checked_at' => now(),
+            ]);
+
+            $errorLog->refresh();
+
+            $results[] = [
+                'id' => $errorLog->id,
+                'status' => $status,
+                'checked_at' => $errorLog->last_checked_at->diffForHumans(),
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'results' => $results,
+            'message' => 'Checked status of ' . count($results) . ' URL(s).',
+        ]);
+    }
+
     // Check the HTTP status of a logged URL
     public function checkStatus(Request $request, $id)
     {

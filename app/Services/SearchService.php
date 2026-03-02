@@ -39,13 +39,20 @@ class SearchService
      */
     public function logSearch(string $query): void
     {
-        $agent = new Agent();
+        try {
+            $agent = new Agent();
 
-        DB::table('searches')->insert([
-            'query' => $query,
-            'user_agent' => "User Agent: browser:" . $agent->browser() .
-                " platform:" . $agent->platform() .
-                " device:" . $agent->device(),
-        ]);
+            DB::table('searches')->insert([
+                'query' => $query,
+                'user_agent' => "User Agent: browser:" . $agent->browser() .
+                    " platform:" . $agent->platform() .
+                    " device:" . $agent->device(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            // Don't let search logging failures break the search page
+            \Log::warning('Failed to log search query: ' . $e->getMessage());
+        }
     }
 }

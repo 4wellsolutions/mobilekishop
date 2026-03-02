@@ -134,10 +134,9 @@ class ProductService
             if (!empty($value)) {
                 $products = $products->whereHas('attributes', function ($query) use ($attribute, $value) {
                     if ($attribute === 'year') {
-                        // For year, we actually want to filter Products directly by release_date column or use pivot
-                        // But since year is passed as a filter, let's assume it refers to release_date attribute
+                        $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $value);
                         $query->where('name', 'release_date')
-                            ->where('product_attributes.value', 'like', "%$value%");
+                            ->where('product_attributes.value', 'like', "%$escaped%");
                     } else {
                         $query->where('name', $attribute)
                             ->where('product_attributes.value', $value);

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Services\CountryService;
 use App\Services\ProductService;
 use App\Services\BrandService;
 use App\Services\MetaService;
@@ -19,9 +18,7 @@ use Illuminate\Support\Facades\URL;
 class BrandController extends Controller
 {
     public function __construct(
-        private CountryService $countryService,
         private ProductService $productService,
-        private BrandService $brandService,
         private MetaService $metaService
     ) {
     }
@@ -38,7 +35,7 @@ class BrandController extends Controller
         if ($brandParam instanceof Brand) {
             $brand = $brandParam;
         } else {
-            $brand = \App\Models\Brand::whereSlug($brandParam)->first();
+            $brand = Brand::whereSlug($brandParam)->first();
         }
 
         if (!$brand) {
@@ -48,7 +45,7 @@ class BrandController extends Controller
         // Get category if provided
         $category = null;
         if ($categorySlug) {
-            $category = \App\Models\Category::whereSlug($categorySlug)->first();
+            $category = Category::whereSlug($categorySlug)->first();
             if (!$category) {
                 abort(404);
             }
@@ -83,7 +80,6 @@ class BrandController extends Controller
         $categorySlug = $request->route('category_slug') ?: 'all';
         $category = null;
 
-
         if ($categorySlug === 'all') {
             $metas = (object) [
                 "title" => Str::title("All Brands Mobile Phones, Tablets, Smart Watches {$country->country_name}"),
@@ -94,13 +90,11 @@ class BrandController extends Controller
             ];
             $categories = Category::with([
                 'brands' => function ($q) use ($country) {
-                    // Approximate logic from legacy: brands with active products in country
                     $q->whereHas('products.variants', function ($qv) use ($country) {
                         $qv->where('country_id', $country->id)->where('price', '>', 0);
                     });
                 }
             ])->get();
-
 
             $brands = collect([]);
         } else {

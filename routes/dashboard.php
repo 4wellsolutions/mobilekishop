@@ -236,6 +236,7 @@ Route::prefix('dashboard')
 		Route::get('error_logs/{id}/check', [ErrorLogController::class, 'checkStatus'])->name('error_logs.check');
 		Route::delete('error_logs/clear-all', [ErrorLogController::class, 'clearAll'])->name('error_logs.clearAll');
 		Route::delete('error_logs/bulk-delete', [ErrorLogController::class, 'bulkDestroy'])->name('error_logs.bulkDestroy');
+		Route::post('error_logs/bulk-check-status', [ErrorLogController::class, 'bulkCheckStatus'])->name('error_logs.bulkCheckStatus');
 		Route::delete('error_logs/{id}', [ErrorLogController::class, 'destroy'])->name('error_logs.destroy');
 
 

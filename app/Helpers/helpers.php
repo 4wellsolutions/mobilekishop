@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Country;
 use App\Models\Product;
 use App\Models\Category;
@@ -9,10 +10,12 @@ use App\Models\Brand;
 if (!function_exists('generate_hreflang_tags')) {
     function generate_hreflang_tags()
     {
-        $countries = Country::where('is_active', 1)
-                            ->where('is_menu', 1)
-                            ->get();
-        
+        $countries = Cache::remember('hreflang_countries', 3600, function () {
+            return Country::where('is_active', 1)
+                ->where('is_menu', 1)
+                ->get();
+        });
+
         $currentUrl = url()->current();
         $baseUrl = url('/');
         $segments = request()->segments();
@@ -78,17 +81,17 @@ if (!function_exists('generate_hreflang_tags')) {
                     $hreflangTags .= '<link rel="alternate" hreflang="' . $country->locale . '" href="' . $fullUrl . '">' . PHP_EOL;
                 }
             }
-        }elseif (Route::currentRouteName() === 'brand.show' || Route::currentRouteName() === 'country.brand.show') {
+        } elseif (Route::currentRouteName() === 'brand.show' || Route::currentRouteName() === 'country.brand.show') {
             $segment1 = request()->segment(2);
             $segment2 = request()->segment(3); // Extract the brand slug
             $brand = Brand::whereSlug($segment1)->first(); // Fetch brand by slug
             if ($brand) {
                 // Default hreflang tag for the brand page
-                $mainUrl = route('brand.show', [$segment1,$segment2], false);
+                $mainUrl = route('brand.show', [$segment1, $segment2], false);
                 $mainFullUrl = 'https://mobilekishop.net' . $mainUrl;
                 $hreflangTags .= '<link rel="alternate" hreflang="en" href="' . $mainFullUrl . '">' . PHP_EOL;
                 $hreflangTags .= '<link rel="alternate" hreflang="x-default" href="' . $mainFullUrl . '">' . PHP_EOL;
-                
+
                 foreach ($countries as $country) {
                     $domain = $country->country_code === 'pk' ? 'mobilekishop.net' : $country->country_code . '.mobilekishop.net';
                     $url = $country->country_code === 'pk'

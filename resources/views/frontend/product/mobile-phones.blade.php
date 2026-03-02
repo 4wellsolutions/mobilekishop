@@ -486,7 +486,7 @@
     <!-- TAB: User Opinions -->
     <div id="panel-reviews" class="hidden">
         @php
-            $reviews = $product->reviews;
+            $reviews = $product->activeReviews;
             $reviewCount = $reviews->count();
             $avgRating = $reviewCount > 0 ? round($reviews->avg('stars'), 1) : 0;
             $ratingDist = [];

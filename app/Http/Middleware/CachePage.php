@@ -51,6 +51,8 @@ class CachePage
             return response($cached['content'], $cached['status'])
                 ->withHeaders(array_merge($cached['headers'], [
                     'X-Page-Cache' => 'HIT',
+                    'Vary' => 'Accept-Encoding',
+                    'Cache-Control' => 'public, max-age=' . ($minutes * 60),
                 ]));
         }
 
@@ -72,6 +74,8 @@ class CachePage
             ], now()->addMinutes($minutes));
 
             $response->headers->set('X-Page-Cache', 'MISS');
+            $response->headers->set('Vary', 'Accept-Encoding');
+            $response->headers->set('Cache-Control', 'public, max-age=' . ($minutes * 60));
         }
 
         return $response;

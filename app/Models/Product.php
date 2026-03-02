@@ -79,9 +79,12 @@ class Product extends Model
     }
     public function reviews()
     {
-        $Reviews = $this->hasMany(Review::class);
-        $Reviews->getQuery()->where('is_active', 1);
-        return $Reviews;
+        return $this->hasMany(Review::class);
+    }
+
+    public function activeReviews()
+    {
+        return $this->hasMany(Review::class)->where('is_active', 1);
     }
 
     public function ProductAttributeViews()

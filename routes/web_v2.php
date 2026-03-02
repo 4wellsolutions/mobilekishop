@@ -86,15 +86,6 @@ $webRoutes = function () {
     Route::get('brand/{brand}/{categorySlug?}', [BrandController::class, 'show'])->name('brand.show');
     Route::get('brands/{category_slug?}', [BrandController::class, 'index'])->name('brands.by.category');
 
-    // Comparisons
-    Route::get('compare/{slug}', [ComparisonController::class, 'show'])
-        ->name('compare.show');
-    Route::get('comparison', [ComparisonController::class, 'index'])
-        ->name('comparison');
-
-    // Search
-    Route::get('search', [SearchController::class, 'search'])
-        ->name('search');
 
     // Sitemaps
     Route::get('html-sitemap', [SitemapController::class, 'htmlSitemap'])->name('html.sitemap');
@@ -146,7 +137,7 @@ $webRoutes = function () {
     // Screen size filters: mobile-phones-screen-{maxSize}-inch
     Route::get('mobile-phones-screen-{maxSize}-inch', [FilterController::class, 'byScreenSize'])
         ->name('filter.screen')
-        ->where('maxSize', '[0-9]+');
+        ->where('maxSize', '[0-9]+\.?[0-9]*');
 
     // Camera count: mobile-phones-{parameter}-camera
     Route::get('mobile-phones-{parameter}-camera', [FilterController::class, 'byCameraCount'])
@@ -277,7 +268,7 @@ $webRoutes = function () {
     Route::get('{brand}/{product}', [ProductController::class, 'show'])
         ->name('product.show.legacy')
         ->where([
-            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|mobile-installment-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blogs|google|facebook)).*'
+            'brand' => '^(?!(category|product|products|brand|brands|compare|comparison|search|sitemaps|html-sitemap|sponsor|privacy-policy|terms-and-conditions|contact|about-us|mobile-phones-under|packages|pta-calculator|dashboard|user|unsubscribe|auth|login|register|password|api|blogs|google|facebook)).*'
         ]);
 };
 

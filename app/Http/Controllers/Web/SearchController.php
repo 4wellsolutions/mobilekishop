@@ -25,11 +25,11 @@ class SearchController extends Controller
     {
         $country = $request->attributes->get('country');
 
-        if (!$request->filled('query')) {
+        if (!$request->filled('q') && !$request->filled('query')) {
             return redirect()->back()->with('fail', 'Please try again with different query!');
         }
 
-        $query = $request->get('query');
+        $query = $request->get('q') ?: $request->get('query');
 
         // Log search
         $this->searchService->logSearch($query);

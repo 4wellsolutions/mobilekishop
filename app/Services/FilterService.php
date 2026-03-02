@@ -3,18 +3,43 @@
 namespace App\Services;
 
 use App\Models\Product;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
 
 class FilterService
 {
     /**
+     * Standard eager-loads for filter result product cards.
+     * Includes variants scoped to country for price display.
+     */
+    private function withStandardRelations(?string $countryCode = null): array
+    {
+        $relations = ['brand', 'category'];
+
+        if ($countryCode) {
+            $relations['variants'] = function ($query) use ($countryCode) {
+                $query->where('country_id', function ($sub) use ($countryCode) {
+                    $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
+                })->where('price', '>', 0);
+            };
+        }
+
+        return $relations;
+    }
+
+    /**
+     * Base query for a given category.
+     */
+    private function categoryQuery(string $categoryConfigKey)
+    {
+        return Product::where('category_id', config("categories.{$categoryConfigKey}"));
+    }
+
+    /**
      * Get products under a specific price (Mobile Phones)
      */
     public function getProductsUnderPrice(int $amount, string $countryCode): Builder
     {
-        // Category 1 for Mobile Phones
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('variants', function ($query) use ($amount, $countryCode) {
                 $query->where('country_id', function ($sub) use ($countryCode) {
                     $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
@@ -22,10 +47,7 @@ class FilterService
                     ->where('price', '<=', $amount)
                     ->where('price', '>', 0);
             })
-            ->with([
-                'brand',
-                'category'
-            ]);
+            ->with($this->withStandardRelations($countryCode));
     }
 
     /**
@@ -33,7 +55,7 @@ class FilterService
      */
     public function getProductsByBrandAndPrice(string $brandSlug, int $amount, string $countryCode): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('brand', function ($query) use ($brandSlug) {
                 $query->where('slug', $brandSlug);
             })
@@ -44,59 +66,59 @@ class FilterService
                     ->where('price', '<=', $amount)
                     ->where('price', '>', 0);
             })
-            ->with(['brand', 'category']);
+            ->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by RAM size
      */
-    public function getProductsByRam(int $ram): Builder
+    public function getProductsByRam(int $ram, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($ram) {
-                $query->where('attribute_id', 76)
+                $query->where('attribute_id', config('attributes.mobile.ram'))
                     ->where('value', 'like', $ram . 'GB');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by ROM/Storage size
      */
-    public function getProductsByRom(int $rom, string $unit = 'GB'): Builder
+    public function getProductsByRom(int $rom, string $unit = 'GB', ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($rom, $unit) {
-                $query->where('attribute_id', 77)
+                $query->where('attribute_id', config('attributes.mobile.rom'))
                     ->where('value', 'like', $rom . strtoupper($unit));
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by RAM and ROM combination
      */
-    public function getProductsByRamRom(int $ram, int $rom): Builder
+    public function getProductsByRamRom(int $ram, int $rom, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($ram) {
-                $query->where('attribute_id', 76)
+                $query->where('attribute_id', config('attributes.mobile.ram'))
                     ->where('value', $ram . 'GB');
             })->whereHas('attributes', function ($query) use ($rom) {
-                $query->where('attribute_id', 77)
+                $query->where('attribute_id', config('attributes.mobile.rom'))
                     ->where('value', $rom . 'GB');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by screen size range
      */
-    public function getProductsByScreenSize(float $maxSize): Builder
+    public function getProductsByScreenSize(float $maxSize, ?string $countryCode = null): Builder
     {
         $ranges = [
             4 => [0, 4],
             5 => [4.1, 5],
             6 => [5.1, 6],
             7 => [6.1, 7],
-            8 => [7.1, 24], // 8+ means up to very large
+            8 => [7.1, 24],
         ];
 
         if (!array_key_exists((int) $maxSize, $ranges)) {
@@ -105,17 +127,17 @@ class FilterService
 
         $range = $ranges[(int) $maxSize];
 
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($range) {
-                $query->where('attribute_id', 75)
+                $query->where('attribute_id', config('attributes.mobile.screen_size'))
                     ->whereBetween('value', $range);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by number of cameras
      */
-    public function getProductsByCameraCount(string $parameter): Builder
+    public function getProductsByCameraCount(string $parameter, ?string $countryCode = null): Builder
     {
         $cameraMap = [
             'dual' => 2,
@@ -130,45 +152,47 @@ class FilterService
             abort(404, 'Invalid camera parameter');
         }
 
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($count) {
-                $query->where('attribute_id', 74)
+                $query->where('attribute_id', config('attributes.mobile.camera_count'))
                     ->where('value', $count);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by camera megapixels
      */
-    public function getProductsByCameraMp(int $mp): Builder
+    public function getProductsByCameraMp(int $mp, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($mp) {
-                $query->where('attribute_id', 73)
+                $query->where('attribute_id', config('attributes.mobile.camera_mp'))
                     ->where('value', $mp);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by processor types
      */
-    public function getProductsByProcessor(string $processor): Builder
+    public function getProductsByProcessor(string $processor, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
-            ->whereHas('attributes', function ($query) use ($processor) {
-                $query->where('attribute_id', 34)
-                    ->where('value', 'like', "%" . $processor . "%");
-            })->with(['brand', 'category']);
+        $safeProcessor = str_replace(['%', '_'], ['\%', '\_'], $processor);
+
+        return $this->categoryQuery('mobile_phones')
+            ->whereHas('attributes', function ($query) use ($safeProcessor) {
+                $query->where('attribute_id', config('attributes.mobile.processor'))
+                    ->where('value', 'like', "%" . $safeProcessor . "%");
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get curved screen phones by brand
      */
-    public function getCurvedScreensByBrand(string $brandSlug): Builder
+    public function getCurvedScreensByBrand(string $brandSlug, ?string $countryCode = null): Builder
     {
-        $query = Product::where('category_id', 1)
+        $query = $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) {
-                $query->where('attribute_id', 263)->where('value', 1);
+                $query->where('attribute_id', config('attributes.mobile.curved_display'))->where('value', 1);
             });
 
         if ($brandSlug !== 'all') {
@@ -177,29 +201,29 @@ class FilterService
             });
         }
 
-        return $query->with(['brand', 'category']);
+        return $query->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get products by type (folding, flip, 4g, 5g)
      */
-    public function getProductsByType(string $type): Builder
+    public function getProductsByType(string $type, ?string $countryCode = null): Builder
     {
         $type = strtolower($type);
 
         // Handle 4G/5G network technology
         if (in_array($type, ['4g', '5g'])) {
             $tech = strtoupper($type);
-            return Product::where('category_id', 1)
+            return $this->categoryQuery('mobile_phones')
                 ->whereHas('attributes', function ($query) use ($tech) {
-                    $query->where('attribute_id', 36)
+                    $query->where('attribute_id', config('attributes.mobile.network'))
                         ->where('value', 'like', "%{$tech}%");
-                })->with(['brand', 'category']);
+                })->with($this->withStandardRelations($countryCode));
         }
 
         $typeMap = [
-            'folding' => 265,
-            'flip' => 264,
+            'folding' => config('attributes.mobile.folding'),
+            'flip' => config('attributes.mobile.flip'),
         ];
 
         $attrId = $typeMap[$type] ?? null;
@@ -208,71 +232,73 @@ class FilterService
             abort(404, 'Invalid type parameter');
         }
 
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) use ($attrId) {
                 $query->where('attribute_id', $attrId)
                     ->where('value', 1);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get upcoming products
      */
-    public function getUpcomingProducts(): Builder
+    public function getUpcomingProducts(?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 1)
+        return $this->categoryQuery('mobile_phones')
             ->whereHas('attributes', function ($query) {
-                $query->where('attribute_id', 80)
+                $query->where('attribute_id', config('attributes.mobile.release_date'))
                     ->where('value', '>', now());
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get power banks by capacity (mAh)
      */
-    public function getPowerBanksByCapacity(int $mah): Builder
+    public function getPowerBanksByCapacity(int $mah, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 9)
-            ->whereHas('attributes', function ($query) use ($mah) {
-                $query->where('attribute_id', 302)
-                    ->where('value', 'like', "%" . $mah . "%");
-            })->with(['brand', 'category']);
+        $safeMah = str_replace(['%', '_'], ['\%', '\_'], (string) $mah);
+
+        return $this->categoryQuery('power_banks')
+            ->whereHas('attributes', function ($query) use ($safeMah) {
+                $query->where('attribute_id', config('attributes.powerbank.capacity'))
+                    ->where('value', 'like', "%" . $safeMah . "%");
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get phone covers by model slug
      */
-    public function getPhoneCoversByModel(string $slug): Builder
+    public function getPhoneCoversByModel(string $slug, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 8)
+        return $this->categoryQuery('phone_covers')
             ->whereHas('attributes', function ($query) use ($slug) {
-                $query->where('attribute_id', 312)
+                $query->where('attribute_id', config('attributes.phonecover.model'))
                     ->where('value', $slug);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get tablets by RAM
      */
-    public function getTabletsByRam(int $ram): Builder
+    public function getTabletsByRam(int $ram, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('attributes', function ($query) use ($ram) {
-                $query->where('attribute_id', 239)
+                $query->where('attribute_id', config('attributes.tablet.ram'))
                     ->where('value', 'like', $ram . 'GB');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get tablets by ROM
      */
-    public function getTabletsByRom(int $rom): Builder
+    public function getTabletsByRom(int $rom, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('attributes', function ($query) use ($rom) {
-                $query->where('attribute_id', 77)
+                $query->where('attribute_id', config('attributes.tablet.rom'))
                     ->where('value', 'like', $rom . 'GB');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
@@ -280,14 +306,14 @@ class FilterService
      */
     public function getTabletsUnderPrice(int $amount, string $countryCode): Builder
     {
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('variants', function ($query) use ($amount, $countryCode) {
                 $query->where('country_id', function ($sub) use ($countryCode) {
                     $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
                 })
                     ->where('price', '<=', $amount)
                     ->where('price', '>', 0);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
@@ -295,116 +321,115 @@ class FilterService
      */
     public function getSmartWatchesUnderPrice(int $amount, string $countryCode): Builder
     {
-        return Product::where('category_id', 2)
+        return $this->categoryQuery('smart_watches')
             ->whereHas('variants', function ($query) use ($amount, $countryCode) {
                 $query->where('country_id', function ($sub) use ($countryCode) {
                     $sub->select('id')->from('countries')->where('country_code', $countryCode)->limit(1);
                 })
                     ->where('price', '<=', $amount)
                     ->where('price', '>', 0);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get phone covers by brand and model slug
      */
-    public function getPhoneCoversByBrand(string $brandSlug, string $modelSlug): Builder
+    public function getPhoneCoversByBrand(string $brandSlug, string $modelSlug, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 8)
+        return $this->categoryQuery('phone_covers')
             ->whereHas('brand', function ($q) use ($brandSlug) {
                 $q->where('slug', $brandSlug);
             })
             ->whereHas('attributes', function ($q) use ($modelSlug) {
-                $q->where('attribute_id', 312)
+                $q->where('attribute_id', config('attributes.phonecover.model'))
                     ->where('value', $modelSlug);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get tablets by screen size
      */
-    public function getTabletsByScreenSize(float $inch): Builder
+    public function getTabletsByScreenSize(float $inch, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('attributes', function ($query) use ($inch) {
-                $query->where('attribute_id', 1) // Using same attribute ID as mobile for screen size
+                $query->where('attribute_id', config('attributes.tablet.screen'))
                     ->where('value', 'like', $inch . '%');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get tablets by camera MP
      */
-    public function getTabletsByCameraMp(int $mp): Builder
+    public function getTabletsByCameraMp(int $mp, ?string $countryCode = null): Builder
     {
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('attributes', function ($query) use ($mp) {
-                $query->where('attribute_id', 5) // Using same attribute ID as mobile for camera
+                $query->where('attribute_id', config('attributes.tablet.camera_mp'))
                     ->where('value', 'like', $mp . 'MP');
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get tablets by type (4g, 5g)
      */
-    public function getTabletsByType(string $type): Builder
+    public function getTabletsByType(string $type, ?string $countryCode = null): Builder
     {
         $type = strtolower($type);
-        $attrId = $type === '4g' ? 199 : 200;
+        $attrId = config("attributes.tablet.{$type}");
 
-        return Product::where('category_id', 3)
+        return $this->categoryQuery('tablets')
             ->whereHas('attributes', function ($query) use ($attrId) {
                 $query->where('attribute_id', $attrId);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get chargers by port type (Attribute 315)
      */
-    public function getChargersByPortType(string $portType): Builder
+    public function getChargersByPortType(string $portType, ?string $countryCode = null): Builder
     {
-        // Category 10 for Chargers
         $tech = str_replace('-', ' ', $portType);
-        return Product::where('category_id', 10)
+        return $this->categoryQuery('chargers')
             ->whereHas('attributes', function ($query) use ($tech) {
-                $query->where('attribute_id', 315)
+                $query->where('attribute_id', config('attributes.charger.port_type'))
                     ->where('value', 'like', "%{$tech}%");
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get chargers by wattage (Attribute 323)
      */
-    public function getChargersByWatt(int $watt): Builder
+    public function getChargersByWatt(int $watt, ?string $countryCode = null): Builder
     {
         $watt_values = [0, 15, 20, 25, 35, 45, 65, 75, 100, 120, 150, 180, 200, 240];
         $lowerWatt = $this->getLowerValue($watt, $watt_values);
 
-        return Product::where('category_id', 10)
+        return $this->categoryQuery('chargers')
             ->whereHas('attributes', function ($query) use ($lowerWatt, $watt) {
-                $query->where('attribute_id', 323)
+                $query->where('attribute_id', config('attributes.charger.wattage'))
                     ->whereBetween('value', [$lowerWatt, $watt]);
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get chargers by wattage and port type (USB Type C specific likely)
      */
-    public function getChargersByWattAndPortType(int $watt, string $portType): Builder
+    public function getChargersByWattAndPortType(int $watt, string $portType, ?string $countryCode = null): Builder
     {
         $watt_values = [0, 30, 45, 60, 65, 67, 140];
         $lowerWatt = $this->getLowerValue($watt, $watt_values);
         $tech = str_replace('-', ' ', $portType);
 
-        return Product::where('category_id', 10)
+        return $this->categoryQuery('chargers')
             ->whereHas('attributes', function ($query) use ($lowerWatt, $watt) {
-                $query->where('attribute_id', 323)
+                $query->where('attribute_id', config('attributes.charger.wattage'))
                     ->whereBetween('value', [$lowerWatt, $watt]);
             })
             ->whereHas('attributes', function ($query) use ($tech) {
-                $query->where('attribute_id', 315)
+                $query->where('attribute_id', config('attributes.charger.port_type'))
                     ->where('value', 'like', "%{$tech}%");
-            })->with(['brand', 'category']);
+            })->with($this->withStandardRelations($countryCode));
     }
 
     /**
@@ -426,25 +451,24 @@ class FilterService
 
     /**
      * Get cables by type slug (e.g., usb-c-to-usb-c, usb-a-to-usb-c)
-     * Matches against the product name/slug containing the type string.
      */
-    public function getCablesByType(string $typeSlug): Builder
+    public function getCablesByType(string $typeSlug, ?string $countryCode = null): Builder
     {
-        $search = str_replace('-', ' ', $typeSlug); // "usb c to usb c"
-        return Product::where('category_id', 11)
+        $search = str_replace('-', ' ', $typeSlug);
+        return $this->categoryQuery('cables')
             ->where('name', 'like', "%{$search}%")
-            ->with(['brand', 'category']);
+            ->with($this->withStandardRelations($countryCode));
     }
 
     /**
      * Get cables by brand and wattage
      */
-    public function getCablesByBrandAndWatt(string $brandSlug, int $watt): Builder
+    public function getCablesByBrandAndWatt(string $brandSlug, int $watt, ?string $countryCode = null): Builder
     {
         $watt_values = [0, 15, 30, 60, 100, 140, 240];
         $lowerWatt = $this->getLowerValue($watt, $watt_values);
 
-        $query = Product::where('category_id', 11)
+        $query = $this->categoryQuery('cables')
             ->whereHas('brand', function ($q) use ($brandSlug) {
                 $q->where('slug', $brandSlug);
             });
@@ -453,6 +477,6 @@ class FilterService
             $query->where('name', 'like', "%{$watt}%");
         }
 
-        return $query->with(['brand', 'category']);
+        return $query->with($this->withStandardRelations($countryCode));
     }
 }

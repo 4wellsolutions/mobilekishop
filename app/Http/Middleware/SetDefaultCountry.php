@@ -21,9 +21,6 @@ class SetDefaultCountry
         // Set the country code as a route parameter for use in controllers
         $request->route()->setParameter('country_code', $country->country_code);
 
-        // Store in session for backward compatibility (will be removed later)
-        session(['country_code' => $country->country_code]);
-
         // Share country with all views
         \View::share('country', $country);
 

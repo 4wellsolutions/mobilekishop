@@ -39,8 +39,6 @@
             routes: {
                 login: '{{ route("login.post") }}',
                 register: '{{ route("auth.register") }}',
-                getProductsByBrand: '{{ route("get.products.by.brand") }}',
-                installmentPlanPost: '{{ route("installment.plan.post") }}',
                 reviewPost: '{{ route("review.post") }}'
             },
             isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}

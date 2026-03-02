@@ -212,6 +212,11 @@
                     <!-- Compare -->
                     <a class="text-sm font-medium text-text-muted hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
                         href="{{ $comparisonRoute }}">Compare</a>
+                    @if($isPk)
+                    <!-- Packages (Pakistan only) -->
+                    <a class="text-sm font-medium text-text-muted hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
+                        href="{{ route('package.index') }}">Packages</a>
+                    @endif
                     <!-- Blog -->
                     <a class="text-sm font-medium text-text-muted hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
                     href="{{ url('/blogs') }}">Blog</a>
@@ -238,14 +243,9 @@
                         @foreach($menuCountries as $mc)
                             @php
                                 $isActive = $mc->country_code === $currentCountryCode;
-                                // Auth pages and blog pages are global — no country prefix
-                                $isAuthPage = in_array(ltrim($basePath, '/'), ['login', 'register', 'password/reset', '']);
-                                $isBlogPage = str_starts_with(ltrim($basePath, '/'), 'blogs');
-                                // Auth pages → redirect to country homepage; Blog pages → keep same URL
-                                $switchPath = ($isAuthPage && $basePath !== '') ? '' : $basePath;
-                                $countryUrl = ($mc->country_code === 'pk' || $isBlogPage)
-                                    ? url($switchPath)
-                                    : url($mc->country_code . '/' . $switchPath);
+                                $countryUrl = $mc->country_code === 'pk'
+                                    ? url('/')
+                                    : url($mc->country_code);
                             @endphp
                             <a href="{{ $countryUrl }}"
                                 class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isActive ? 'text-primary bg-primary/5 font-semibold' : 'text-text-muted hover:text-primary hover:bg-slate-50' }}">

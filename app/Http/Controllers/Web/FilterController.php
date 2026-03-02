@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 
 class FilterController extends Controller
 {
+    /** @var Category|null Cached mobile phones category */
+    private ?Category $mobileCategory = null;
+
     public function __construct(
         private FilterService $filterService,
         private ProductService $productService,
@@ -21,46 +24,69 @@ class FilterController extends Controller
     }
 
     /**
-     * Show products under a specific price
+     * Get the Mobile Phones category (cached per request).
      */
-    public function underPrice(Request $request)
+    private function getMobileCategory(): Category
     {
-        $amount = (int) $request->route('amount');
-        $country = $request->attributes->get('country');
-        $filters = collect($request->input('filter', [])); // Pass as collection
-        if ($filters->isEmpty() && $request->has('min')) {
-            $filters = collect($request->all());
+        if (!$this->mobileCategory) {
+            $this->mobileCategory = Category::find(config('categories.mobile_phones'));
         }
+        return $this->mobileCategory;
+    }
 
-        // Get products
-        $products = $this->filterService->getProductsUnderPrice($amount, $country->country_code);
+    /**
+     * Common handler for all filter actions.
+     * Eliminates duplication across 11 near-identical methods.
+     *
+     * @param Request $request
+     * @param \Illuminate\Database\Eloquent\Builder $productsQuery
+     * @param object $metas
+     * @param array $extraViewData Additional variables to pass to the view
+     * @return \Illuminate\Http\Response|\Illuminate\Contracts\View\View|string
+     */
+    private function handleFilter(Request $request, $productsQuery, object $metas, array $extraViewData = [])
+    {
+        $country = $request->attributes->get('country');
 
         // Apply additional filters if present
         if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-            $filters = collect($request->input('filter'));
+            $productsQuery = $this->productService->applyFilters($productsQuery, $request->input('filter'), $country->id);
         }
 
         // Handle AJAX pagination
         if ($request->ajax()) {
-            $products = $products->paginate(32);
+            $products = $productsQuery->paginate(32);
             if ($products->isEmpty()) {
                 return response()->json(['success' => false]);
             }
             return view('includes.products-partial', compact('products', 'country'))->render();
         }
 
-        // Get metadata
-        $metas = $this->metaService->generatePriceFilterMeta($amount, $country);
-
         // Paginate
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1); // Mobile phones category
-
-        // Pass filters explicitly
+        $products = $productsQuery->simplePaginate(32);
+        $category = $this->getMobileCategory();
         $filters = collect($request->query());
 
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return view('frontend.filter', array_merge(
+            compact('products', 'metas', 'category', 'country', 'filters'),
+            $extraViewData
+        ));
+    }
+
+    /**
+     * Show products under a specific price
+     */
+    public function underPrice(Request $request)
+    {
+        $amount = (int) $request->route('amount');
+        if ($amount <= 0 || $amount > 10000000)
+            abort(404);
+        $country = $request->attributes->get('country');
+
+        $products = $this->filterService->getProductsUnderPrice($amount, $country->country_code);
+        $metas = $this->metaService->generatePriceFilterMeta($amount, $country);
+
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -71,30 +97,19 @@ class FilterController extends Controller
         $brandParam = $request->route('brand');
         $brandSlug = ($brandParam instanceof \App\Models\Brand) ? $brandParam->slug : $brandParam;
         $amount = (int) $request->route('amount');
+        if ($amount <= 0 || $amount > 10000000)
+            abort(404);
         $country = $request->attributes->get('country');
 
         $products = $this->filterService->getProductsByBrandAndPrice($brandSlug, $amount, $country->country_code);
 
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
         $brand = \App\Models\Brand::whereSlug($brandSlug)->first();
         $metas = $this->metaService->generateBrandPriceFilterMeta($brand, $amount, $country);
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
 
-        $activeBrand = $brand;
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'activeBrand', 'filters'));
+        return $this->handleFilter($request, $products, $metas, [
+            'brand' => $brand,
+            'activeBrand' => $brand,
+        ]);
     }
 
     /**
@@ -103,33 +118,14 @@ class FilterController extends Controller
     public function byRam(Request $request)
     {
         $ram = (int) $request->route('ram');
+        if ($ram <= 0 || $ram > 64)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        // Get products
-        $products = $this->filterService->getProductsByRam($ram);
-
-        // Apply additional filters
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        // Handle AJAX
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
-        // Metadata
+        $products = $this->filterService->getProductsByRam($ram, $country->country_code);
         $metas = $this->metaService->generateRamFilterMeta($ram, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -138,29 +134,14 @@ class FilterController extends Controller
     public function byRom(Request $request)
     {
         $rom = (int) $request->route('rom');
+        if ($rom <= 0 || $rom > 2048)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByRom($rom);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByRom($rom, 'GB', $country->country_code);
         $metas = $this->metaService->generateRomFilterMeta($rom, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -170,29 +151,14 @@ class FilterController extends Controller
     {
         $ram = (int) $request->route('ram');
         $rom = (int) $request->route('rom');
+        if ($ram <= 0 || $ram > 64 || $rom <= 0 || $rom > 2048)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByRamRom($ram, $rom);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByRamRom($ram, $rom, $country->country_code);
         $metas = $this->metaService->generateRamRomFilterMeta($ram, $rom, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -201,29 +167,14 @@ class FilterController extends Controller
     public function byScreenSize(Request $request)
     {
         $maxSize = (float) $request->route('maxSize');
+        if ($maxSize <= 0 || $maxSize > 20)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByScreenSize($maxSize);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByScreenSize($maxSize, $country->country_code);
         $metas = $this->metaService->generateScreenFilterMeta($maxSize, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -234,27 +185,10 @@ class FilterController extends Controller
         $parameter = $request->route('parameter');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByCameraCount($parameter);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByCameraCount($parameter, $country->country_code);
         $metas = $this->metaService->generateCameraCountFilterMeta($parameter, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -263,29 +197,14 @@ class FilterController extends Controller
     public function byCameraMp(Request $request)
     {
         $mp = (int) $request->route('mp');
+        if ($mp <= 0 || $mp > 300)
+            abort(404);
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByCameraMp($mp);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByCameraMp($mp, $country->country_code);
         $metas = $this->metaService->generateCameraMpFilterMeta($mp, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -296,58 +215,24 @@ class FilterController extends Controller
         $processor = $request->route('processor');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByProcessor($processor);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByProcessor($processor, $country->country_code);
         $metas = $this->metaService->generateProcessorFilterMeta($processor, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
-     * Show products by type (folding, flip)
+     * Show products by type (folding, flip, 4g, 5g)
      */
     public function byType(Request $request)
     {
         $type = $request->route('type');
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getProductsByType($type);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
-
+        $products = $this->filterService->getProductsByType($type, $country->country_code);
         $metas = $this->metaService->generateTypeFilterMeta($type, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 
     /**
@@ -358,28 +243,14 @@ class FilterController extends Controller
         $brandSlug = $request->route('brandSlug') ?: 'all';
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getCurvedScreensByBrand($brandSlug);
-
-        if ($request->has('filter')) {
-            $products = $this->productService->applyFilters($products, $request->input('filter'), $country->id);
-        }
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getCurvedScreensByBrand($brandSlug, $country->country_code);
 
         $brand = $brandSlug !== 'all' ? \App\Models\Brand::whereSlug($brandSlug)->first() : null;
         $metas = $this->metaService->generateCurvedFilterMeta($brand, $country);
 
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
-
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'filters'));
+        return $this->handleFilter($request, $products, $metas, [
+            'brand' => $brand,
+        ]);
     }
 
     /**
@@ -389,20 +260,9 @@ class FilterController extends Controller
     {
         $country = $request->attributes->get('country');
 
-        $products = $this->filterService->getUpcomingProducts();
-
-        if ($request->ajax()) {
-            $products = $products->paginate(32);
-            if ($products->isEmpty()) {
-                return response()->json(['success' => false]);
-            }
-            return view('includes.products-partial', compact('products', 'country'))->render();
-        }
+        $products = $this->filterService->getUpcomingProducts($country->country_code);
         $metas = $this->metaService->generateUpcomingMeta($country);
-        $products = $products->simplePaginate(32);
-        $category = Category::find(1);
-        $filters = collect($request->query());
 
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'filters'));
+        return $this->handleFilter($request, $products, $metas);
     }
 }

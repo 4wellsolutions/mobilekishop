@@ -12,10 +12,8 @@ use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PackageController;
-use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PTACalculatorController;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\JobController;
 
 
 
@@ -90,8 +88,8 @@ Route::prefix('user')->middleware('auth')->group(function () {
 
 
 // Social login routes
-Route::get('/{social}/redirect', [LoginController::class, 'socialRedirect'])->name('social.redirect');
-Route::get('/{social}/callback', [LoginController::class, 'socialCallback'])->name('social.callback');
+Route::get('/{social}/redirect', [LoginController::class, 'socialRedirect'])->name('social.redirect')->where('social', 'google|facebook');
+Route::get('/{social}/callback', [LoginController::class, 'socialCallback'])->name('social.callback')->where('social', 'google|facebook');
 
 // user routes
 Route::get('/password/reset', function () {
@@ -122,10 +120,6 @@ Route::middleware(['default.country'])->group(function () {
     Route::get('/pta-calculator', [PTACalculatorController::class, 'index'])->name('pta.calculator');
     Route::get('/get-products-by-brand-pta', [PTACalculatorController::class, 'getProductsByBrandPTA'])->name('get.products.by.brand.pta');
     Route::get('/get-pta-tax', [PTACalculatorController::class, 'getPTATax'])->name('get.pta');
-    Route::get('/mobile-installment-calculator', [FinanceController::class, 'index'])->name('installment.plan');
-    Route::post('/mobile-installment-calculator-post', [FinanceController::class, 'postInstallments'])->name('installment.plan.post');
-    Route::get('/installment/{price}/{bank}', [FinanceController::class, 'calculateInstallment'])->name('installment.plan.details');
-    Route::get('/get-products-by-brand', [FinanceController::class, 'getProductsByBrand'])->name('get.products.by.brand');
 
     // Sitemaps (Legacy/XML)
     Route::get('/sitemaps', [SitemapController::class, 'index'])->name('sitemap.index');
@@ -147,32 +141,9 @@ Route::get('/app-scraper', [AppController::class, 'index']);
 Route::post('/app-scraper', [AppController::class, 'postData'])->name('app.scraper.post');
 Route::post('/contact', [HomeController::class, 'contactPost'])->name('contact.post')->middleware(['default.country', 'throttle:1,60']);
 
-// Background job routes
-Route::get('/jobs/marked-deleted', [JobController::class, 'markAsDeleted'])->name('job.mark.deleted');
-Route::get('/jobs/marked-expired', [JobController::class, 'markAsExpired'])->name('job.mark.expired');
-
-// Artisan commands for background tasks and cache clearing
-Route::get('/run-queue', function () {
-    Artisan::call('queue:work', [
-        '--queue' => 'default',
-        '--tries' => 3,
-        '--timeout' => 45
-    ]);
-});
-
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('config:cache');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    Artisan::call('optimize:clear');
-
-    return 'All caches cleared successfully!';
-});
 
 // Review post route
-Route::post('/review', [HomeController::class, 'reviewPost'])->name('review.post');
+Route::post('/review', [HomeController::class, 'reviewPost'])->name('review.post')->middleware('throttle:5,1');
 
 // Password reset route
 Route::get('/password/reset', function () {

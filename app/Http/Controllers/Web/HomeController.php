@@ -37,27 +37,28 @@ class HomeController extends Controller
         // Fetch data for home page (customized for country if needed)
         // For now, let's keep it simple as per legacy but using services later
         $categories = Category::where('is_active', 1)
-            ->get()
-            ->map(function ($category) use ($country) {
-                /** @var \App\Models\Category $category */
-                $category->latest_products = $category->products()
-                    ->whereHas('variants', function ($query) use ($country) {
-                        $query->where('country_id', $country->id)->where('price', '>', 0);
+            ->with([
+                'products' => function ($query) use ($country) {
+                    $query->whereHas('variants', function ($vq) use ($country) {
+                        $vq->where('country_id', $country->id)->where('price', '>', 0);
                     })
-                    ->with([
-                        'variants' => function ($query) use ($country) {
-                            $query->where('country_id', $country->id)->where('price', '>', 0);
-                        },
-                        'brand',
-                        'category',
-                        'attributes' => function ($query) {
-                            $query->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
-                        },
-                    ])
-                    ->latest()
-                    ->take(4)
-                    ->get();
-                return $category;
+                        ->with([
+                            'variants' => function ($vq) use ($country) {
+                                $vq->where('country_id', $country->id)->where('price', '>', 0);
+                            },
+                            'brand',
+                            'category',
+                            'attributes' => function ($aq) {
+                                $aq->whereIn('attributes.name', ['size', 'chipset', 'main', 'capacity', 'battery']);
+                            },
+                        ])
+                        ->latest()
+                        ->take(4);
+                }
+            ])
+            ->get()
+            ->each(function ($category) {
+                $category->latest_products = $category->products;
             });
 
         // Generate meta

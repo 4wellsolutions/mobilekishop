@@ -13,6 +13,10 @@
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
       @if($errorLogs->total() > 0)
+        <button type="button" class="btn-admin-primary" id="bulkCheckStatusBtn" style="display:none;"
+          onclick="bulkCheckStatus()">
+          <i class="fas fa-sync-alt"></i> Check Status (<span id="selectedCountCheck">0</span>)
+        </button>
         <button type="button" class="btn-admin-danger" id="bulkDeleteBtn" style="display:none;"
           onclick="document.getElementById('bulkDeleteForm').submit()">
           <i class="fas fa-trash-alt"></i> Delete Selected (<span id="selectedCount">0</span>)
@@ -237,10 +241,10 @@
             else if (data.status >= 400) statusClass = 'badge-danger';
 
             cell.innerHTML = `
-                  <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
-                    ${data.status || '0'}
-                  </span>
-                `;
+                    <span class="admin-badge ${statusClass}" title="Checked ${data.checked_at}">
+                      ${data.status || '0'}
+                    </span>
+                  `;
             toastr.success(data.message);
           } else {
             toastr.error(data.message || 'Failed to check status');
@@ -272,11 +276,16 @@
     const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
     const selectedCountEl = document.getElementById('selectedCount');
 
+    const bulkCheckStatusBtn = document.getElementById('bulkCheckStatusBtn');
+    const selectedCountCheckEl = document.getElementById('selectedCountCheck');
+
     function updateBulkUI() {
       const checked = document.querySelectorAll('.row-checkbox:checked');
       const total = document.querySelectorAll('.row-checkbox');
       selectedCountEl.textContent = checked.length;
+      selectedCountCheckEl.textContent = checked.length;
       bulkDeleteBtn.style.display = checked.length > 0 ? 'inline-flex' : 'none';
+      bulkCheckStatusBtn.style.display = checked.length > 0 ? 'inline-flex' : 'none';
       selectAll.checked = total.length > 0 && checked.length === total.length;
       selectAll.indeterminate = checked.length > 0 && checked.length < total.length;
     }
@@ -291,5 +300,58 @@
     document.querySelectorAll('.row-checkbox').forEach(cb => {
       cb.addEventListener('change', updateBulkUI);
     });
+
+    function bulkCheckStatus() {
+      const checked = document.querySelectorAll('.row-checkbox:checked');
+      if (checked.length === 0) { toastr.error('No items selected'); return; }
+
+      const ids = Array.from(checked).map(cb => cb.value);
+      const btn = bulkCheckStatusBtn;
+      const icon = btn.querySelector('i');
+
+      // Loading state
+      icon.classList.add('fa-spin');
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+      btn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Checking ' + ids.length + ' URL(s)...';
+
+      fetch('{{ route("dashboard.error_logs.bulkCheckStatus") }}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ ids: ids })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.results) {
+            data.results.forEach(result => {
+              const cell = document.getElementById('status-cell-' + result.id);
+              if (cell) {
+                let statusClass = 'badge-secondary';
+                if (result.status >= 200 && result.status < 300) statusClass = 'badge-success';
+                else if (result.status >= 300 && result.status < 400) statusClass = 'badge-info';
+                else if (result.status >= 400) statusClass = 'badge-danger';
+                cell.innerHTML = `<span class="admin-badge ${statusClass}" title="Checked ${result.checked_at}">${result.status || '0'}</span>`;
+              }
+            });
+            toastr.success(data.message);
+          } else {
+            toastr.error(data.message || 'Failed to check status');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          toastr.error('Failed to check status');
+        })
+        .finally(() => {
+          btn.innerHTML = '<i class="fas fa-sync-alt"></i> Check Status (<span id="selectedCountCheck">' + ids.length + '</span>)';
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        });
+    }
   </script>
 @endsection

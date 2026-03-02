@@ -7,7 +7,7 @@ Usage: @include('includes.product-schema', ['product' => $product, 'price' => $p
     $schemaCurrency = $country->iso_currency ?? 'PKR';
     $schemaAvailability = $schemaPrice > 0 ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder';
     $brandName = $product->brand ? $product->brand->name : 'Unknown';
-    $reviewCount = $product->reviews_count ?? $product->reviews->count();
+    $reviewCount = $product->reviews_count ?? $product->activeReviews->count();
     $avgRating = $product->avg_rating ?? 0;
 @endphp
 

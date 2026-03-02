@@ -35,9 +35,9 @@
         </form>
     </div>
 
-    @if(count($product->reviews))
+    @if(count($product->activeReviews))
         <div class="space-y-4">
-            @foreach($product->reviews()->orderBy("created_at", "DESC")->get() as $review)
+            @foreach($product->activeReviews()->orderBy("created_at", "DESC")->get() as $review)
                 <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-4 dark:bg-slate-900 dark:ring-slate-800">
                     <div class="flex gap-3 mb-3">
                         <img src="{{ URL::to('/images/profile.png') }}" class="rounded-full size-12 object-cover"

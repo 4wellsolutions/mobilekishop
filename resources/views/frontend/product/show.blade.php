@@ -154,7 +154,7 @@
                         }
                     </script>
 
-        @if($product->reviews->isEmpty())
+        @if($product->activeReviews->isEmpty())
             <script type="application/ld+json">
                                                   {
                                                       "@@context": "https://schema.org/",
@@ -260,7 +260,7 @@
                                                           "@type": "Brand",
                                                           "name": "{{$product->brand->name}}"
                                                       },
-                                                          @foreach($product->reviews as $review)
+                                                          @foreach($product->activeReviews as $review)
                                                             {
                                                                 "@type": "Review",
                                                                 "reviewRating": {
@@ -277,8 +277,8 @@
                                                           ],
                                                       "aggregateRating": {
                                                           "@type": "AggregateRating",
-                                                          "ratingValue": "{{ round($product->reviews()->avg('stars'), 1) }}",
-                                                          "reviewCount": "{{ $product->reviews->count() }}"
+                                                          "ratingValue": "{{ round($product->activeReviews()->avg('stars'), 1) }}",
+                                                          "reviewCount": "{{ $product->activeReviews->count() }}"
                                                       },
                                                       "offers": {
                                                           "@type": "Offer",
@@ -399,14 +399,14 @@
                                 </div>
                             </div>
                             <!-- Star Rating -->
-                            @if($product->reviews->isNotEmpty())
+                            @if($product->activeReviews->isNotEmpty())
                                 <div class="flex items-center gap-1 text-yellow-500 text-sm mt-1">
                                     <span
-                                        class="font-bold text-text-main mr-1">{{ round($product->reviews->avg('stars'), 1) }}</span>
+                                        class="font-bold text-text-main mr-1">{{ round($product->activeReviews->avg('stars'), 1) }}</span>
                                     @for($i = 1; $i <= 5; $i++)
                                         <span class="material-symbols-outlined text-[18px] fill-current">star</span>
                                     @endfor
-                                    <span class="text-text-muted ml-1">({{ $product->reviews->count() }} Reviews)</span>
+                                    <span class="text-text-muted ml-1">({{ $product->activeReviews->count() }} Reviews)</span>
                                 </div>
                             @endif
                         </div>
@@ -706,7 +706,7 @@
         <div class="mt-12" id="reviews">
             <div class="bg-white border border-border-light rounded-xl p-6 shadow-card">
                 <h3 class="text-lg font-bold text-text-main mb-6">User Ratings & Reviews</h3>
-                @if($product->reviews->isEmpty())
+                @if($product->activeReviews->isEmpty())
                     <div class="text-center py-8">
                         <p class="text-text-muted mb-4">No reviews yet. Be the first to review this product!</p>
                         <button onclick="openReviewModal()"
@@ -715,7 +715,7 @@
                     </div>
                 @else
                     <div class="space-y-6">
-                        @foreach($product->reviews as $review)
+                        @foreach($product->activeReviews as $review)
                             <div class="border-b border-border-light pb-6 last:border-0">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">

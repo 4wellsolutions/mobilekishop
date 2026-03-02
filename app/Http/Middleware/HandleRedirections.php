@@ -14,6 +14,7 @@ class HandleRedirections
      * 
      * Checks if the current URL has a redirect configured.
      * Redirections are cached for 1 hour to avoid hitting the DB on every request.
+     * Uses both a full-URL map and a path-only map for O(1) lookups.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
@@ -34,23 +35,32 @@ class HandleRedirections
         $currentUrl = $request->fullUrl();
         $currentPath = '/' . ltrim($request->path(), '/');
 
-        // Cache all redirections as a lookup map
+        // Cache all redirections as two lookup maps: by full URL and by path
         // Refreshes every hour or when cache is manually cleared
-        $redirections = Cache::remember('url_redirections', 3600, function () {
-            return DB::table('redirections')->pluck('to_url', 'from_url')->toArray();
+        $maps = Cache::remember('url_redirections_maps', 3600, function () {
+            $redirections = DB::table('redirections')->pluck('to_url', 'from_url')->toArray();
+
+            $byUrl = $redirections;
+            $byPath = [];
+
+            foreach ($redirections as $fromUrl => $toUrl) {
+                $fromPath = parse_url($fromUrl, PHP_URL_PATH);
+                if ($fromPath) {
+                    $byPath[$fromPath] = $toUrl;
+                }
+            }
+
+            return ['by_url' => $byUrl, 'by_path' => $byPath];
         });
 
-        // Check exact full URL match first
-        if (isset($redirections[$currentUrl])) {
-            return redirect()->to($redirections[$currentUrl], 301);
+        // Check exact full URL match (O(1) hash lookup)
+        if (isset($maps['by_url'][$currentUrl])) {
+            return redirect()->to($maps['by_url'][$currentUrl], 301);
         }
 
-        // Also check by path — extract path from stored from_url and compare
-        foreach ($redirections as $fromUrl => $toUrl) {
-            $fromPath = parse_url($fromUrl, PHP_URL_PATH);
-            if ($fromPath && $fromPath === $currentPath) {
-                return redirect()->to($toUrl, 301);
-            }
+        // Check by path (O(1) hash lookup instead of O(n) loop)
+        if (isset($maps['by_path'][$currentPath])) {
+            return redirect()->to($maps['by_path'][$currentPath], 301);
         }
 
         return $next($request);
