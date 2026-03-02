@@ -49,11 +49,11 @@
             </div>
             <div class="max-h-[250px] overflow-y-auto">
                 <ul class="space-y-1.5 list-none p-0 m-0">
-                    @foreach($sidebarBrands as $brand)
+                    @foreach($sidebarBrands as $sbBrand)
                         <li>
-                            <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$brand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $brand->slug, 'categorySlug' => $category->slug])) }}"
-                                class="text-sm text-text-muted hover:text-primary no-underline block py-0.5 transition-colors">
-                                {{ $brand->name }}
+                            <a href="{{ route(($pk ? '' : 'country.') . 'brand.show', ($pk ? [$sbBrand->slug, $category->slug] : ['country_code' => $country->country_code, 'brand' => $sbBrand->slug, 'categorySlug' => $category->slug])) }}"
+                                class="text-sm no-underline block py-0.5 transition-colors {{ (isset($activeBrand) && $activeBrand->id === $sbBrand->id) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
+                                {{ $sbBrand->name }}
                             </a>
                         </li>
                     @endforeach
@@ -78,6 +78,16 @@
         ->whereNotNull('url')->where('url', '!=', '')
         ->orderBy('title')
         ->get();
+
+    // For brand-price filter pages, also check the brand's main page URL
+    if ($dbFilters->isEmpty() && isset($activeBrand) && $activeBrand) {
+        $brandPageUrl = url(($pk ? '' : $country->country_code . '/') . 'brand/' . $activeBrand->slug . '/mobile-phones');
+        $dbFilters = \App\Models\Filter::where('page_url', $brandPageUrl)
+            ->whereNotNull('title')->where('title', '!=', '')
+            ->whereNotNull('url')->where('url', '!=', '')
+            ->orderBy('title')
+            ->get();
+    }
 @endphp
 
 @if($dbFilters->isNotEmpty())
@@ -92,7 +102,7 @@
                 @foreach($dbFilters as $dbFilter)
                     <li>
                         <a href="{{ $dbFilter->url }}"
-                            class="text-sm no-underline block py-0.5 transition-colors {{ str_contains(request()->url(), $dbFilter->url) ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
+                            class="text-sm no-underline block py-0.5 transition-colors {{ request()->url() === $dbFilter->url ? 'text-primary font-semibold' : 'text-text-muted hover:text-primary' }}">
                             {{ $dbFilter->title }}
                         </a>
                     </li>

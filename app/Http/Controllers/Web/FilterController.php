@@ -69,7 +69,7 @@ class FilterController extends Controller
     public function brandUnderAmount(Request $request)
     {
         $brandParam = $request->route('brand');
-        $brandSlug = ($brandParam instanceof \App\Brand) ? $brandParam->slug : $brandParam;
+        $brandSlug = ($brandParam instanceof \App\Models\Brand) ? $brandParam->slug : $brandParam;
         $amount = (int) $request->route('amount');
         $country = $request->attributes->get('country');
 
@@ -93,7 +93,8 @@ class FilterController extends Controller
         $category = Category::find(1);
         $filters = collect($request->query());
 
-        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'filters'));
+        $activeBrand = $brand;
+        return view('frontend.filter', compact('products', 'metas', 'category', 'country', 'brand', 'activeBrand', 'filters'));
     }
 
     /**
